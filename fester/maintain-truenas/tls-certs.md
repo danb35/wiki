@@ -2,7 +2,7 @@
 title: TLS Certificates on TrueNAS
 description: How to create and/or deploy them
 published: true
-date: 2025-03-28T22:30:09.491Z
+date: 2025-03-29T14:50:10.574Z
 tags: 
 editor: markdown
 dateCreated: 2025-03-28T22:30:07.661Z
@@ -15,8 +15,8 @@ Modern web browsers will complain about insecure connections when you're accessi
 TrueNAS creates a self-signed certificate on installation, which is valid for about one year in recent versions of TrueNAS.  This certificate will allow encryption of traffic for the web interface and certain other services, but all browsers will give warnings for a self-signed certificate.  When this certificate nears expiration or has expired, the web interface will give you a warning.
 
 To replace the self-signed certificate with a new one, see the following instructions:
-* TrueNAS CORE
-* TrueNAS SCALE
+* [TrueNAS CORE](/fester/maintain-truenas/selfsigned-core)
+* [TrueNAS SCALE](/fester/maintain-truenas/selfsigned-scale)
 ## Obtain a Let's Encrypt certificate
 Recent versions of TrueNAS CORE, and every version of TrueNAS SCALE, include limited functionality to obtain a trusted certificate from Let's Encrypt and renew it automatically.  This functionality requires that DNS for your domain be hosted buy a compatible provider: Route53 for CORE; or Cloudflare, OVH, or Route53 for SCALE.  Instructions for this process are below:
 * TrueNAS CORE
