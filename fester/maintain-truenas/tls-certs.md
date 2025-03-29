@@ -2,7 +2,7 @@
 title: TLS Certificates on TrueNAS
 description: How to create and/or deploy them
 published: true
-date: 2025-03-29T16:03:47.768Z
+date: 2025-03-29T16:26:59.018Z
 tags: 
 editor: markdown
 dateCreated: 2025-03-28T22:30:07.661Z
@@ -19,7 +19,7 @@ To replace the self-signed certificate with a new one, see the following instruc
 * [TrueNAS SCALE](/fester/maintain-truenas/selfsigned-scale)
 ## Obtain a Let's Encrypt certificate
 Recent versions of TrueNAS CORE, and every version of TrueNAS SCALE, include limited functionality to obtain a trusted certificate from Let's Encrypt and renew it automatically.  This functionality requires that DNS for your domain be hosted by a compatible provider: Route53 for CORE; or Cloudflare, OVH, or Route53 for SCALE.  Instructions for this process are below:
-* TrueNAS CORE
+* [TrueNAS CORE](/fester/maintain-truenas/letsencrypt-core)
 * [TrueNAS SCALE](/fester/maintain-truenas/letsencrypt-scale)
 ## Import a certificate automatically
 If DNS for your domain isn't hosted by a compatible provider, or you'd otherwise prefer to manage your certificates (whether from Let's Encrypt or elsewhere) on a different system, you can use a script to automate importing a certificate.  Instructions for this process are below:
