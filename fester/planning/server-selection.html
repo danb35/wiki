@@ -1,0 +1,122 @@
+<!--
+title: 2.3.7 Server Hardware Selection Time
+description: Wow, you made it through the hardware sections...
+published: true
+date: 2024-08-15T16:49:45.317Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-05-25T20:58:03.059Z
+-->
+
+<p><span class="text-huge"><mark class="pen-red"><strong><u>CON</u></strong></mark><strong><u>GRAT</u></strong><mark class="pen-red"><strong><u>ULA</u></strong></mark><strong><u>TIONS</u></strong><mark class="pen-red"><strong><u>!!!!</u></strong></mark></span> You made it through the mass of detail about different hardware issues, and so now it is time to choose…</p>
+<p>We have tried our best to be comprehensive yet brief yet informative with our level of detail, and hopefully you haven't found it too daunting…</p>
+<p>We are going to finish this Server Hardware sub-section of planning by giving as many “Rules of Thumb” as we can…</p>
+<h2>Server Type</h2>
+<ul>
+  <li>You're building a server, so use server-grade hardware. The “gamer” motherboard you bought may work (may even work well), but isn't going to be ideal. It probably won't have enough SATA ports, memory capability, CPU I/O channels etc. and probably won't support ECC Memory, it may have a lower quality Realtek NIC<mark class="pen-red"><strong><sup>[1]</sup></strong></mark>, and it will probably have other built-in hardware that you don't need and can't use e.g. a sound card, bluetooth, wifi etc. Laptops are generally entirely unsuitable.</li>
+  <li>If you can afford to buy a commercial NAS box (from a reputable manufacturer), even if it is 2nd user, then save yourself time, effort and heartache by doing so. Avoid older hardware that doesn't support the minimum memory requirement of 8GB. If you can afford it, the iXsystems hardware is pretty good. Alternatively 2nd user commercial servers (from manufacturers like Dell or HP) can be purchased relatively cheaply too.</li>
+  <li>For a home / family business environment, doing network storage, media streaming and a few smallish applications, the CPU, memory and SSD requirements are much much smaller than you might think, so older (and therefore cheaper) equipment can be perfectly suitable.</li>
+</ul>
+<p><mark class="pen-red"><strong><sup>[1]</sup></strong></mark><span class="text-small"> Old-time TrueNAS community user </span><a href="https://www.truenas.com/community/members/jgreco.115/"><span class="text-small">@jgreco</span></a><span class="text-small">’s article entitled “</span><a href="https://forums.truenas.com/t/is-my-realtek-ethernet-really-that-bad/1496"><span class="text-small">Is my Realtek ethernet really that bad?</span></a><span class="text-small">” explains why Realtek NICs can be fine for workstations and small home / family business TrueNAS servers but may not be up to the multi-user needs for bigger environments.</span></p>
+<h2>CPU</h2>
+<ul>
+  <li>A multicore 64 bit Intel / AMD processor is a minimum requirement.</li>
+  <li>Low power (CPU power and electrical wattage power) 2 core CPUs (which can be embedded i.e. soldered onto the motherboard as opposed to installed in a socket) may well be adequate for home / family business servers doing network storage, media streaming and a few smallish apps. Obviously a 4-core processor will be better and may not cost much more. 12 core i9s or Ryzen processors will likely be a waste of money unless you are running multiple heavy apps / VMs.</li>
+  <li>If you follow the advice on ECC memory below then the processor and motherboard must also support ECC memory (not all do).</li>
+  <li>If you want to use disk or network encryption, select a processor that supports AES-NI on chip. Otherwise, don’t use encryption as it creates too much of a performance hit. <strong>In fact, unless you have a specific legal requirement for full-disk encryption, don't use it. The risk of data loss is too great.</strong></li>
+  <li>Most modern (i.e., Sandy Bridge or newer) Intel CPUs will have adequate performance for any sort of file sharing over a gigabit network.</li>
+</ul>
+<h2>Memory</h2>
+<ul>
+  <li>If possible use Error Correcting Memory (ECC memory). Whilst it is a bit more expensive, with non-ECC memory you are introducing a possible source of corruption of your data before it is written to disk or whilst it is held in cache. That said, servers and workstations have run for decades with non-ECC memory, so if your system is for home or family business use, you may be perfectly happy with non-ECC memory - but the more memory you have and the longer your server runs between reboots, the greater the likelihood of a random cosmic ray flipping a memory bit somewhere, and ECC fixes these without you noticing. That said, if your RAM goes bad (as opposed to random cosmic rays) non-ECC memory can introduce serious amounts of permanent data corruption as it is written - so if the data you are writing is critical, don't economise and build an ECC system.<mark class="pen-red"><strong><sup>[2][3]</sup></strong></mark></li>
+  <li>The absolute minimum amount of RAM for a TrueNAS system is 8GB, and for home / family business use you can often see cache hit ratios of 99%+ with only 8GB of memory (with TrueNAS O/S and services using c. 4GB, leaving c. 4GB for ARC). Obviously more memory is better, and if your server supports more memory then 16GB should be considered a more realistic minimum. If you find that your your ARC cache hit ratio is below 99%, then adding RAM is the easiest and cheapest way to improve your network response times since as soon as you add it, ZFS will use it for caching.</li>
+</ul>
+<p><mark class="pen-red"><strong><sup>[2]</sup></strong></mark><span class="text-small"> If you want fine detail on this, old-time TrueNAS community user </span><a href="https://www.truenas.com/community/members/cyberjock.22572/"><span class="text-small">@Cyberjock</span></a><span class="text-small">’s article entitled “</span><a href="https://www.truenas.com/community/threads/ecc-vs-non-ecc-ram-and-zfs.15449/"><span class="text-small">ECC vs non-ECC RAM and ZFS</span></a><span class="text-small">” goes into detail about how cosmic rays and permanent bad bits can cause data corruption.</span></p>
+<p><mark class="pen-red"><strong><sup>[3]</sup></strong></mark><span class="text-small"> For a cautionary tale of bad memory, the Reddit article “</span><a href="https://www.reddit.com/r/homelab/comments/4iepsw/freenas_all_disks_suddenly_degraded/"><span class="text-small"><i>FreeNAS All Disks Suddenly Degraded</i></span></a><span class="text-small">” explains the potential real-life consequences.</span></p>
+<h2>Motherboard</h2>
+<ul>
+  <li>Server motherboards are more expensive but the best way to go.</li>
+  <li>If you follow the advice on ECC memory then the motherboard must support it (not all do).</li>
+  <li>It’s a good idea to use a CPU and memory and NVMe cards from the manufacturer’s Qualified Vendors List (QVL) where possible. The QVL is a list of hardware that has been tested by the motherboard manufacturer for compatibility.</li>
+  <li>Make sure you match the memory and the processor to the motherboard. Memory comes in different types (DDR 3/4/5), speeds, capacities, physical formats (DIMM, SODIMM) etc. Processors are designed for specific sockets, have different speeds, etc. The motherboard must support your choices.</li>
+  <li>If you plan to support your NAS remotely (or just want an easier time when you install TrueNAS), get a motherboard that features the Intelligent Platform Management Interface (IPMI) if you can - this allows you to do e.g. BIOS settings and other console ops over the network.</li>
+  <li>Prefer motherboards with Intel NICs are recommended, and try to avoid Realtek NICs if at all possible (see above).</li>
+</ul>
+<h2>Storage HDDs for your data</h2>
+<ul>
+  <li>Avoid SMR (<i>S</i>hingled <i>M</i>agnetic <i>R</i>ecording) technology HDDs at all costs<mark class="pen-red"><strong><sup>[4]</sup></strong></mark> (e.g. some models of WD Red drives) - they are literally completely unsuitable for use by ZFS. Check the detailed specs to confirm the drives you are planning to use are CMR technology and not SMR because drive are often marketed <strong>without</strong> showing whether they are CMR or SMR drives.</li>
+  <li>If possible use HDDs specifically rated for NAS usage e.g. WD Red Plus/Pro, Seagate IronWolf/IronWolf Pro etc.</li>
+  <li>Because ZFS is providing error recover using redundancy and checksums, controllable error recovery timeout<mark class="pen-red"><strong><sup>[5]</sup></strong></mark> is a useful HDD feature to have because it avoids an I/O error on one disk from holding up the successful I/Os on the other drives (which are still providing all the data needed for a successful read/write).</li>
+  <li>Because ZFS combines multiple drives into a single storage pool, and because (without redundancy) the loss of a single drive will result in the loss of the entire data across the whole storage pool, it is absolutely essential to use redundant drives on any pool containing more than one drive, and unless you cannot do so for some reason it should be considered essential to provide redundancy on all non-boot pools. So accept the need and the cost implications.</li>
+  <li>The more drives you have in a pool, and the larger the drives are, the greater the level of redundancy you need. You should plan for adding 20%-33% more drives for redundancy of RAIDZ pools, and (obviously) 100% redundancy for mirror pools. Use RAIDZ2 (or RAIDZ3) on all RAIDZ vDevs with 6 or more drives and only use RAIDZ1 on vDevs of 5 or less with drives of 8TB size or less and even then only if you absolutely have to.</li>
+</ul>
+<p><mark class="pen-red"><strong><sup>[4]</sup></strong></mark><span class="text-small"> A partial unmaintained list of SMR drives is available from the </span><a href="https://www.truenas.com/community/resources/list-of-known-smr-drives.141/"><span class="text-small">TrueNAS Community “List of Known SMR Drives”</span></a><span class="text-small">.</span></p>
+<p><mark class="pen-red"><strong><sup>[5]</sup></strong></mark> <span class="text-small">A description of how Western Digital TLER, Seagate ERC and Samsung/Hitachi CCTL work is available from the </span><a href="https://www.truenas.com/community/threads/checking-for-tler-erc-etc-support-on-a-drive.27126/"><span class="text-small">TrueNAS Community Resource “Checking for TLER, ERC, etc. support on a drive”</span></a></p>
+<h2>Host Bus Adapters (HBAs) and RAID Controllers</h2>
+<ul>
+  <li>Use HBA cards and not RAID cards. If you can, use an LSI-based HBA card flashed into IT-mode (HBA rather than RAID). If you use a RAID card it <strong><u>must</u></strong> be flashed into IT-mode/JBOD-mode.<mark class="pen-red"><strong><sup>[6]</sup></strong></mark></li>
+  <li>The HBA or RAID (IT Mode) firmware version must match with the driver version in TrueNAS. TrueNAS will give a warning if this is not the case. This is important as a mismatch can lead to possible data corruption.</li>
+  <li>Using a backplane can seriously reduce the amount of cabling in your server.</li>
+  <li>Do not use SATA port multipliers.</li>
+</ul>
+<p><mark class="pen-red"><strong><sup>[6]</sup></strong></mark> <span class="text-small">RAID cards work by hiding the physical drives from the operating system and instead presenting multiple physical drives as a single large drive. Meanwhile ZFS absolutely needs to be able to see the physical drives and thus RAID cards are incompatible with and unsuitable for use with ZFS. Many RAID cards do not support a true JBOD mode, in which each disk is directly presented to the operating system, which is why HBAs are preferred over RAID cards.</span></p>
+<h2>Special ZFS devices</h2>
+<ul>
+  <li>ZFS has several special SSD devices that can be used to improve performance (Metadata, L2ARC, SLOG, Deduplication).</li>
+  <li>Most home / family-business servers will <i><strong><u>NOT</u></strong></i> need any of these special ZFS devices. Never include these by default because you think “well, why not” - if you have a genuine need for one or more of these, then if you configure them correctly they are sound features, but in many cases they will make your ZFS configuration (and any recovery if things go wrong) substantially more complex whilst not providing any benefit. If you think you have a need, then ask in the TrueNAS Forums because some of these cannot be removed once they have been added.</li>
+</ul>
+<h2>Boot Device for the TrueNAS OS</h2>
+<ul>
+  <li>The TrueNAS OS must reside on a separate drive. It cannot be installed on the HDD/s you will use for data storage.</li>
+  <li>A Solid State Disk (SSD) is recommended for your boot drive.</li>
+  <li>A minimum of 16GB capacity for the TrueNAS boot device is recommended. Any larger than 32 GB is wasteful.</li>
+  <li>Using the first 16GB-32GB of a much larger drive as a boot partition whilst using the rest of the boot drive for other uses (such as an SSD apps pool) is neither supported nor recommended, but it is easily achievable and works just fine, and it saves you using a separate SSD or NVMe drive for non-boot SSD needs.</li>
+  <li>It is neither supported nor recommended to attach your boot SSD using USB rather than SATA or NVMe, but if you don't have M.2 slots and your SATA ports are limited, it is possible to do this. USB has a reputation for having occasional disconnects (especially USB3 ports) and if it does disconnect, your TrueNAS server will hang.</li>
+  <li>If you are going to use a USB boot drive it must be an SSD and <strong>not</strong> a flash drive. TrueNAS writes frequently to the boot drive (e.g. syslog) and a flash drive's limited amount of Total Bytes Written will quickly be exhausted and the drive will stop working. A proper USB connected SSD will, however, work (with the above caveats) - you can either use a USB→SATA connector, or buy a specialised USB SSD (e.g. by manufacturer SKK).</li>
+</ul>
+<h2>Power Supply Units (PSUs)</h2>
+<ul>
+  <li>Don’t buy low quality or low-power PSUs. Hard drives use much less power than a modern high-end GPU, but the power draw of significant numbers of HDDs still adds up.</li>
+  <li>When selecting a PSU for a quiet server build chose one that will operate at around 50%–60% of its rated maximum wattage. So if your server draws 300W, select a PSU with a maximum rating of around 600W.</li>
+  <li>If you have time have a look at <a href="https://forums.freenas.org/index.php?threads/proper-power-supply-sizing-guidance.38811/"><i>this</i></a> article by Jgreco. It is excellent and should help.</li>
+</ul>
+<h2>Uninterruptible Power Supply (UPS)</h2>
+<ul>
+  <li>ZFS is highly resilient to power failures - you may lose data that has not yet been written to disk, but ZFS is designed so that the disk is always in a consistent state (so CHKDSK / FSCK scans are a thing of the past - which is just as well when the file system spans multiple large disks and a pool wide CHKDSK/FSCK could take hours or even days to complete).</li>
+  <li>Nevertheless, power outages are often very short, and an Uninterruptable Power Supply (UPS) can tide you over these short interruptions and signal for an orderly power down if it is a longer one.</li>
+  <li>If your budget allows, invest in an Uninterruptible Power Supply (UPS). If your budget doesn't allow, adjust your budget until it does. It may not be the most seductive bit of kit (incidentally, the most seductive bit of kit I ever bought was a leather thong, but that’s another story) and it’s reasonably expensive (the UPS, not the thong!), but it is good practice to use one.</li>
+  <li>Some server PSUs will not work with a UPS that uses a simulated sine wave output. Some PSUs don’t seem to mind. The reasons are beyond the scope of this guide. I have seen the output of some simulated sine wave UPSs on an oscilloscope and some of them are shockingly bad and do not even come close to a sine wave. If you don’t want to take a chance, then get a UPS that provides a proper sine wave at its output. Unfortunately, this will cost you more.</li>
+  <li>Whatever UPS you choose make sure it is supported by Debian's Network UPS Tools (NUT) - see <a href="http://networkupstools.org/stable-hcl.html">the NUT hardware compatibility list</a>. This will connect the UPS to the server via a USB, serial, or network cable, and allow the server to monitor the UPS and if the mains power fails, to wait for a period to see if the power comes back and if not to shut down the server in an orderly manner.</li>
+  <li>Don't forget to (somehow) fix the power cable into the back of your server so that e.g. a passing cat doesn't pull it out!!</li>
+</ul>
+<h2>ZFS Knowledge</h2>
+<ul>
+  <li>You do not need to be a ZFS expert to build a TrueNAS system. However, it is easy to make a bad decision when designing your ZFS pools and it can be VERY hard (or impossible) to fix this at a later date - so before finalising your design, take advice from more experienced users by asking in the <a href="https://forums.truenas.com/">TrueNAS Forums</a>.</li>
+  <li>If you get any sort of Pool issues, ask for advice in the <a href="https://forums.truenas.com/">TrueNAS Forums</a> before taking any actions as attempting incorrect recovery actions can easily turn a recoverable pool where your data stays online or can be brought back online into an irrecoverable one where your data is offline and permanently lost.</li>
+  <li>Try (hard) to use your empty but configured new TrueNAS system to simulate a disk failure (when any mistakes will not lose your data - because there is no data on it as yet). Shut down, remove a RAID or mirror drive and boot again and see what happens. Add a file to the pool, then do the same actions to reinsert the drive. Now try to recover the pool using the UI.</li>
+  <li>Other than this wiki (which is not intended to be an in-depth tutorial on ZFS anyway) there are several resources you can read to lean about ZFS basics:<ul>
+      <li><a href="https://www.truenas.com/docs/scale/24.04/">iXsystems documentation</a></li>
+      <li>Cyberjock's <a href="https://forums.freenas.org/index.php?threads/slideshow-explaining-vdev-zpool-zil-and-l2arc-for-noobs.7775/">guide to ZFS for newbies</a> - read it once, then read it again, ideally read it a third time.</li>
+      <li>Another good beginner's resource for ZFS is <a href="https://www.ixsystems.com/community/resources/introduction-to-zfs.111/">this guide by Ericlöwe</a>.</li>
+    </ul>
+  </li>
+</ul>
+<h2>Esoteric Tips &amp; Advice</h2>
+<ul>
+  <li>No matter how well you train them, don’t use ferrets to build your server (that’s 3 years of my life I’m not getting back).</li>
+  <li>Same goes for pigeons (but they can be trained to make great cocktails).</li>
+  <li>Make sure that you use all recommended safety features - S.M.A.R.T monitoring and tests, Scrubs, Snapshots and sometimes Replications - and make sure that you get Lurch to include cleaning the server's dust filters in his regular spring-cleaning routine.</li>
+</ul>
+<p>&nbsp;</p>
+<h6><span class="text-big">Links</span></h6>
+<figure class="table" style="width:100%;">
+  <table style="border-bottom:1px solid rgb(117, 117, 117);border-left:1px solid rgb(117, 117, 117);border-right:1px solid rgb(117, 117, 117);border-top:1px solid rgb(117, 117, 117);">
+    <tbody>
+      <tr>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;width:50%;">Previous - <a href="/fester/planning/tower-pc">2.3.6 What About Using an Ordinary Tower PC?</a></td>
+        <td style="background-color:rgb(23, 23, 23);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;text-align:center;"><a href="https://wiki.familybrown.org/fester/index">Index</a></td>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;text-align:right;width:50%;">Next - <a href="/fester/planning/storage-services">2.4 Storage Services &amp; Protocols</a></td>
+      </tr>
+    </tbody>
+  </table>
+</figure>

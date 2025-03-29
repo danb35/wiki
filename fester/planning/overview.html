@@ -1,0 +1,86 @@
+<!--
+title: 2.1 Overview of Server Hardware Planning
+description: Why plan your server hardware?
+published: true
+date: 2024-08-01T23:30:37.800Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-04-11T11:07:35.728Z
+-->
+
+<p>There are many many reasons that you need to plan your server hardware but here is a quick overview of the major factors you need to consider:</p>
+<h2>Data storage disks</h2>
+<p>Firstly you need to decide just how critical this NAS server is going to be to you. What categories of data are you going to store on it (personal, downloaded media etc.), will this be the primary or backup copy of this data, and if you were to lose the data on the NAS just how much of a disaster or inconvenience will it be?</p>
+<p>Now you need to guess how much data you think you will need to store. Think big, because expanding it later can be a big, big pain. And you will need to account for holding multiple copies, compression, file system overheads, redundancy etc.&nbsp;</p>
+<p>You also need to think about what disk technology you want to use for the various types of data:</p>
+<ul>
+  <li>Solid State Drives (SSDs) - very fast random access - great for the operating system - and storage sizes are getting larger, but for home servers do you really need that level of performance for your data (bearing in mind that it is already going across a slow-ish network)?</li>
+  <li>Spinning Hard Disk Drives (HDDs) - tried and tested technology, large storage,&nbsp;and (for the moment) still cheaper than SSDs. From a performance perspective, because your data will be spread across multiple disks, the performance of sequential reads from HDDs should be substantially faster than a single HDD, and for backup file shares and media streaming, most data reads will be sequential (and will benefit from the operating system loading later parts of the file in advance in anticipation that it will be needed).</li>
+</ul>
+<p>For most home NAS data storage, esp. for file sharing and media streaming, for cost reasons most people currently still seem to use HDDs - however you will need to evaluate costs for your own specific needs.</p>
+<p>As mentioned above, you will also need to decide how much redundancy you want to include in the data storage in order that drive failures will not result in lost data. Identical (or similar) sized and performing drives are normally combined into pools, and within such a pool you can:</p>
+<ul>
+  <li>Dedicate <strong>zero</strong> drives for redundancy - which means that a single hard drive failure will lose all the data in the pool.</li>
+  <li>Dedicate between one and three drives for redundancy (RAIDZ) - which means that you can lose this number of drives simultaneously before you lose all the data in the pool.</li>
+  <li>Dedicate half of your drives for redundancy (each drive is MIRRORED) - which means that you can lose one drive out of each pair before you lose all the data in the pool.</li>
+</ul>
+<p>Uncle Fester's experience is that very few people are willing to risk having no redundancy, and on a home/small-business NAS with a limited number of drives, few people are willing to dedicate 3 of the limited number of drives for redundancy - so most people choose 1 or 2 drives. You need to decide what the risks are of one drive failing, and then a 2nd drive failing before the first has been fully replaced - and whether the data is mission critical or not.</p>
+<p>But the key thing to remember is that &nbsp;a ZFS pool is all-or-nothing. If you lose more devices than you have redundancy for, you will not only lose the data on those devices but rather lose all the data in the entire pool. So the larger your disks, and the more disks you have in the pool, the greater the risk and the greater the level of redundancy you should have.</p>
+<p>Finally you will need to decide how to deliver the useable disk space and the extra disks for redundancy, and how these disks will attach to the server motherboard i.e. how many SATA ports you will need:</p>
+<ul>
+  <li>More smaller-capacity disks gives you greater read data capacity and uses less space for redundancy (because redundancy is an integral number of disks).</li>
+  <li>Fewer larger-capacity disks requires fewer disk slots - so server hardware costs may be lower. (And remember that you will need disk slots for the system/application drives).</li>
+</ul>
+<h2>Operating System and Server Application storage disks</h2>
+<p>The operating system and server applications also require disk storage and again they can be either SSDs or HDDs, and these will normally also require SATA ports.</p>
+<h2>Processor</h2>
+<p>For a TrueNAS server that is providing network file storage and perhaps a few small apps, the processor requirements are far lower than you might expect, even if you want to do background media transcoding (e. g. changing video resolutions).</p>
+<p>If you want to run extensive Apps or Virtual Machines or do real-time media transcoding, then you might need a more powerful processor.&nbsp;</p>
+<h2>Memory</h2>
+<p>The ZFS file system that underpins TrueNAS is very memory intensive, and anything less than 8GB of memory will be insufficient (with 16GB being a more recommended amount).</p>
+<p>Apps will also take a certain amount of memory, but if you are going to run Virtual Machines then you will likely need a fair amount more memory.</p>
+<p>You will also need to decide whether to buy a server which runs Error Correction Code (ECC) memory or not. You may read a lot of advice suggesting that ECC memory is important (or even essential), however many systems run continuously for many months without a restart and without memory corruption, and in the end you need to ask yourself whether the increased peace-of-mind from ECC memory is worth the extra cost.</p>
+<h2>Minimum Server Hardware</h2>
+<p>In the detailed planning pages we will cover the minimum &amp; recommended levels of hardware in more detail, however even older commercial server appliances (like Synology or QNAP or Terramaster) with quite modest specifications can still successfully run TrueNAS.</p>
+<p>For example the author of this page has a 5-bay Terramaster system, with a dual core processor, and only 10GB of memory and yet supports 20TB of disk and several apps and still delivers excellent performance. Here are a couple of graphs that show how the memory is used, and that a ZFS cache of only 4GB still delivers 99.9%+ of data from the cache rather than the hard drive.</p>
+<figure class="image"><img src="/scale-memory-usage-cache-hits.png">
+  <figcaption>TrueNAS Scale Memory Usage &amp; Cache Hits</figcaption>
+</figure>
+<h2>Server Total Cost of Ownership</h2>
+<p>The total cost of ownership for the NAS server breaks down into four parts:</p>
+<ul>
+  <li>The Server hardware</li>
+  <li>The disks - broadly speaking you pay a similar amount per TB for HDDs, and a different amount per TB for SDDs, regardless of the capacity of the individual drives. HDDs also use varying technologies, and those designed for NAS (and those over 4TB in size) tend to have a longer life and a higher performance.</li>
+  <li>The software - TrueNAS is free, but some alternatives have a cost</li>
+  <li>The electricity to run it - off-the-shelf self-contained home/small-business NAS servers tend to have lower electricity requirements than using a standard tower PC as the basis for a NAS. This difference can make a significant difference to the total cost of owning a NAS over several years.</li>
+</ul>
+<h2>Network ports &amp; LAN bandwidth</h2>
+<p>Determining your network configuration is a complex subject in its own right dealt with elsewhere, but your server will need a network connection onto your LAN.</p>
+<p>Unless you want to use the NAS as an application server for a VPN or firewall, a single network port is normally going to be sufficient. For most home/small business environments, Gigabit Ethernet is likely also to be sufficient (given e.g. common internet connection speeds and common Wifi speeds) but you will need to consider your specific needs to confirm this - and the network speed will need to be end-to-end for your wired network, so you will need Gigabit switches (or router) and gigabit uplinks on your Wifi Access Points too, and possibly Wifi 5 (802.11ac) or better.</p>
+<h2>Other redundancy</h2>
+<p>One final piece of hardware you should consider is a small Uninterruptable Power Supply (UPS) which continues to provide electricity to your server from batteries in the event of a mains power cut - at least until the batteries run out. Although the underlying ZFS technology is reasonably robust against sudden outages, having a UPS to keep your NAS running over power glitches, short mains outages of a few second or longer outages of several minutes could be a better investment than e.g. using 2 redundant disks rather than one.&nbsp;</p>
+<h2><strong>Gomez Addams advises</strong></h2>
+<ul>
+  <li>For a family environment, store your current or vital personal data on your PC(s), and store backup copies of personal data on the server.</li>
+  <li>For a family environment, store the primary copy&nbsp;of your archive personal data, any shared data, and media files on the server, and for vital shared files, store a backup copy on one of your PCs.</li>
+  <li>Think about long-term needs, but don't overdo the hardware specification (because it can get really expensive really quickly).</li>
+  <li>Store your data on HDDs, but hold your NAS operating system and server applications on SSDs.</li>
+  <li>For a small home/small-business NAS, consider whether you want 1 or 2 drives dedicated to redundancy.</li>
+  <li>Have at least 16GB or more memory if your hardware supports it, but at an absolute minimum you must have 8GB. (Many off-the-shelf 3-5 bay NAS servers use a different NAS operating system than TrueNAS and come with as little as 2GB of memory. Unless you can reach this minimum 8GB with an upgrade, then you should avoid them.)</li>
+  <li>Use ECC memory if your hardware supports it in order to eliminate the risk of in-memory data corruption, but many PCs and servers have run successfully for years without it so don't over worry if your server hardware doesn't support it.</li>
+  <li>Think about using server hardware specifically designed for NAS usage, combined with TrueNAS. You can often get used models off eBay at a good price.</li>
+  <li>If you can afford it, always buy new disks from a reputable manufacturer like Seagate rather than used disks. Reject any disks which you think may have been mishandled in transit.&nbsp;</li>
+</ul>
+<p>&nbsp;</p>
+<h6><span class="text-big">Links</span></h6>
+<figure class="table" style="width:100%;">
+  <table>
+    <tbody>
+      <tr>
+        <td style="width:50%;">Previous - <a href="/fester/planning">2. Planning Your TrueNAS Solution</a></td>
+        <td style="text-align:center;"><a href="/fester/index">Index</a></td>
+        <td style="text-align:right;width:50%;">Next - <a href="/fester/planning/data-requirements">2.2 Data requirements</a></td>
+      </tr>
+    </tbody>
+  </table>
+</figure>

@@ -1,0 +1,19 @@
+<!--
+title: Mounting an ISO Image File via IPMI
+description: 
+published: true
+date: 2024-04-11T09:43:53.853Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-01-13T12:27:00.394Z
+-->
+
+<h1>Mounting an ISO Image File via IPMI</h1>
+<p>If your motherboard supports IPMI, you can mount image files (like the FreeNAS installer, Memtest86+, or other test utilities) through the virtual console. Your system will see the file as a local CD-ROM or flash drive. To start, open a web browser, and browse to the IP address of the IPMI interface on your server.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:eccfb2fbf3c95d9d814447910e2ebe0f.png" alt=""></figure>
+<p>Log in with the username of ADMIN and the password you chose. In the IPMI window, under the <strong>Remote Control</strong> menu, click on <strong>Console Redirection</strong>.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:a7637c7c556f5b982baa71c89f4799c0.png" alt=""></figure>
+<p>Click on the <strong>Launch Console</strong> button. You'll probably need to click some confirmation messages for Java; these vary from system to system. Once you've confirmed them, the console window will open. Under the <strong>Virtual Media</strong> menu, click on <strong>Virtual Storage</strong>.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:59b06a88dc07fa6ada420480f57e51c8.png" alt=""></figure>
+<p>In the Virtual Storage window, click on the <strong>CD-ROM &amp; ISO</strong> tab. Then, under <strong>Logical Drive Type</strong>, select <strong>ISO File</strong>. Click the <strong>Open I…</strong> button, then browse to the .iso file you want to mount. Click the <strong>Plug In</strong> button, then click <strong>OK</strong>. Your .iso file will be attached to your server and appear as a local CD-ROM.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:e66af69ebf7541cf2b98a877ce1d3e30.png" alt=""></figure>

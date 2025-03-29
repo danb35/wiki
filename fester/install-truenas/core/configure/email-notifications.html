@@ -1,0 +1,53 @@
+<!--
+title: Email Notifications
+description: 
+published: true
+date: 2024-04-07T14:35:12.695Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-01-13T12:58:58.320Z
+-->
+
+<h1>Email Notifications</h1>
+<p>The TrueNAS OS and the IPMI monitor can give you warnings and other types of useful information delivered straight to your email account. This is an incredibly useful feature (not to mention important to the security of your data–it's how the system will warn you of problems) and does not take long to setup.</p>
+<h2>Setting Up Email Notifications From The TrueNAS Web GUI</h2>
+<p>You'll first need to set an email address for the root user. Click “Accounts” in the left column, then “Users”. Click the three vertical dots to the right of the root user, then click “Edit” on the pop-up menu.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190526-235536.png" alt=""></figure>
+<p>In the “Email” text box type in the email account you want to use to receive the messages from your server (Fester uses a Gmail account for this e.g. Festerservermail@gmail.com).</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190526-235745.png" alt=""></figure>
+<p>Now scroll down this window and click on the “Save” button.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190526-235811.png" alt=""></figure>
+<p>Now click “System” in the left column, then “Email”.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-000026.png" alt=""></figure>
+<p>To setup email notifications we must use an email address for one of the user accounts on the TrueNAS server (not your actual external email address e.g. Festerservermail@gmail.com). This is an internal email address (i.e. for the server only) and it follows a specific syntax. Here is how it works.</p>
+<p><strong>user@hostname.local</strong></p>
+<p>The hostname of your server can be found in the “Dashboard” page and looks something like this.</p>
+<figure class="image"><img src="/sysinfo.png"></figure>
+<p>Here is an example hostname.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-000324.png" alt=""></figure>
+<p>So in Fester’s case the internal email address would take this form.</p>
+<p><strong>root@truenas.local</strong></p>
+<p>So armed with this information we can now go ahead and start configuring the “Email” page.</p>
+<p>In the “From email:” text box type the internal email address you want (Fester’s is root@truenas.local).</p>
+<p>In the “Outgoing mail server:” text box type in the mail server of the email service you use. If you don’t know it you can usually get it from looking on the mail service provider’s website (Fester uses Gmail so this would be set to <strong>smtp.gmail.com</strong>).</p>
+<p>The Gmail service uses port 25 for plain text email, port 465 for SSL encrypted email and port 587 for TLS encrypted email.</p>
+<p>In the “Port to connect to:” text box type in the port you need, again if you don’t know it you can usually get it from the mail service provider’s website (Fester uses SSL encryption therefore the port number is 465).</p>
+<p>In the “TLS/SSL:” drop down selection box chose if you want encryption or not, and which type (your mail service provider must support your choices).</p>
+<p>Put a tick in the “Use SMTP Authentication:” tick box if this is required. If this box is ticked, fill in the fields below.</p>
+<p>In the “Username:” text box type in the user name only (not the complete email address) of the external email address you want to use for notifications (in Fester’s case this is <strong>Festerservermail</strong>).</p>
+<p>Next type in the password for your external email account (not the internal server user account) in the “Password:” text box and then retype your password again to confirm it in the “Password confirmation:” text box.</p>
+<p>Now click the “Save” button.</p>
+<p>Do not click on the “Send Test Mail” button yet as there is a little more work to be done.</p>
+<p>The next part applies specifically to Gmail. If you are using a different mail service provider I can’t help you.</p>
+<p>Log into your external email account (in Fester’s case this was Fesrterservermail@gmail.com) and navigate to the “My Account” page.</p>
+<p>Go to “Connected Apps &amp; Sites” and <i>turn on</i> “Allow less secure apps”.</p>
+<p>If you do not do this then Gmail will prevent the server from accessing your external email account and you may receive an email entitled “Sign-in attempt Prevented” or something to that effect in your Gmail inbox.</p>
+<p>(Fester does not have screen shots for this. If anyone would like to provide some copyright free ones I would be happy to include them in the guide or you could replace this or any section with your own?)</p>
+<p>Now go back to the “System” → “Email” page in TrueNAS and click on the “Send Test Mail:” button (9). If all goes well you should receive an email from your server momentarily.</p>
+<p>If you are using 2 step verification with your Gmail account then you will not receive the email. You must go into your Gmail account and do a little more configuration.</p>
+<h2>Configuration Of A Gmail Account With 2 Step Verification</h2>
+<p>In order to do this, you need to create an application password. Go to <a href="https://myaccount.google.com/apppasswords">https://myaccount.google.com/apppasswords</a> and then create a new app password (Select App: Mail, Select Device: Other (Custom Name), Name: TrueNAS) and click on Generate. A popup window will open with your generated app password. Be sure to copy this password to a good location, you can only view it once. Use this password in the password settings for the email authentication.</p>
+<p>This will create a revoke-able app password that only allows access to your gmail account.</p>
+<h2>Setting Up Email Notifications From The IPMI Web GUI</h2>
+<p>I don’t know how to do this or if it is even possible to get IPMI to email notifications direct to a Gmail account.</p>
+<p>If anyone knows how to do this would you pass on the information and I will try to include it in the guide so everyone can benefit from your knowledge or you could replace this or any section with your own?</p>

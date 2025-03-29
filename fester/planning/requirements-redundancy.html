@@ -1,0 +1,141 @@
+<!--
+title: 2.2.4 Redundant disks
+description: Safeguard your data against loss through disk failure
+published: true
+date: 2024-12-27T19:03:23.553Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-08-01T22:58:08.947Z
+-->
+
+<p>This section of the wiki is all about how <i><strong><u>NOT</u></strong></i> to lose your data.</p>
+<p>All disks fail eventually. Some disks fail quicker than others.&nbsp;</p>
+<p>If a small stand-alone disk holding a limited amount of non-vital data fails, it will be a little annoying.</p>
+<p>However if a single disk failure within an integrated group of several, or perhaps many, large drives causes you to lose every single piece of data held across all those drives - including all the critical data you ever accumulated - this can be quite literally life changing.</p>
+<blockquote>
+  <p>History is littered with the examples of organisations that lost their vital data - see <a href="https://en.wikipedia.org/wiki/Gnolia">Ma.gnolia (2009)</a>, <a href="https://www.technewsworld.com/story/data-center-fire-fries-samsungs-un-backed-up-servers-80333.html">Samsung (2014)</a> and even the <a href="https://en.wikipedia.org/wiki/Library_of_Alexandria">Library of Alexandria (300BC)</a> - and Uncle Fester claims that he still remembers the Library of Alexandria fire though even by his standards this sounds unlikely.</p>
+</blockquote>
+<p>This can easily happen to you, so take our advice and invest in the extra hardware to store your data in a redundant way so that a single drive failure doesn't lose any data.</p>
+<p>ZFS is designed to group drives together to create one large storage pool - indeed it is designed to potentially group hundreds or even thousands of such drives together - but equally it is designed to ensure that these drives can be configured in a way that your don't lose <i><strong><u>any</u></strong></i> data even with the loss of one, two or even three drives simultaneously in any sub-group. Get this design right and your data can survive almost any isolated disk failures (though of course e.g. a fire that destroys all disks will need other backups to have been taken) but get the design wrong and you may find that the loss of a single disk causes you to lose all your data.</p>
+<p>This section describes the types of redundancy that you can create to try to ensure that your data survives disk failures, talks about the performance characteristics of each of these, and gives some rules of thumb about which of these you should use in different circumstances.</p>
+<p>It also discusses which types of Disk Drive are suitable for use with ZFS and which types <strong>must</strong> be avoided - and (without going into technicalities) why this is the case.</p>
+<p>We do recommend that you read this entire page in order to familiarise yourself with the ZFS basics and terminology, but if you want to you can skip to the end of the page to read <i>Uncle Fester's Simple Rules of Thumb for Pool Design</i>.</p>
+<p>But first a brief description (in <strong>very</strong> simple terms) about how ZFS storage is organised…</p>
+<h2>ZFS&nbsp;Fundamentals</h2>
+<p>The largest unit of storage in ZFS is called a Storage Pool - which in the simplest terms is a collection of disk blocks spread out over several (or many) disk drives (which can be Hard Disk Drives (HDDs) which can be SAS or SATA attached or Solid State Drives which can be SATA or NVMe attached.</p>
+<p>Storage Pools consist of one or more Virtual Devices (vDevs), each of which consists of one or more disks, and which can be of several types:</p>
+<ul>
+  <li><i><strong>Data vDevs</strong></i> - at least one and possible more</li>
+</ul>
+<p>plus zero or one of each of several types of very specialised vDev:</p>
+<ul>
+  <li>Metadata</li>
+  <li>Level 2 ARC</li>
+  <li>SLOG</li>
+  <li>Deduplication</li>
+</ul>
+<p>These special vDevs will be covered in more detail in the very next wiki page - but unless you have VERY special performance needs, most or all of these special vDevs will <i><mark class="pen-red"><strong>NOT</strong></mark></i> be needed and you can skip this page.</p>
+<p>As an aside, each storage pool has a ZFS Dataset at its root, and within this initial dataset can be a hierarchy of nested Datasets, each of which can contain normal folders and files and also Zvols (which are virtual disks for want of a better description). &nbsp;</p>
+<p>However what we are concerned about on this page is how you can make an individual vDev resilient by adding extra, redundant drives.</p>
+<h2>Why Redundancy?</h2>
+<p>First off, a vDev does not have to have redundancy. If we look at special vDevs, some are so vital to the operation of a storage pool that they pretty much have to be redundant - other types only hold copies or temporary data and can be safely defined without redundancy.</p>
+<p><u>Data vDevs</u> can be non-redundant - and there are several examples of single-disk storage pools where this is a very valid configuration:</p>
+<ul>
+  <li>The boot pool (which we will cover later)</li>
+  <li>A pool where you take a regular backup (ZFS replication) of non-vital data to another Storage Pool instead of having redundancy e.g. an apps pool</li>
+  <li>A data pool consisting of a single disk containing non-vital data where you decide to risk that disk failing.</li>
+</ul>
+<p><strong>But the general rule of thumb for most storage pools containing your network of VM data, resiliency should pretty much be considered mandatory.</strong>&nbsp;</p>
+<p>This means you should not:</p>
+<ul>
+  <li>Create a storage pool with multiple data-vDevs where each data-vDev has only one disk.</li>
+  <li>Ever trust any of your vital data to a data-vDev which has no redundancy.</li>
+</ul>
+<p>Resiliency does, of course, mean that you will be dedicating expensive drives to providing resiliency rather than basic storage, and newcomers often feel that this is an expensive luxury rather than a necessity, particularly once you start using 2 or 3 redundant disks rather than just one, however this is something you need to fully internalise and accept because it really is a necessity.</p>
+<h2>Types of Redundancy</h2>
+<p>In essence there are two types of redundancy that you can create:</p>
+<ol>
+  <li><strong><u>Mirrors</u></strong> - each disk in the vDev holds an identical copy of each piece of data - all but one of the drives are providing redundancy.<br><br>In theory there is no limit to the number of mirrors you can create, but in practice mostly a mirror consists of a total of 2 drives, or in special situations possibly three drives.<br><br>Mirrors are more flexible than RAIDZ vDevs because you can adjust the level of redundancy up or down.&nbsp;<br><br>Mirrored vDevs are used when:<ul>
+      <li>You only want to use a single drive worth of data (so a RAIDZ is not suitable); or</li>
+      <li>You want the best write performance</li>
+    </ul>
+  </li>
+  <li><strong><u>RAIDZ1/2/3</u></strong> - you group 3 or more drives together and, whilst two or more drives are used for base data storage, you dedicate one, two or three of additional drives to hold redundancy information.<br><br>In theory a single RAIDZ1/2/3 vDev can consist of hundreds of drives, but to make recovery (“resilvering”) in the event of the loss of a one or more drives a practical reality a RAIDZ vDev should consist of 3-12 drives and no more.<br><br>The larger the drives themselves, and the large number of drives in the RAIDZ vDev, the longer it will take to resilver after a drive failure, and so the greater the risk that another drive will fail during the resilvering process, and the greater the number of redundant disks that you should use.<br><br><mark class="pen-red"><strong>Important note:</strong></mark> Once the RAIDZ redundancy level is defined, it cannot be changed (without migrating data off the entire pool, deleting and recreating the vDev or pool, and migrating the data back again). Since your NAS will likely be easily your biggest data store, this may be impossible for all practical purposes. Therefore <i><mark class="pen-red"><strong>it is essential that you choose the RAIDZ redundancy level wisely because&nbsp;it is fixed for ever.</strong></mark></i></li>
+  <li><strong><u>DRAID</u></strong> - ZFS also has a different variety of RAID vDev called DRAID - in DRAID a vDev can consist of one or more RAIDZ sub-vDevs, plus a hot-spare which is pre-populated with additional partial redundancy data rather than kept empty for resilvering. The important things to note of this are:<ul>
+      <li>The hot-spare can be spread across multiple RAIDZ sub-vDevs rather than needing to dedicate a hot-spare to each RAIDZ vDev.</li>
+      <li>Resilvering can be achieved faster because the disk is already pre-populated with partial redundancy information.</li>
+      <li>DRAID is intended for very large arrays - its use is relatively limited and there may still be bugs as yet not found.</li>
+      <li>RAIDZ expansion probably isn't available for DRAID.</li>
+      <li>You may not be able to add RAIDZ sub-vDevs to a DRAID vDev - you may need to create an entirely new DRAID (or RAIDZ) vDev to expand the pool.</li>
+    </ul>
+  </li>
+</ol>
+<p>In all of these types of redundant data vDev, you should:</p>
+<ul>
+  <li>Always use the same type of technology for all drives i.e. all HDD, all SATA SSD, or all NVMe SSD.</li>
+  <li>Always use drives with the same performance characteristics e.g. don't mix 5400 RPM drives with 7200 RPM drives</li>
+  <li>Try to use drives of the same size - because each of the disks in the vDev will be limited in the space used to that of the smallest disk.</li>
+</ul>
+<p>Another general rule of thumb is that <strong>all the data-vDevs in a storage pool should have a similar type and level of redundancy</strong> i.e.:</p>
+<ul>
+  <li>Don't mix mirrors and RAIDZ</li>
+  <li>Don't mix RAIDZ1, RAIDZ2, RAIDZ3 in a single pool or DRAID vDev.</li>
+</ul>
+<p>This is not a technical limitation, but rather a realisation that the reasons for a particular type of resiliency apply to the whole Storage Pool and not to individual vDevs.</p>
+<p>This means that you will end up with different pools for different disk technologies (HDD, SATA SSD and NVMe) and between high write&nbsp;performance uses (mirrors) and general uses (RAIDZ).</p>
+<p>The penultimate rule of thumb is that within a single disk type and redundancy type, it is almost always best to create a single Storage Pool of that type with multiple data-vDevs, rather than create several Storage Pools each with a single vDev - because this allows ZFS to manage the space and performance in the single storage pool for you, whereas with several smaller storage pools of the same type you will have to balance the data across them.</p>
+<p>One final rule of thumb is that you should not expect to be able to significantly change the size of a vDev:</p>
+<ul>
+  <li>(With some limited exceptions) you can only add more storage to an existing vDev by replacing every disk in the pool one-by-one&nbsp;with a bigger one (which takes a LOT of time to resilver each disk before you replace the next one, or by adding a new data-vDevs to an existing storage pool.&nbsp;<br><br>In future versions of TrueNAS SCALE it will be possible to add additional space to an existing RAIDZ vDev, making it wider, however afterwards you may need to rebalance the vDev manually to respread the data across the increased number of drives.</li>
+  <li>(With some limited exceptions) you cannot reduce the size of a Storage Pool without migrating data elsewhere, destroying the pool and &nbsp;recreating it, and migrating the data back again.&nbsp;<br><br>For a Storage Pool consisting only of mirror data-vDevs, providing that you have sufficient space remaining afterwards to hold all the data, you can remove individual mirror vDevs from the pool.</li>
+</ul>
+<h2>Hot Spares</h2>
+<p>Normally when a drive fails, you need to physically replace it before ZFS can being the process of resilvering to bring the degraded vDev back to full redundancy.</p>
+<p>However it is possible within a Storage Pool to provide extra data drives which are left empty at the start and which can be switched in automatically when a drive fails to begin the resilvering process immediately. When the failed drive is replaced, it can then become the new hot-spare drive ready for the next time a drive fails.</p>
+<p>A hot spare drives can be used across all the RAIDZx data-vDevs in the storage pool, with the proviso that it cannot be used for any RAIDZ vDevs whose drives are bigger than the hot-spare.</p>
+<h3>dRAID Hot spares</h3>
+<p>As an aside, in the most recent versions of TrueNAS SCALE, there is an alternative type of vDev (called Distributed RAID or dRAID) which allows you to use hot spares in a different (and complex) way that reduces the resilvering time.&nbsp;</p>
+<p>The author's interpretation of how dRAID works is that it effectively distributes the hot-spare empty blocks across all the disks in the vDev, so that when a drive fails it can resilver into these empty blocks and because these blocks are spread across all the disks in the Storage Pool rather than on a single device, the resilvering can be completed in a much shorter time. This then allows each RAIDZ group within the Storage Pool to be wider and achieve the same resilvering time, and thus reduces the number of drives you need to dedicate to redundancy across the &nbsp;Storage Pool.</p>
+<p><strong>iXsystems recommend that you only use this on Storage Pools with ≥ 100 drives, which puts it outside the scope of this “Beginners Guide”. </strong>We really only mention it here in order to save you investigating this unnecessarily.</p>
+<h2>Splitting 3.5" slots into vDev groups</h2>
+<p>If your hardware has a specific number of 3.5" hardware slots and (now or eventually) you want to be able to use all these slots, here is a proposed approach for deciding how to group them into vDevs:</p>
+<ol>
+  <li>Decide what slots you need to use for non-redundant and mirror Storage Pools and reduce the number of slots accordingly.</li>
+  <li>Divide the remaining slots as evenly as possible into groups of between 6 and 12 drives (bearing in mind the level of RAIDZ redundancy you plan to use and that you will need this number of redundant drives from each group vs. the resilvering time needed). If you the number of slots doesn't easily divide into evenly sized groups, then you should plan to keep a slot or two free for future use (or use them for hot-spares).</li>
+</ol>
+<p>As an example, suppose you have 20 slots, and you need 2 of them for a mirror vDev and want RAIDZ2 for the bulk of your storage. You can divide the remaining slots into either:</p>
+<ul>
+  <li>3 groups of 6 - resulting in 12 data drives and 6 redundant drives and shorter resilver times; or</li>
+  <li>2 groups of 9 - resulting in 14 data drives and 4 redundant drives and longer resilver times.</li>
+</ul>
+<h2>Unsuitable Disk Technologies</h2>
+<h3>SMR HDDs</h3>
+<p>When discussing use of redundant disks, <strong>it is important to warn against a particular hard drive technology called SMR</strong> (<i>S</i>hingled <i>M</i>agnetic <i>R</i>ecording - which is slightly cheaper to produce than the alternative CMR technology)<strong>.</strong></p>
+<p>The problem with SMR drives is that they have very poor (c. 10%) bulk<mark class="pen-red"><strong><sup>[1]</sup></strong></mark> random write throughput (compared to CMR drives) - and whilst this write throughput might be completely acceptable in normal usage where writes are sporadic, if you ever need to resilver which requires massive random write throughput, the performance of the SMR disks is completely inadequate.</p>
+<p>This makes SMR drives completely and utterly unsuitable for use with ZFS redundant vDevs<mark class="pen-red"><strong><sup>[2]</sup></strong></mark>.</p>
+<p>When purchasing HDDs, <strong>you <u>MUST</u> ensure that the drives you buy are </strong><i><strong><u>NOT</u></strong></i><strong> SMR drives, </strong>and to do this you will likely need to check the detailed and formal drive specifications issued by the manufacturer <strong>because retail marketing materials often fail to disclose this, and often the drives themselves and the packaging they are delivered in often do not state this either</strong>.</p>
+<p>Sadly, for some manufacturers this is even true for some of the drives in their product ranges which are specifically designed for NAS usage. For example, Western Digital Red drives are sold as being suitable for small NAS systems up to 8 bays, but <a href="https://documents.westerndigital.com/content/dam/doc-library/en_us/assets/public/western-digital/product/internal-drives/wd-red-hdd/product-brief-western-digital-wd-red-hdd.pdf">the detailed specification PDF fails to mention anywhere that they are unsuitable for ZFS</a>.&nbsp;</p>
+<p><mark class="pen-red"><strong><sup>[1]</sup></strong></mark> SMR drive typically have a “persistent cache” area of the drive which is CMR of c. 70GB-100GB, where writes are staged, and later when the drive is idle they are written out asynchronously to the correct areas - but if you are doing bulk random writes, allowing no time for this background de-caching, then the cache fills up and everything slows to a crawl whilst previous writes are de-cached in order to make space for new writes to be cached. If you want a detailed explanation, <a href="https://youtu.be/rC0UDtCiYgI?t=632">here is a Youtube video which explains in detail</a>.&nbsp;</p>
+<p><mark class="pen-red"><strong><sup>[2]</sup></strong></mark> <a href="https://www.youtube.com/watch?v=8hdJTwaTl8I">Here is another Youtube video</a> which shows a test of SMR drives in ZFS arrays showing just how disastrous they will be (and damning Western Digital for introducing SMR drives into their WD Red line of NAS drives without properly disclosing that they did this).&nbsp;</p>
+<h2><i>Uncle Fester's Simple Rules of Thumb for Pool Design</i></h2>
+<figure class="image image-style-align-right image_resized" style="width:24.02%;"><img src="/planning/planning_thing_rules_of_thumb.jpg"></figure>
+<p>Obviously all Rules of Thumb are generalisations, and there are always unusual requirements which are exceptions to such rules, but in most cases (and especially those that this Wiki is aimed at), the following are generally true:</p>
+<ul>
+  <li>Active data, especially zVolumes and iSCSI and databases all do random i/o and should be synchronous writes on mirrored drives, ideally SSDs or (if data is too large) on HDDs with SSD SLOG.</li>
+  <li>Inactive rarely accessed data, and large sequential files should almost always be asynchronous writes on RAIDZ, typically HDD. These do NOT need SLOG which will do nothing.</li>
+  <li>Specialised types of vDev (e.g. special allocation aka metadata, dedup, L2ARC - other than SLOG as above) are only needed on extremely large servers or in very unusual and special circumstances. In most normal home / small business situations they are a waste of money.</li>
+</ul>
+<p>&nbsp;</p>
+<h6><span class="text-big">Links</span></h6>
+<figure class="table" style="width:1083px;">
+  <table style="background-color:rgb(33, 33, 33);border-bottom:1px solid rgb(117, 117, 117);border-left:1px solid rgb(117, 117, 117);border-right:1px solid rgb(117, 117, 117);border-top:1px solid rgb(117, 117, 117);">
+    <tbody>
+      <tr>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;width:509.094px;">Prev - <a href="https://wiki.familybrown.org/fester/planning/requirements-data-volumes">2.2.3 Data Volumes</a></td>
+        <td style="background-color:rgb(23, 23, 23);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;text-align:center;"><a href="https://wiki.familybrown.org/fester/index">Index</a></td>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;text-align:right;width:509.297px;">Next - <a href="/fester/planning/requirements-specialist-vdevs">2.2.5 ZFS Specialist vDevs</a></td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>&nbsp;</p>

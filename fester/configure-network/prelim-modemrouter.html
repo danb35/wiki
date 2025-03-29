@@ -1,0 +1,98 @@
+<!--
+title: Modem/Router Configuration
+description: 
+published: true
+date: 2024-04-07T14:16:20.008Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-01-12T21:02:38.622Z
+-->
+
+<h1>Modem/Router Configuration</h1>
+<p>I connect to the internet through one of these.</p>
+<figure class="image"><img src="/modem_pos.png"></figure>
+<p>It is a modem/router (I will just use the word “router” from here on) with a firewall and DHCP server built into it. I like to call it a POS router (POS=Piece of Shit) because it’s always giving trouble.</p>
+<p>This is how most people in the UK connect to the internet, via some sort of ISP supplied box (ISP= Internet Service Provider). Your setup might be different.</p>
+<p>Whatever your setup, you need to reserve a group of IP addresses for the server to use. There are good reasons for doing this.</p>
+<ul>
+  <li>By assigning static IP addresses (i.e. not changing) to the server we can always know where to find the IPMI web GUI and the TrueNAS web GUI. If the DHCP server in the router were to automatically assign these IP addresses to the TrueNAS server, then each time the router gets rebooted they could change. We would then need to go and find out what they had changed to, before we could once again use the IPMI and TrueNAS GUIs.</li>
+  <li>The IP addresses for Jails can be kept out of the IP address range of the DHCP server in the router. Jails didn’t work properly for me until I did this.</li>
+</ul>
+<p>I can’t tell you how to do this for your particular router as each one is different. This is how I did it for my setup, hopefully it will help you.</p>
+<p>Type the IP address of your router’s web GUI into your browser.</p>
+<p>The POS router’s web GUI address is:</p>
+<p>192.168.0.1</p>
+<p>(Yours might be different)</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:cd8bb74ed66ee726d258d1eb5e26a816.png" alt=""></figure>
+<p>This brings up the POS router’s web GUI.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:7433ba2bdc5b0abd1b85cdc3570a297b.png" alt=""></figure>
+<p>Now log in to your router.</p>
+<p>Your router will have the details of the IP address range of your private network (the ones that sit behind your router’s firewall, not the public IP address).</p>
+<p>On the POS router these are 192.168.0.0 – 192.168.0.254 (yours might be different).</p>
+<p>Plan how you want to arrange the IP addresses and how many you want to reserve.</p>
+<p>This is Fester’s attempt it may give you some ideas.</p>
+<p>I thought about 50 IP addresses would be more than enough (i.e. 192.168.0.0 – 192.168.0.49).</p>
+<p>The gateway address on the POS router is 192.168.0.1, so I kept away from this as I thought it might cause an IP address conflict if I used it. Therefore, in practice the IP addresses reserved for the server will start at 192.168.0.2 to avoid the gateway address.</p>
+<p>(Notice that the IPv4 Default Gateway IP address and the router’s web GUI address match. They are actually one in the same.)</p>
+<p>I planned how I would use the IP address range 192.168.0.2 – 192.168.0.49 and made a little table.</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td><i>IP Address</i>&nbsp;</td>
+        <td><i>Usage</i>&nbsp;</td>
+      </tr>
+      <tr>
+        <td>192.168.0.2&nbsp;</td>
+        <td>IPMI of TrueNAS Server&nbsp;</td>
+      </tr>
+      <tr>
+        <td>192.168.0.3 – 192.168.0.4&nbsp;</td>
+        <td>Reserved for Future Servers That Require IPMI&nbsp;</td>
+      </tr>
+      <tr>
+        <td>192.168.0.5&nbsp;</td>
+        <td>NIC Of The TrueNAS Server&nbsp;</td>
+      </tr>
+      <tr>
+        <td>192.168.0.6 – 192.168.0.49&nbsp;</td>
+        <td>Reserved For Future Use (Jails, etc)&nbsp;</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>I then reserved the first 50 IP addresses for the server by altering the IP address range of the DHCP Server in the POS router accordingly.</p>
+<p>This is a slightly backwards way of doing things, but due to the limited options of the POS router this was the only practical way to do it. Your router might offer a more elegant solution than this.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:13e3e286c1565e6a920bd2cdbce620a3.png" alt=""></figure>
+<p>The value in the little box was changed from 0 to 50.</p>
+<p>Also make a note of the subnet mask value, it will be needed later.</p>
+<p>While I was in there I also set up email alerts so that the router informs me of anything it considers worthy of mention. You may want to consider this.</p>
+<p>OK, that’s the router configured.</p>
+<p>But what if you don’t know your router’s web GUI IP address?</p>
+<p><br>&nbsp;</p>
+<h2>Finding The IP Address Of The Router’s GUI On A Windows Machine</h2>
+<p>If you have a Windows machine available that can connect to the router then you can find out (if your unsure use a machine that connects to the internet this should work).</p>
+<p>Click on the “Start” button and go into the “Control Panel” in Windows and select “Network and Sharing Centre” (this was on a Windows 7 machine).</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:8e8189bad54c27831ad4f136d343e8ea.png" alt=""></figure>
+<p>A new window will now pop-up. Click on the blue text next to “Connections”.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:b4f05a20f47d467b0d5c323e8a5b82f2.png" alt=""></figure>
+<p>Another window will now pop-up. Click on the “Details” button.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:4aec0ab653e748a44e678cdb6b42bd22.png" alt=""></figure>
+<p>Yet another window will now pop-up. The IP address listed by the “IPv4 Default Gateway” is the one you want.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:785cd52a765eef5a945a144a38aa5b02.png" alt=""></figure>
+<p>If you don’t mind a CLI (Command Line Interface) here is a faster way.</p>
+<p>Click on the START button in Windows (1) and type <strong>cmd</strong> in the “Search programs and files” text box (2) and press return, or click on the cmd icon at the top (3).</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:6a7870477a00d810cb5e7736c3f65087.png" alt=""></figure>
+<p>This should bring up the Windows default command-line interpreter, which is basically a window you can type commands into.</p>
+<p>Type in <strong>ipconfig</strong> at the command prompt (1) and then note down the Default Gateway IP address (2), you should get something like this.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:1195dd0bf5cfa9cdb076e49b765368a5.png" alt=""></figure>
+<p>Also make a note of the subnet mask value, it will be needed later (it’s just above the Default Gateway).</p>
+<h2>Finding The IP Address Of The Router’s GUI On A MAC</h2>
+<p>On a MAC go to “System Preferences” and click on “Network”.</p>
+<p>Now click on the “Advanced” button on the screen that appears next.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:2b25a778ae4094188af50ebe97a203af.png" alt=""></figure>
+<p>Select the “TCP/IP” tab on the next screen, and go down the list (it’s usually down the bottom) until you come to an entry called “Router”. The associated IP address is the one you want.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:56e8a6aa6c7bfc8e7b7e27cf72d6fd22.png" alt=""></figure>
+<h2>Finding The IP Address Of The Router’s GUI On A Linux Machine</h2>
+<p>I can’t help you here because I don’t know how.</p>
+<p>If someone would like to provide some information with copyright free screenshots I will try to include it in the guide or you could replace this or any section with your own?</p>

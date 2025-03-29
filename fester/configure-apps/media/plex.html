@@ -1,0 +1,102 @@
+<!--
+title: Plex Media Server
+description: 
+published: true
+date: 2024-04-07T16:45:41.905Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-01-13T13:30:36.895Z
+-->
+
+<h1>Plex Media Server</h1>
+<p>This is a guide for installing Plex Media Server using the <a href="https://github.com/danb35/freenas-iocage-plex">script</a> created by user <a href="https://www.truenas.com/community/members/danb35.3713/">danb35</a> on the TrueNAS forums. &nbsp;A previous version of this guide described installation of the plugin for Plex, but plugins are poorly maintained and will be removed from TrueNAS in the near future. &nbsp;See <a href="https://www.truenas.com/blog/the-future-of-truenas-plugins-is-apps/">this blog post</a> for more information.</p>
+<h2>Create the Media Dataset</h2>
+<p>Click “Storage” in the left column, then “Pools”.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-130751.png" alt=""></figure>
+<p>Click the three vertical dots to the right of your pool, and select “Add Dataset” from the pop-up menu.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-130827.png" alt=""></figure>
+<p>You'll see the “Add Dataset” window.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-131010.png" alt=""></figure>
+<p>In the “Name” text box type a name for the new media dataset (Fester very imaginatively used <strong>Media</strong>).</p>
+<p>Leave the “Compression level” drop down selection box (2) at its default value (<strong>Inherit (lz4)</strong>).</p>
+<p>In “Share Type” I selected <strong>Windows</strong> simply because most of the clients on Fester’s network are Windows machines.</p>
+<p>Now click on the “Save” button.</p>
+<p>Your dataset will be created. Click the <strong>&gt;</strong> next to your pool name to show the datasets.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-131143.png" alt=""></figure>
+<p><br>If all goes well the new dataset will be listed in the “Storage” page.&nbsp;<br>Click the three vertical dots to the right of the new dataset, and click “Edit Permissions” from the pop-up menu.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-131248.png" alt=""></figure>
+<p>You'll see the “Edit Permissions” window.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-131518.png" alt=""></figure>
+<p>In the “User” drop down selection box select whatever user you created when we created the experimental share (in Fester’s case this was TestUser).</p>
+<p>In the “Group” drop down selection box select whatever group you created when we created the experimental share (in Fester’s case this was TestGroup).</p>
+<p>Now click the “Save” button.</p>
+<h2>Add Media Share</h2>
+<p>Now click “Sharing” in the left column, then “Windows (SMB) Shares”.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-131629.png" alt=""></figure>
+<p>Click the “Add” button.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-131829.png" alt=""></figure>
+<p>A new smaller window will pop up. In the “Path” section click the folder icon to the left, then browse to find your new Media dataset.</p>
+<p>The “Path” text box should now display the chosen dataset.</p>
+<p>Do not tick the “Use as home share:” tick box at the moment.</p>
+<p>Give the share a name in the “Name” text box.</p>
+<p>Do not tick the “Allow Guest Access:” tick box.</p>
+<p>Now click the “Save” button.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-131959.png" alt=""></figure>
+<p>If all goes well you will see the newly created SMB share entry.</p>
+<p>Give the server some time to get the share up and running, then it is time to map the new network folder to a drive letter.</p>
+<h2>Map Network Drive</h2>
+<p>On the Windows client click on the “Start” button and go into “Computer” (this was on a Windows 7 machine). This should bring up a window that shows all the hard drives and any other devices connected to the Windows computer. Click on the “Map Network Drive” button.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:446c9751c125a437609d6c4815c9c16e.png" alt=""></figure>
+<p>From the “Drive:” drop down selection box (1) chose the drive letter you wish to assign to the shared folder (Fester accepted the default Y letter).</p>
+<p>Now click the “Browse…” button (2). This will cause a window to pop up.</p>
+<p>Navigate to the location of the shared folder by clicking on the server (in this case TestNAS1) (3) and then clicking on the shared folder itself (in this case Fester’s Plex Share) (4).</p>
+<p>Now click the “OK” button (5).</p>
+<p>The shared folder’s path name should appear in the “Folder:” text box (6).</p>
+<p>Tick the “Reconnect at logon! Tick box (7).</p>
+<p>Now click the “Finish” button (8).</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:21417006e15d5d7926a8efc26cd26061.png" alt=""></figure>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:7c839b8d65235de44d5707d49951649e.png" alt=""></figure>
+<p>If all has gone well you should find yourself in the shared folder. Here you can create other folders and save files. Test this to make sure there are no permissions problems. You should create a folder here for each type of media you want to use with the Plex Media Server (Movies, TV shows, Music, etc.).</p>
+<p>Now copy a couple of media files (i.e. music, films, etc) into this folder. We will need these later to check the Plex media server.</p>
+<p>The shared folder will now appear as another drive on your system and should look something like this.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:1ed30a867110f36a1fce7ded53a81dd3.png" alt=""></figure>
+<h2>Install Plex Media Server</h2>
+<p>To install Plex using the script, you'll first need to connect to your server using SSH. &nbsp;Then, follow the following instructions:</p>
+<h3>Download the script</h3>
+<p>Change to the directory of your pool using the <code>cd</code> command. &nbsp;For example, if your pool is named <code>tank</code>, type <code>cd /mnt/tank</code> and then press Enter. &nbsp;Then, to download the script, run <code>git clone https://github.com/danb35/freenas-iocage-plex</code>.</p>
+<h3>Configure the script</h3>
+<p>Change to the newly-created directory (<code>cd freenas-iocage-plex</code>). &nbsp;You'll now need to create a small configuration file for the script. &nbsp;To do this, run <code>nano plex-config</code>. &nbsp;This will open a text editor, into which you'll enter the contents of the configuration file. &nbsp;Enter the following:</p>
+<pre><code class="language-plaintext">JAIL_IP="192.168.1.89"
+DEFAULT_GW_IP="192.168.1.1"
+POOL_PATH="/mnt/tank"
+PLEX_MEDIA_PATH="/mnt/tank/Media"</code></pre>
+<p>Adjust these entries as required, especially the network settings. &nbsp;The <code>JAIL_IP</code> must not be in use by any other device on your network. &nbsp;Once you're finished, exit the editor by pressing Ctrl-X, and telling it to save the contents.</p>
+<h3>Execute the script</h3>
+<p>Now it's time to run the script. &nbsp;Do this by running <code>script plex.log ./plex-jail.sh</code>. &nbsp;This will run for a few minutes. &nbsp;If all goes well, you'll see this:</p>
+<pre><code class="language-plaintext">Installation Complete!
+Log in and configure your server by browsing to:
+http://192.168.1.89:32400/web</code></pre>
+<p>Do what the message says: browse to that address to open the Plex interface.</p>
+<h2>Initial Plex Setup</h2>
+<p><strong>These instructions are current as of 27 May 2019. The Plex interface may change with time.</strong> The first time you launch the Plex web interface, it will ask you to log in to your <a href="https://plex.tv">plex.tv</a> account.&nbsp;</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-140754.png" alt=""></figure>
+<p><strong>This is not required.</strong> To skip this step, click on the tiny text in the bottom-right corner that says “What's this?”. You'll see this screen:&nbsp;</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-140821.png" alt=""></figure>
+<p>Read the screen and see if you want to register for a free plex.tv account. If not, scroll to the bottom and click on “Skip and accept limited functionality”. You'll see a screen explaining how Plex works.&nbsp;</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-141045.png" alt=""></figure>
+<p>Click “Got it!”. You'll see a page explaining the benefits of Plex Pass, which you can close by clicking the X in the upper-right corner.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-141524.png" alt=""></figure>
+<p>The next page will ask you to name your server. You can call it anything you like. It will also offer to allow you to access your media outside your home. The security implications of this choice are beyond the scope of this guide. Click “Next” when you're finished.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-141707.png" alt=""></figure>
+<p>You'll now be able to set up your media libraries. Click the “Add Library” button to start.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-142138.png" alt=""></figure>
+<p>Select the media type. For this example, I'll use movies. Name the library and select your language, and click “Next” when you're finished.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-142304.png" alt=""></figure>
+<p>Now you'll need to add one or more folders to this library. If you've followed the instructions above, we'll need to add <code>/media/Movies</code>. Begin by clicking “Browse for media folder”.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-142357.png" alt=""></figure>
+<p>Then click to browse to the desired location. If you prefer, you can just type it in at the top of this window. Click “Add” when you've found it. Repeat as necessary to add more folders to this library, if desired. Click the “Add Library” button when you're finished.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-142542.png" alt=""></figure>
+<p>You can add further libraries here (TV, Music, etc.) if desired. Click “Next” when you're done adding libraries.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-142812.png" alt=""></figure>
+<p>The system will take a few minutes to set up the server. Once it finishes, you'll see the home screen.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-144408.png" alt=""></figure>

@@ -1,0 +1,50 @@
+<!--
+title: 2.7 Virtualisation
+description: Either running TrueNAS as a VM or running other VMs under TrueNAS
+published: true
+date: 2024-12-27T14:20:53.162Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-11-13T13:11:42.693Z
+-->
+
+<p>If you want to run TrueNAS alongside other server operating system(s), but you do not want to use multiple servers to do so, then you have two options:</p>
+<ol>
+  <li>Install a specialised hypervisor (like Proxmox or VMWARE etc.) and run TrueNAS and the other operating system(s) underneath; or</li>
+  <li>Install TrueNAS natively (as so-called “bare metal”) and run the other operating system(s) underneath TrueNAS.</li>
+</ol>
+<p>TrueNAS as a virtual host is reasonably capable, as it uses the underlying virtualisation capabilities of Debian Linux and adds a UI for configuring it, but it does not have all the bells and whistles of a specialised hypervisor (like Proxmox). If TrueNAS / Debian has the capabilities that you want as a virtualisation platform, then running TrueNAS natively and&nbsp;running your VMs underneath is going to be a simpler, more easily achieved solution than running TrueNAS as a VM (see below for details why).&nbsp;</p>
+<h2>TrueNAS as a VM</h2>
+<p>It is perfectly feasible to run TrueNAS as a VM, however if you choose to do so then you need to be aware of the pros and cons of doing so:</p>
+<ul>
+  <li>You need to ensure that for redundant pools, the hypervisor passes through the storage controller(s) and disks natively so that ZFS can control them natively. Because you are having to pass through the storage controller, this means that the hypervisor will need a separate storage controller for its own use. This can get even more complicated if you have a mixture of SATA/SAS and NVMe drives that you want to pass through.</li>
+  <li>You need to ensure that the hypervisor's own ZFS (if it has it) does not simultaneously mount the ZFS pools at the same time as TrueNAS as this almost certainly will lead to pool corruption and total data loss of the pool.</li>
+  <li>This solution is more complex, and will have additional learning curve.</li>
+  <li>Since it is likely that TrueNAS will be managing the storage used by the other VMs, then you will be using virtual networks to share data rather than virtual disks - and this may have a storage performance impact.</li>
+</ul>
+<p>If you want to run TrueNAS as a VM for anything other than testing purposes, please carefully read and understand the following resources:</p>
+<ul>
+  <li><a href="https://www.truenas.com/community/resources/absolutely-must-virtualize-truenas-a-guide-to-not-completely-losing-your-data.212/">https://www.truenas.com/community/resources/absolutely-must-virtualize-truenas-a-guide-to-not-completely-losing-your-data.212/</a></li>
+  <li><a href="https://www.truenas.com/blog/yes-you-can-virtualize-freenas/">https://www.truenas.com/blog/yes-you-can-virtualize-freenas/</a></li>
+</ul>
+<h2>TrueNAS natively</h2>
+<p>Installing TrueNAS natively on your hardware is the simplest and easiest way to provide a virtualisation platform for other operating system(s) alongside TrueNAS itself. The benefits are:</p>
+<ul>
+  <li>Simplest overall configuration</li>
+  <li>No learning curve for a separate hypervisor</li>
+  <li>UI to configure the VMs</li>
+  <li>Storage provided using virtual disks rather than over a virtual network</li>
+</ul>
+<p>&nbsp;</p>
+<h6><span class="text-big">Links</span></h6>
+<figure class="table" style="width:100%;">
+  <table style="background-color:rgb(33, 33, 33);border-bottom:1px solid rgb(117, 117, 117);border-left:1px solid rgb(117, 117, 117);border-right:1px solid rgb(117, 117, 117);border-top:1px solid rgb(117, 117, 117);">
+    <tbody>
+      <tr>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;width:50%;">Previous - <a href="/fester/planning/network">2.6 Configuring &amp; Upgrading your network</a></td>
+        <td style="background-color:rgb(23, 23, 23);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;text-align:center;"><a href="https://wiki.familybrown.org/fester/index">Index</a></td>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;text-align:right;width:50%;">Next - <a href="/fester/planning/performance">2.8 Maximising Performance</a></td>
+      </tr>
+    </tbody>
+  </table>
+</figure>

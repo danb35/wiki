@@ -1,0 +1,30 @@
+<!--
+title: Barrier Methods of Protection (Personal Firewalls)
+description: 
+published: true
+date: 2024-04-07T14:17:31.038Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-01-12T21:03:58.201Z
+-->
+
+<h1>Barrier Methods of Protection (Personal Firewalls)</h1>
+<p>Fester approves of barrier methods of protection and so has always installed a personal software firewall on his computer (not the server, just the client computer).</p>
+<p>Don’t get confused, I am not referring to the firewall built into your router but an additional software firewall that you install on a personal computer.</p>
+<p><i>This software firewall will stop any shares created on your server from working on the client</i>. Therefore, we must configure the software firewall to allow the server and client to share nicely.</p>
+<p>After much experimentation (netbios names, etc) I got more consistent results by specifying an IP address range within the firewall software that corresponded to the IP address range used by the server.</p>
+<p>Fester’s server IP address range goes from 192.168.0.2 – 192.168.0.49. If we tell the firewall to trust this range of IP addresses then all will be well.</p>
+<p>I use Zone Alarm (you might use something different, but the principle will be the same). Here is how to set it up.</p>
+<p>Open Zone Alarm and click “View Details” under firewall.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:6b50e19023e6508a96dc4c404a452b86.png" alt=""></figure>
+<p>Now click on “Basic Firewall”.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:bc5bb81d6ef5485a2e1700180e667194.png" alt=""></figure>
+<p>Now click on “Advanced Settings”.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:e0505f1af48ceaf3744210889dc17c5f.png" alt=""></figure>
+<p>Click on “View Zones”.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:f83039be258e9d10b6e025fbbbef9ef9.png" alt=""></figure>
+<p>Click on “Add” (1) and chose “IP Range” (2).</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:5ee4edae8febb6ca9feaac8f3b61d8f8.png" alt=""></figure>
+<p>Set the drop down selection box next to “Zone” to “Trusted” (1). Enter the first IP address of your server’s IP address range in the “IP Range Start” text box (2) and then enter the last address in your server’s range in the text box labelled “IP Range End” (3). Call it something meaningful in the “Description” text box and press OK (4).</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:5edb47a2476c4dbe7c2c56c0c3dc1d0b.png" alt=""></figure>
+<p>That should be the firewall configured.</p>

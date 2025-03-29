@@ -1,0 +1,580 @@
+<!--
+title: 2.3.3 Using commercial NAS appliances
+description: Certainly the easiest way to get "reasonable" NAS hardware, and with 2nd user probably the cheapest
+published: true
+date: 2024-08-10T10:54:19.444Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-04-15T15:43:55.850Z
+-->
+
+<p><i><strong>Note:</strong></i> This section is about smaller, <strong>stand-alone</strong> pre-built NAS appliances; rack-mounted appliances will be covered in the Server section in a couple of pages time.</p>
+<blockquote>
+  <p><strong>Gomez</strong>: I say, I say, I say… What is the easiest way to build a NAS server?</p>
+  <p><strong>Wednesday</strong> (playing along): I don't know, Dad. What is the easiest way?</p>
+  <p><strong>Gomez</strong>: Buy a prebuilt NAS box and just-add-disks.</p>
+  <p><strong>Wednesday</strong> groans.</p>
+</blockquote>
+<p>Dad jokes aside, if you:</p>
+<ul>
+  <li>Aren't technical enough to build a server; or</li>
+  <li>You just want to get something working fast (and reasonably cheap);</li>
+</ul>
+<p>and</p>
+<ul>
+  <li>The hardware limitations of pre-built NAS boxes are OK for your needs<ul>
+      <li>Numbers of easily accessed 3.5" disk slots (HDDs) - typically between 2 &amp; 5 slots for home / small offices or up to 12 slots for larger offices.</li>
+      <li>Extra internal slots for SSDs (USB, M.2, NVME)</li>
+      <li>CPU architecture &amp; power - for TrueNAS the architecture needs to be x64 Intel / AMD</li>
+      <li>GPU for media transcoding (may require paid subscription to e.g. Plex for GPU transcoding - CPU transcoding is normally free)</li>
+      <li>Memory - ECC? Maximum size?</li>
+      <li>Networking - no. of ports, speeds</li>
+      <li>Electricity consumption</li>
+    </ul>
+  </li>
+</ul>
+<p>then this might well be the best solution for you.</p>
+<p>You can either buy new, or look to eBay (other similar sites are available) for a significantly cheaper 2nd user box.</p>
+<p>Some of the major brands to look for:</p>
+<ul>
+  <li>ixSystems - yes, them, the developers of TrueNAS make NAS appliances</li>
+  <li>Synology</li>
+  <li>TerraMaster</li>
+  <li>QNAP - but watch out for their smaller appliances which often use ARM processors or max out at 4GB of memory.</li>
+  <li>etc.</li>
+</ul>
+<p>(See <a href="https://naschart.com/brands">here</a> and <a href="https://en.wikipedia.org/wiki/List_of_NAS_manufacturers">here</a> for a bigger list of NAS brands.)</p>
+<p>Some key points to look for:</p>
+<ol>
+  <li>These brands usually come with NAS software (ixSystems boxes come with TrueNAS, obviously) but you can run TrueNAS instead if it is a better match to your needs than the brand software.</li>
+  <li>But NAS software based on ZFS (rather than BTFS) has significantly higher memory requirements and even if you can upgrade the memory the maximum may not be enough. Similarly if you want to run big apps or virtual machines, maximum memory may be an issue.</li>
+  <li>Many / most do <strong>not</strong> have ECC memory.</li>
+  <li>Most <strong>do</strong> have proper drive bays - where drives sit in caddies which slide into slots and lock in and this makes it possible to change a drive without opening the case.</li>
+  <li>Many do <strong>not</strong> have hot-swap - in other words you cannot change out a drive whilst the server is operating but instead will need to power it down to change the drive.</li>
+  <li>Most but not all will have Gigabit Ethernet or faster which is normally good enough for a home / small office environment.&nbsp;<br><br><strong>Note:</strong> Gigabit or faster ethernet is only worth having if your network is designed to support it i.e. all the equipment between the NAS and your key Wifi Access point(s) is&nbsp;the same fast speed all the way which means switches and wireless access points <strong>all</strong> need to support the same e.g. Gigabit Ethernet, and you also need to have Wifi5 (803.11AC) or later on your key access points and your key devices. However, if you don't already have it you will be amazed at just how much difference and upgrade to Wifi5 or later will make to your wifi speeds.</li>
+  <li>Almost all new NAS boxes and priced without disks - you will need to budget to buy the disks you want separately.</li>
+  <li>When you buy disks, try to buy disks which are designed for NAS or enterprise usage like Seagate Ironwold or Ironwolf Pro rather than consumer disks which are not designed to run 24x7 or in close proximity to one another. Check carefully the type of technology in the disk - and avoid SMC technology disks because their write performance characteristics will be very poor and they will be prone to earlier failure. A cheap way of getting disks is to buy standalone external disks in a USB case, and “shuck” them (which means take out the disk and throwing the case away - <strong>beware doing this</strong> as these can be whatever disks happen to be cheap and available and are likely to be SMC technology.</li>
+  <li>If you are buying a used disks, either standalone or as part of a used NAS which comes <strong>with</strong> disks, then you should try to get the vendor to supply you with SMART reports for each disk so that you can see the wear status of the disks (model, serial number, spinning hours, power cycles, spin-up cycles, head retractions, errors, bad sectors etc.), and the substantially reduced price cf. new needs to factor in that these disks will almost certainly be out of warranty and more likely to fail.</li>
+</ol>
+<h2>Some examples</h2>
+<p>In order to give you a flavour of this type of NAS appliance, the following table shows some example NAS appliances from the brands above, both older and newer models, with a variety of different drive slots, CPUs, maximum memory etc. and both new and eBay <u>US</u> prices (all as at April 2024, <i>all without any disks</i>).</p>
+<p>Because you need at least 1 disk for boot, and we are absolutely recommending the use of redundant disk configurations, we are only going to show NAS with at least 3 disk slots of some form. Some manufacturers offer 2-slot NAS and these are not included for this reason. &nbsp;</p>
+<p>This is NOT intended to be a definitive or even extensive list. Ordinary users (who do not have a conflict of interest) are welcome to contribute by adding new examples or by updating the entire table if it is too out of date. Manufacturers are welcome to add their products to this list providing they follow the existing format, stick strictly to the existing data formats and stick strictly to facts.<br>&nbsp;</p>
+<figure class="table">
+  <table>
+    <thead>
+      <tr>
+        <th style="text-align:center;"><span class="text-small"><strong>Brand</strong></span></th>
+        <th style="text-align:center;"><span class="text-small"><strong>Model</strong></span></th>
+        <th style="text-align:center;"><span class="text-small"><strong>CPU</strong></span></th>
+        <th style="text-align:center;"><span class="text-small"><strong>Cores</strong></span></th>
+        <th style="text-align:center;"><span class="text-small"><strong>ECC</strong></span><br><span class="text-small"><strong>Memory</strong></span></th>
+        <th style="text-align:center;"><span class="text-small"><strong>Memory</strong></span><br><span class="text-small"><strong>(Std/Max)</strong></span></th>
+        <th style="text-align:center;"><span class="text-small"><strong>SATA</strong></span><br><span class="text-small"><strong>Bays</strong></span></th>
+        <th style="text-align:center;"><span class="text-small"><strong>Hot</strong></span><br><span class="text-small"><strong>Swap</strong></span></th>
+        <th style="text-align:center;"><span class="text-small"><strong>Other</strong></span><br><span class="text-small"><strong>Slots</strong></span></th>
+        <th style="text-align:center;"><span class="text-small"><strong>Ethernet</strong></span><br><span class="text-small"><strong>Ports</strong></span></th>
+        <th style="text-align:center;"><span class="text-small"><strong>Watts</strong></span><br><span class="text-small"><strong>empty</strong></span></th>
+        <th><span class="text-small">PCIe</span></th>
+        <th><span class="text-small"><strong>IPMI</strong></span></th>
+        <th style="text-align:center;"><span class="text-small"><strong>New $</strong></span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="text-small">ixSystems</span></td>
+        <td><span class="text-tiny">TrueNAS Mini E+</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Intel C3558</span></td>
+        <td style="text-align:center;"><span class="text-tiny">4</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Yes</span></td>
+        <td style="text-align:center;"><span class="text-tiny">16GB/32GB</span></td>
+        <td style="text-align:right;"><span class="text-tiny">4x3.5"</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Yes</span></td>
+        <td style="text-align:right;"><span class="text-tiny">2x2.5"</span></td>
+        <td><span class="text-tiny">4x1Gb</span></td>
+        <td style="text-align:center;"><span class="text-tiny">24W</span></td>
+        <td style="text-align:center;"><span class="text-tiny">-</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Yes</span></td>
+        <td style="text-align:right;"><span class="text-small">&nbsp;</span></td>
+      </tr>
+      <tr>
+        <td><span class="text-small">ixSystems</span></td>
+        <td><span class="text-tiny">TrueNAS Mini X</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Intel C3558</span></td>
+        <td style="text-align:center;"><span class="text-tiny">4</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Yes</span></td>
+        <td style="text-align:center;"><span class="text-tiny">16GB/32GB</span></td>
+        <td style="text-align:right;"><span class="text-tiny">5x3.5"</span><br><span class="text-tiny">2x2.5"</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Yes</span></td>
+        <td style="text-align:right;"><span class="text-tiny">&nbsp;</span></td>
+        <td><span class="text-tiny">4x1Gb</span></td>
+        <td style="text-align:center;"><span class="text-tiny">24W</span></td>
+        <td style="text-align:center;"><span class="text-tiny">-</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Yes</span></td>
+        <td style="text-align:right;"><span class="text-small">$1,148</span></td>
+      </tr>
+      <tr>
+        <td><span class="text-small">ixSystems</span></td>
+        <td><span class="text-tiny">TrueNAS Mini X+</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Intel C3558</span></td>
+        <td style="text-align:center;"><span class="text-tiny">8</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Yes</span></td>
+        <td style="text-align:center;"><span class="text-tiny">32GB/64GB</span></td>
+        <td style="text-align:right;"><span class="text-tiny">5x3.5"</span><br><span class="text-tiny">2x2.5"</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Yes</span></td>
+        <td style="text-align:right;"><span class="text-tiny">&nbsp;</span></td>
+        <td><span class="text-tiny">2x10Gb</span></td>
+        <td style="text-align:center;"><span class="text-tiny">40W</span></td>
+        <td style="text-align:center;"><span class="text-tiny">-</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Yes</span></td>
+        <td style="text-align:right;"><span class="text-small">$1,448</span></td>
+      </tr>
+      <tr>
+        <td><span class="text-small">ixSystems</span></td>
+        <td><span class="text-tiny">TrueNAS Mini XL+</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Intel C3558</span></td>
+        <td style="text-align:center;"><span class="text-tiny">8</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Yes</span></td>
+        <td style="text-align:center;"><span class="text-tiny">32GB/64GB</span></td>
+        <td style="text-align:right;"><span class="text-tiny">8x3.5"</span><br><span class="text-tiny">1x2.5"</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Yes</span></td>
+        <td style="text-align:right;"><span class="text-tiny">1x2.5"</span></td>
+        <td><span class="text-tiny">2x10Gb</span></td>
+        <td style="text-align:center;"><span class="text-tiny">40W</span></td>
+        <td style="text-align:center;"><span class="text-tiny">-</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Yes</span></td>
+        <td style="text-align:right;"><span class="text-small">$1,648</span></td>
+      </tr>
+      <tr>
+        <td><span class="text-small">QNAP</span></td>
+        <td><span class="text-tiny">TS-453E</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Intel Celeron J6412</span></td>
+        <td style="text-align:center;"><span class="text-tiny">4</span></td>
+        <td style="text-align:center;"><span class="text-tiny">? (likely No)</span></td>
+        <td style="text-align:center;"><span class="text-tiny">8GB/<u>8GB</u></span></td>
+        <td style="text-align:right;"><span class="text-tiny">4x3.5"</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No?</span></td>
+        <td style="text-align:right;"><span class="text-tiny">2xM.2</span></td>
+        <td><span class="text-tiny">2x2.5Gb</span></td>
+        <td style="text-align:center;"><span class="text-tiny">22W?</span></td>
+        <td style="text-align:center;"><span class="text-tiny">&nbsp;</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-small">$639</span></td>
+      </tr>
+      <tr>
+        <td><span class="text-small">QNAP</span></td>
+        <td><span class="text-tiny">TS-473A</span></td>
+        <td style="text-align:center;"><span class="text-tiny">AMD Ryzen V1500B</span></td>
+        <td style="text-align:center;"><span class="text-tiny">4</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Yes</span></td>
+        <td style="text-align:center;"><span class="text-tiny">8GB/64GB</span></td>
+        <td style="text-align:right;"><span class="text-tiny">4x3.5"</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No?</span></td>
+        <td style="text-align:right;"><span class="text-tiny">2xM.2</span></td>
+        <td><span class="text-tiny">2x2.5Gb</span></td>
+        <td style="text-align:center;"><span class="text-tiny">15W?</span></td>
+        <td style="text-align:center;"><span class="text-tiny">2x4-wide</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-small">$779</span></td>
+      </tr>
+      <tr>
+        <td><span class="text-small">QNAP</span></td>
+        <td><span class="text-tiny">TS-673A</span></td>
+        <td style="text-align:center;"><span class="text-tiny">AMD Ryzen V1500B</span></td>
+        <td style="text-align:center;"><span class="text-tiny">4</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Yes</span></td>
+        <td style="text-align:center;"><span class="text-tiny">8GB/64GB</span></td>
+        <td style="text-align:right;"><span class="text-tiny">6x3.5"</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No?</span></td>
+        <td style="text-align:right;"><span class="text-tiny">2xM.2</span></td>
+        <td><span class="text-tiny">2x2.5Gb</span></td>
+        <td style="text-align:center;"><span class="text-tiny">15W?</span></td>
+        <td style="text-align:center;"><span class="text-tiny">2x4-wide</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-small">$899</span></td>
+      </tr>
+      <tr>
+        <td><span class="text-small">QNAP</span></td>
+        <td><span class="text-tiny">TS-873A</span></td>
+        <td style="text-align:center;"><span class="text-tiny">AMD Ryzen V1500B</span></td>
+        <td style="text-align:center;"><span class="text-tiny">4</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Yes</span></td>
+        <td style="text-align:center;"><span class="text-tiny">8GB/64GB</span></td>
+        <td style="text-align:right;"><span class="text-tiny">8x3.5"</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No?</span></td>
+        <td style="text-align:right;"><span class="text-tiny">2xM.2</span></td>
+        <td><span class="text-tiny">2x2.5Gb</span></td>
+        <td style="text-align:center;"><span class="text-tiny">15W?</span></td>
+        <td style="text-align:center;"><span class="text-tiny">2x4-wide</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-small">&nbsp;$1,049</span></td>
+      </tr>
+      <tr>
+        <td><span class="text-small">QNAP</span></td>
+        <td><span class="text-tiny">TS-h973AX</span></td>
+        <td style="text-align:center;"><span class="text-tiny">AMD Ryzen V1500B</span></td>
+        <td style="text-align:center;"><span class="text-tiny">4</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Yes&nbsp;</span></td>
+        <td style="text-align:center;"><span class="text-tiny">8GB/64GB</span></td>
+        <td style="text-align:right;"><span class="text-tiny">&nbsp;5x3.5"</span><br><span class="text-tiny">4x2.5"</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No?</span></td>
+        <td style="text-align:right;"><span class="text-tiny">&nbsp;</span></td>
+        <td><span class="text-tiny">2x2.5Gb</span><br><span class="text-tiny">1x10Gb</span></td>
+        <td style="text-align:center;"><span class="text-tiny">20W?</span></td>
+        <td style="text-align:center;"><span class="text-tiny">&nbsp;</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-small">$989&nbsp;</span></td>
+      </tr>
+      <tr>
+        <td><span class="text-small">Synology</span></td>
+        <td><span class="text-tiny">DS923+</span></td>
+        <td style="text-align:center;"><span class="text-tiny">AMD Ryzen R1600</span></td>
+        <td style="text-align:center;"><span class="text-tiny">2</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Yes&nbsp;</span></td>
+        <td style="text-align:center;"><span class="text-tiny">4GB/32GB</span></td>
+        <td style="text-align:right;"><span class="text-tiny">4x3.5"</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Yes</span></td>
+        <td style="text-align:right;"><span class="text-tiny">2xNVME</span></td>
+        <td><span class="text-tiny">2x1Gb</span></td>
+        <td style="text-align:center;"><span class="text-tiny">11W</span></td>
+        <td style="text-align:center;"><span class="text-tiny">1x2-wide</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-small">&nbsp;</span></td>
+      </tr>
+      <tr>
+        <td><span class="text-small">Synology</span></td>
+        <td><span class="text-tiny">DS1522+</span></td>
+        <td style="text-align:center;"><span class="text-tiny">AMD Ryzen R1600</span></td>
+        <td style="text-align:center;"><span class="text-tiny">2</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Yes&nbsp;</span></td>
+        <td style="text-align:center;"><span class="text-tiny">8GB/32GB</span></td>
+        <td style="text-align:right;"><span class="text-tiny">5x3.5"</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Yes</span></td>
+        <td style="text-align:right;"><span class="text-tiny">2xNVME</span></td>
+        <td><span class="text-tiny">4x1Gb</span></td>
+        <td style="text-align:center;"><span class="text-tiny">16W</span></td>
+        <td style="text-align:center;"><span class="text-tiny">1x2-wide</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-small">&nbsp;</span></td>
+      </tr>
+      <tr>
+        <td><span class="text-small">Synology</span></td>
+        <td><span class="text-tiny">DS1621+</span></td>
+        <td style="text-align:center;"><span class="text-tiny">AMD Ryzen V1500B</span></td>
+        <td style="text-align:center;"><span class="text-tiny">4</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Yes&nbsp;</span></td>
+        <td style="text-align:center;"><span class="text-tiny">4GB/32GB</span></td>
+        <td style="text-align:right;"><span class="text-tiny">6x3.5"</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Yes</span></td>
+        <td style="text-align:right;"><span class="text-tiny">2xNVME</span></td>
+        <td><span class="text-tiny">4x1Gb</span></td>
+        <td style="text-align:center;"><span class="text-tiny">25W</span></td>
+        <td style="text-align:center;"><span class="text-tiny">1x4-wide</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-small">&nbsp;</span></td>
+      </tr>
+      <tr>
+        <td><span class="text-small">Synology</span></td>
+        <td><span class="text-tiny">DS1821+</span></td>
+        <td style="text-align:center;"><span class="text-tiny">AMD Ryzen V1500B</span></td>
+        <td style="text-align:center;"><span class="text-tiny">4</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Yes&nbsp;</span></td>
+        <td style="text-align:center;"><span class="text-tiny">4GB/32GB</span></td>
+        <td style="text-align:right;"><span class="text-tiny">8x3.5"</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Yes</span></td>
+        <td style="text-align:right;"><span class="text-tiny">2xNVME</span></td>
+        <td><span class="text-tiny">4x1Gb</span></td>
+        <td style="text-align:center;"><span class="text-tiny">26W</span></td>
+        <td style="text-align:center;"><span class="text-tiny">1x4-wide</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-small">&nbsp;</span></td>
+      </tr>
+      <tr>
+        <td><span class="text-small">Synology</span></td>
+        <td><span class="text-tiny">DS2422+</span></td>
+        <td style="text-align:center;"><span class="text-tiny">AMD Ryzen V1500B</span></td>
+        <td style="text-align:center;"><span class="text-tiny">4</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Yes&nbsp;</span></td>
+        <td style="text-align:center;"><span class="text-tiny">4GB/32GB</span></td>
+        <td style="text-align:right;"><span class="text-tiny">12x3.5"</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Yes</span></td>
+        <td style="text-align:right;"><span class="text-tiny">2xNVME</span></td>
+        <td><span class="text-tiny">4x1Gb</span></td>
+        <td style="text-align:center;"><span class="text-tiny">28W</span></td>
+        <td style="text-align:center;"><span class="text-tiny">1x4-wide</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-small">$1,800</span></td>
+      </tr>
+      <tr>
+        <td><span class="text-small">TerraMaster</span></td>
+        <td><span class="text-tiny">F2-223</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Intel Celeron N4505&nbsp;</span></td>
+        <td style="text-align:center;"><span class="text-tiny">2</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:center;"><span class="text-tiny">4GB/32GB</span></td>
+        <td style="text-align:right;"><span class="text-tiny">2x3.5"</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-tiny">-</span></td>
+        <td><span class="text-tiny">&nbsp;2x2.5Gb</span></td>
+        <td style="text-align:center;"><span class="text-tiny">?</span></td>
+        <td style="text-align:center;"><span class="text-tiny">-</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-small">$300</span></td>
+      </tr>
+      <tr>
+        <td><span class="text-small">TerraMaster</span></td>
+        <td><span class="text-tiny">F2-423</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Intel Celeron N5095&nbsp;</span></td>
+        <td style="text-align:center;"><span class="text-tiny">4</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:center;"><span class="text-tiny">4GB/32GB</span></td>
+        <td style="text-align:right;"><span class="text-tiny">2x3.5"</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-tiny">2xNVME</span></td>
+        <td><span class="text-tiny">&nbsp;2x2.5Gb</span></td>
+        <td style="text-align:center;"><span class="text-tiny">?</span></td>
+        <td style="text-align:center;"><span class="text-tiny">-</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-small">$380</span></td>
+      </tr>
+      <tr>
+        <td><span class="text-small">TerraMaster</span></td>
+        <td><span class="text-tiny">F2-424</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Intel Celeron N95&nbsp;</span></td>
+        <td style="text-align:center;"><span class="text-tiny">4</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:center;"><span class="text-tiny">8GB/32GB</span></td>
+        <td style="text-align:right;"><span class="text-tiny">2x3.5"</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-tiny">2xNVME</span></td>
+        <td><span class="text-tiny">&nbsp;2x2.5Gb</span></td>
+        <td style="text-align:center;"><span class="text-tiny">?</span></td>
+        <td style="text-align:center;"><span class="text-tiny">-</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-small">$380</span></td>
+      </tr>
+      <tr>
+        <td><span class="text-small">TerraMaster</span></td>
+        <td><span class="text-tiny">F4-223</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Intel Celeron N4505&nbsp;</span></td>
+        <td style="text-align:center;"><span class="text-tiny">2</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:center;"><span class="text-tiny">4GB/32GB</span></td>
+        <td style="text-align:right;"><span class="text-tiny">4x3.5"</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-tiny">2xNVME</span></td>
+        <td><span class="text-tiny">&nbsp;2x2.5Gb</span></td>
+        <td style="text-align:center;"><span class="text-tiny">?</span></td>
+        <td style="text-align:center;"><span class="text-tiny">-</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-small">$440</span></td>
+      </tr>
+      <tr>
+        <td><span class="text-small">TerraMaster</span></td>
+        <td><span class="text-tiny">F4-423</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Intel Celeron N5095&nbsp;</span></td>
+        <td style="text-align:center;"><span class="text-tiny">4</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:center;"><span class="text-tiny">4GB/32GB</span></td>
+        <td style="text-align:right;"><span class="text-tiny">4x3.5"</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-tiny">2xNVME</span></td>
+        <td><span class="text-tiny">&nbsp;2x2.5Gb</span></td>
+        <td style="text-align:center;"><span class="text-tiny">?</span></td>
+        <td style="text-align:center;"><span class="text-tiny">-</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-small">$500</span></td>
+      </tr>
+      <tr>
+        <td><span class="text-small">TerraMaster</span></td>
+        <td><span class="text-tiny">F4-424</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Intel Celeron N95&nbsp;</span></td>
+        <td style="text-align:center;"><span class="text-tiny">4</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:center;"><span class="text-tiny">8GB/32GB</span></td>
+        <td style="text-align:right;"><span class="text-tiny">4x3.5"</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-tiny">2xNVME</span></td>
+        <td><span class="text-tiny">&nbsp;2x2.5Gb</span></td>
+        <td style="text-align:center;"><span class="text-tiny">?</span></td>
+        <td style="text-align:center;"><span class="text-tiny">-</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-small">$500</span></td>
+      </tr>
+      <tr>
+        <td><span class="text-small">TerraMaster</span></td>
+        <td><span class="text-tiny">F4-424 Pro</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Intel Core&nbsp;i3&nbsp;</span></td>
+        <td style="text-align:center;"><span class="text-tiny">8</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:center;"><span class="text-tiny">32GB/32GB</span></td>
+        <td style="text-align:right;"><span class="text-tiny">4x3.5"</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-tiny">2xNVME</span></td>
+        <td><span class="text-tiny">&nbsp;2x2.5Gb</span></td>
+        <td style="text-align:center;"><span class="text-tiny">?</span></td>
+        <td style="text-align:center;"><span class="text-tiny">-</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-small">$700</span></td>
+      </tr>
+      <tr>
+        <td><span class="text-small">uGreen</span></td>
+        <td><span class="text-tiny">DXP2800</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Intel N100 12Gen</span></td>
+        <td style="text-align:center;"><span class="text-tiny">4</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Yes&nbsp;</span></td>
+        <td style="text-align:center;"><span class="text-tiny">8GB/16GB</span></td>
+        <td style="text-align:right;"><span class="text-tiny">2x3.5"</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-tiny">2xNVME</span></td>
+        <td><span class="text-tiny">2x2.5Gb</span></td>
+        <td style="text-align:center;"><span class="text-tiny">?</span></td>
+        <td style="text-align:center;"><span class="text-tiny">-</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-small">$400</span></td>
+      </tr>
+      <tr>
+        <td><span class="text-small">uGreen</span></td>
+        <td><span class="text-tiny">DXP4800</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Intel N100 12Gen</span></td>
+        <td style="text-align:center;"><span class="text-tiny">4</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Yes&nbsp;</span></td>
+        <td style="text-align:center;"><span class="text-tiny">8GB/16GB</span></td>
+        <td style="text-align:right;"><span class="text-tiny">4x3.5"</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-tiny">2xNVME</span></td>
+        <td><span class="text-tiny">2x2.5Gb</span></td>
+        <td style="text-align:center;"><span class="text-tiny">?</span></td>
+        <td style="text-align:center;"><span class="text-tiny">-</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-small">$600</span></td>
+      </tr>
+      <tr>
+        <td><span class="text-small">uGreen</span></td>
+        <td><span class="text-tiny">DXP4800 Plus</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Intel 8505 12Gen</span></td>
+        <td style="text-align:center;"><span class="text-tiny">6</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Yes&nbsp;</span></td>
+        <td style="text-align:center;"><span class="text-tiny">8GB/64GB</span></td>
+        <td style="text-align:right;"><span class="text-tiny">4x3.5"</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-tiny">2xNVME</span></td>
+        <td><span class="text-tiny">1x2.5Gb</span><br><span class="text-tiny">1x10Gb</span></td>
+        <td style="text-align:center;"><span class="text-tiny">?</span></td>
+        <td style="text-align:center;"><span class="text-tiny">-</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-small">$700</span></td>
+      </tr>
+      <tr>
+        <td><span class="text-small">uGreen</span></td>
+        <td><span class="text-tiny">DXP6800 Pro</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Intel 1235u 12Gen</span></td>
+        <td style="text-align:center;"><span class="text-tiny">10</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Yes&nbsp;</span></td>
+        <td style="text-align:center;"><span class="text-tiny">8GB/64GB</span></td>
+        <td style="text-align:right;"><span class="text-tiny">6x3.5"</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-tiny">2xNVME</span></td>
+        <td><span class="text-tiny">2x10Gb</span></td>
+        <td style="text-align:center;"><span class="text-tiny">?</span></td>
+        <td style="text-align:center;"><span class="text-tiny">1x4-wide</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-small">$1,000</span></td>
+      </tr>
+      <tr>
+        <td><span class="text-small">uGreen</span></td>
+        <td><span class="text-tiny">DXP8800 Plus</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Intel 1235u 12Gen</span></td>
+        <td style="text-align:center;"><span class="text-tiny">10</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Yes&nbsp;</span></td>
+        <td style="text-align:center;"><span class="text-tiny">8GB/64GB</span></td>
+        <td style="text-align:right;"><span class="text-tiny">8x3.5"</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-tiny">2xNVME</span></td>
+        <td><span class="text-tiny">2x10Gb</span></td>
+        <td style="text-align:center;"><span class="text-tiny">?</span></td>
+        <td style="text-align:center;"><span class="text-tiny">1x4-wide</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-small">$1,500</span></td>
+      </tr>
+      <tr>
+        <td><span class="text-small">IceWhale</span></td>
+        <td><span class="text-tiny">ZimaBlade 3760</span><br><span class="text-tiny">+ 2-bay HDD rack</span></td>
+        <td><span class="text-tiny">Intel Celeron N3350</span></td>
+        <td style="text-align:center;"><span class="text-tiny">2</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:center;"><span class="text-tiny">0GB/16GB</span></td>
+        <td style="text-align:right;"><span class="text-tiny">2x3.5" +&nbsp;</span><br><span class="text-tiny">32GB eMMC</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-tiny"><strong>-</strong></span></td>
+        <td><span class="text-tiny">1x1Gb</span></td>
+        <td style="text-align:center;"><span class="text-tiny">?</span></td>
+        <td style="text-align:center;"><span class="text-tiny">1x4-wide</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-small">$180</span></td>
+      </tr>
+      <tr>
+        <td><span class="text-small">IceWhale</span></td>
+        <td><span class="text-tiny">ZimaBlade 7700</span><br><span class="text-tiny">+ 2-bay HDD rack</span></td>
+        <td><span class="text-tiny">Intel Celeron</span><br><span class="text-tiny">N3450/J3455/J3950</span></td>
+        <td style="text-align:center;"><span class="text-tiny">4</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:center;"><span class="text-tiny">0GB/16GB</span></td>
+        <td style="text-align:right;"><span class="text-tiny">2x3.5" +&nbsp;</span><br><span class="text-tiny">32GB eMMC</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-tiny"><strong>-</strong></span></td>
+        <td><span class="text-tiny">1x1Gb</span></td>
+        <td style="text-align:center;"><span class="text-tiny">?</span></td>
+        <td style="text-align:center;"><span class="text-tiny">1x4-wide</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-small">$160</span></td>
+      </tr>
+      <tr>
+        <td><span class="text-small">IceWhale</span></td>
+        <td><span class="text-tiny">ZimaCube</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Intel N100 12Gen</span></td>
+        <td style="text-align:center;"><span class="text-tiny">4</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Yes&nbsp;</span></td>
+        <td style="text-align:center;"><span class="text-tiny">8GB/16GB</span></td>
+        <td style="text-align:right;"><span class="text-tiny">6x3.5"</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-tiny"><strong>6</strong>xNVME</span></td>
+        <td><span class="text-tiny">2x2.5Gb</span></td>
+        <td style="text-align:center;"><span class="text-tiny">?</span></td>
+        <td style="text-align:center;"><span class="text-tiny">1x4-wide</span><br><span class="text-tiny">1x2-wide</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-small">$699</span></td>
+      </tr>
+      <tr>
+        <td><span class="text-small">IceWhale</span></td>
+        <td><span class="text-tiny">ZimaCube Pro</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Intel 1235u 12Gen</span></td>
+        <td style="text-align:center;"><span class="text-tiny">10</span></td>
+        <td style="text-align:center;"><span class="text-tiny">Yes&nbsp;</span></td>
+        <td style="text-align:center;"><span class="text-tiny">16GB/32GB</span></td>
+        <td style="text-align:right;"><span class="text-tiny">6x3.5"</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-tiny">5xNVME</span></td>
+        <td><span class="text-tiny">2x2.5Gb</span><br><span class="text-tiny">1x10Gb</span></td>
+        <td style="text-align:center;"><span class="text-tiny">?</span></td>
+        <td style="text-align:center;"><span class="text-tiny">1x8-wide</span><br><span class="text-tiny">1x4-wide</span></td>
+        <td style="text-align:center;"><span class="text-tiny">No</span></td>
+        <td style="text-align:right;"><span class="text-small">$1,199</span></td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>Search Youtube for videos specific to any of the above appliances.</p>
+<p>&nbsp;</p>
+<h6><span class="text-big">Links</span></h6>
+<figure class="table" style="width:100%;">
+  <table>
+    <tbody>
+      <tr>
+        <td style="width:50%;">Previous - <a href="/fester/planning/what-disks">2.3.2 Storage hardware (HDDs, SSDs, NVMe)</a></td>
+        <td style="text-align:center;"><a href="/fester/index">Index</a></td>
+        <td style="text-align:right;width:50%;">Next - <a href="/fester/planning/nas-appliances-diy">2.3.4 Building a DIY NAS appliance</a></td>
+      </tr>
+    </tbody>
+  </table>
+</figure>

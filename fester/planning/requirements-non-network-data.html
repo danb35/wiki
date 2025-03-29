@@ -1,0 +1,40 @@
+<!--
+title: 2.2.2 Server-only Data Types
+description: System, applications & virtual machines and their data
+published: true
+date: 2024-07-31T06:55:14.211Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-04-09T11:40:09.048Z
+-->
+
+<p>In addition to your data that you want to access over the network, you need to provide disk space for:</p>
+<ul>
+  <li>The TrueNAS operating system (16GB+)</li>
+  <li>Applications</li>
+  <li>Application data</li>
+  <li>Virtual Machines</li>
+</ul>
+<p>The data in the above list that you need to be most concerned about are Virtual Machines as these may have very significant data volumes:</p>
+<ul>
+  <li>The Virtual Machine operating system</li>
+  <li>Its data - which if you are going to the trouble of hosting an entire virtual machine is likely to be significantly larger than e.g. the data for normal TrueNAS apps.</li>
+</ul>
+<p>In most cases, we believe that the remaining areas above are usually not going to be worth estimating because:</p>
+<p>1. In our experience they are typically relatively small compared to the network accessible data (unless you plan to use something extraordinary as an application); and</p>
+<p>2. The TrueNAS operating system is only supported when on a separate disk from other data</p>
+<p>3. TrueNAS and applications would benefit from being on an SSD - and if you are having to buy a separate disk anyway, why not use a (relatively small by comparison to your main data) SSD to host the operating system.</p>
+<p>We will come back to this requirement when we start to consider what hardware we are going to use to meet these requirements.</p>
+<p>&nbsp;</p>
+<h6><span class="text-big">Links</span></h6>
+<figure class="table" style="width:100%;">
+  <table>
+    <tbody>
+      <tr>
+        <td style="width:50%;">Prev - <a href="/fester/planning/requirements-data-types">2.2.1 Network Data Types</a></td>
+        <td style="text-align:center;"><a href="/fester/index">Index</a></td>
+        <td style="text-align:right;width:50%;">Next - <a href="/fester/planning/requirements-data-volumes">2.2.3 Data Volumes</a></td>
+      </tr>
+    </tbody>
+  </table>
+</figure>

@@ -1,0 +1,137 @@
+<!--
+title: 2.3.2 Storage hardware (HDDs, SSDs, M.2 NVMe)
+description: Translating disk space you need into disks to buy and SATA ports they will need
+published: true
+date: 2024-12-27T15:43:26.436Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-04-13T17:11:27.252Z
+-->
+
+<p>This section of the Wiki will help you to translate the disk space calculations you did in section <a href="/fester/planning/what-disks">2.1.3 Data Volumes</a> into the types and numbers of disks you need to procure and even more importantly <strong>the number of SATA ports you need on your server</strong>.</p>
+<p>If you already have your server hardware and you know how many SATA ports you have, then the decision is straight forward. If you are still to choose your hardware, you may need to come up with 2 or 3 disk designs with varying numbers of disks so that you can compare the matching combinations of server and disks.</p>
+<p>The Addams family experience is that SATA ports is very often the constraining factor - so bear that in mind when reading the remainder of this page.&nbsp;</p>
+<p>As previously discussed the disk requirements can pretty much be split into 4 main areas, for each of which you need to make decisions on redundancy:</p>
+<ol>
+  <li>System/boot pool (possibly mirrored)</li>
+  <li>Normal performance SSD/NVMe data pool (RAIDZx) - for e.g. Apps and possibly their data</li>
+  <li>HDD data pool (RAIDZx)</li>
+  <li>High performance SSD/NVMe data pool (mirrored) - for e.g. VM virtual disks and Apps (and their data if a 2 disk mirror gives sufficient disk space)</li>
+</ol>
+<p>You can have more pools if you need, but this is probably the simplest set. In general terms, unless you have a VERY specific reason to have separate pools, you should only create a new pool if the performance characteristics will be different (i.e. NVMe vs. SSD vs. HDD, RAIDZ vs. mirror) because each pool has separate free space, and the whole point of ZFS is to safely group similar disk configurations together in order to have a single free-space and allow ZFS to manage this and spread the data around to achieve best performance rather than having to manually manage this as was common in LVM or with separate disks.&nbsp;</p>
+<p>If you decide you have a really exceptional situation and genuinely need special devices such as SLOG, L2ARC or Metadata - <mark class="pen-red"><strong>which most systems don't really need</strong></mark> - then you will need additional SSD or NVMe disks for these.&nbsp;</p>
+<h2>Future Expansion</h2>
+<p>When thinking about your disk layout, you should also think about future expansion if you run out of disk space - hopefully your space planning will have allowed you to calculate and buy an appropriate amount of disk space to last for the anticipated lifetime of your NAS, however if for cost reasons you need to start smaller, then expansion is possible.&nbsp;</p>
+<h3>Mirrored pools</h3>
+<p>Pools that consist of mirrored data vDevs, can easily be expanded by adding another mirrored pair when needed (assuming that you have physical disk slots and controller ports available).</p>
+<p>As a rule of thumb, unless your performance needs are especially critical, it is probably better to start with a single large mirror pair, and leave room for expansion later rather than fill your NAS slots with mirrored drives.</p>
+<h3>RAIDZ</h3>
+<p>Hurrah - the Gomez family are partying in true gothic style (let your imagination run riot when thinking about their party clothes - they are genuinely weird people) because in the latest version of TrueNAS Scale - Electric Eel - it is now possible to add a disk to an existing RAIDZ vDev.</p>
+<p>In all previous TrueNAS versions, if you needed to add disk space to a RAIDZ pool, you needed to add an entirely new RAIDZ vDev consisting of several disks - you could not just add a single disk and increase your vDev size. So you either needed to keep a substantial number of slots free for expansion, or to populate your entire NAS - and it did not make sense to do anything in between.</p>
+<p>However, thanks to iX Systems who sponsored the development of this ZFS functionality, in Electric Eel it is now possible using "RAIDZ Expansion"&nbsp;to add a drive to an existing RAIDZ vDev, and this enables more flexible strategies for future growth. For example:</p>
+<ul>
+  <li>You can populate all slots, but start by using one drive for a hot-spare. When your data grows to the point that the pool is 80% to 85% full, you can convert the hot-spare into an additional data drive.</li>
+  <li>You can start with a smaller number of drives with a view to adding drives as you need them (i.e. when your pool reaches 80% allocated).</li>
+  <li>You can purchase a smaller number of larger drives with a view to expanding if your data sizing turns out to be a significant under-estimate.</li>
+</ul>
+<p>A few technical notes:</p>
+<ul>
+  <li>Adding a vDev can take some days because it needs to move data off the other drives and onto the new one in order to even out the spare blocks on each drive so that they can be used to spread the redundant data between all drives.<br><br>However, these I/Os run with a lower priority than your standard I/Os and so your NAS can operate reasonably normally whilst these are happening.</li>
+  <li>After you have added a drive, all your existing data has been written using the previous redundancy (i.e. in groups of blocks equal to the old number of drives) - and this data therefore uses a greater proportion of space for redundancy than it would if it was newly written. For example, if you previously had 4x drives in RAIDZ2 and now have 5x drives, the existing files would typically consist of 2x data blocks and 2x redundancy rather than 3x data blocks and 2x redundancy blocks, and this would remain until the files are rewritten. So after adding drive(s) to an existing RAIDZ pool, you may wish to run a rebalancing script to improve the storage efficiency and get a small proportion of extra space back, and this could also take some days to finish.<br><br>These I/Os will run with normal priority (because they are a user script rather than a ZFS internal operation) and if your other uses will be impacted by this then you may need to run these in several smaller chunks at quiet times.</li>
+</ul>
+<h2>System/boot pool</h2>
+<p>The requirements for a system / boot pool are very small - a minimum of 16GB. The cost of 16GB SSDs can be close to (or even exceed) the cost of larger SSDs, so consider buying a larger drive instead.</p>
+<p>It is absolutely recommended that you use an SSD for the boot pool and not a HDD - a HDD will work, but it is going to be slow to boot and your electricity costs will be higher. Wednesday has asked me to tell you “NO! JUST DON'T DO IT!!”.</p>
+<p>The <strong>only</strong> data held on the boot pool is the <strong>system configuration file</strong> and this can be backed up on a daily basis to one of the other pools that has redundancy - so the purpose for having redundancy (i.e. a mirror) on the boot pool is only to avoid down-time if the boot device breaks.&nbsp;Opinion is divided about having a mirrored boot pool for two reasons:</p>
+<ol>
+  <li>If the primary disk gets corrupted, the mirror may equally be corrupted - so a mirror may not any more use than the primary if they have both been corrupted.</li>
+  <li>Your BIOS may not switch automatically to booting from the secondary boot device if the primary one won't boot (e.g. because the BIOS can still see it but it appears empty). See the post <a href="https://www.truenas.com/community/resources/highly-available-boot-pool-strategy.184/">Highly Available Boot Pool Strategy</a> in ixSystems' archived old Community forums. If you are thinking about a boot pool mirror, you may want to run some tests on your own hardware to see what happens if 1) the primary fails (i.e. not seen by BIOS) or 2) the primary appears empty.</li>
+</ol>
+<p>Another options is to <strong>purchase a spare (identical?) boot drive and keep it in a drawer</strong>. Occasionally (e.g. after every version upgrade) run a script to copy your boot pool in a bootable way to a USB flash drive. Don't forget to test that this copy is indeed bootable. If your boot drive fails, install the spare, boot from the USB stick, copy the boot pool to the new boot drive, reboot, and restore the configuration file from your (at least daily) backup you have made on another pool. &nbsp;(If anyone creates such a script then please edit this wiki page and add a link here.)</p>
+<p>If having read the above you still want boot-pool redundancy then you will need to dedicate 2 SATA ports (or 2 NVME/M.2 slots if you have them) for boot pool - if you believe that you can live with down time if the system disk fails, then you will need a single SATA port (or if you are prepared to go outside ixSystems recommendations you can use a USB attached SSD - but <strong>not a USB flash drive</strong> which will almost certainly fail within weeks because of the limited write capability).&nbsp;</p>
+<p>ixSystems also recommends that you dedicate the disk(s) solely to the boot pool and not put any other data on the same disk.&nbsp;If you follow this recommendation, then you cannot use the extra space on the boot drive(s) and you will likely need additional SSDs and SATA ports for applications and possibly some data.</p>
+<h2>Apps / VMs</h2>
+<p>If you run Apps, then you will need to store the app itself and the data they create/use on disk somewhere. There is no reason that this cannot be on a HDD based pool, however you probably want your apps to load with the operating system and their startup time is probably as important as the system startup time, and Apps tend to read and write data more frequently than network data.</p>
+<p>It is not as strong a recommendation as for the boot pool, but it is recommended that the pool for apps and their data is also on an SSD.&nbsp;</p>
+<p>VMs tend to have similar characteristics for their virtual boot and apps, so you probably want their boot area to and executables be on mirrored SSDs.</p>
+<p>You may also have network data that for performance reasons you want to sit on an SSD.</p>
+<p>Next you need to make a similar decision about whether your Apps/VM/Network-data SSD pool needs redundancy. If you need to ensure that the data written a minute ago is not lost if the drive fails, then you need redundancy. If you are happy that e.g. nightly copies of the SSD data to HDD will suffice in the event that the SSD fails (and to reconfigure temporarily so that your apps use the HDD backup to run), then you can probably do without redundancy on your Apps/VM/SSD Network data pool. Lurch advises that it is probably NOT a good idea to use non-redundant pools for network data, because you won't know in advance just how vital data you are going to save at some future point and whether you can accept losing it.</p>
+<p>As an alternative to redundancy for the Apps pool, depending on the recovery requirements you can consider e.g. using TrueNAS/ZFS “replication” from the apps pool to the HDD pool on (say) a nightly basis. In the event of the apps pool drive(s) failing you can then create a temporary softlink from the backup location to the normal mount point of the apps pool in order for things to keep running whilst you procure a new drive for the apps pool and then you can restore from the replica to the new apps-pool SSD once it is installed.</p>
+<p>Finally, for this pool, you need to decide whether you want to follow the ixSystems recommendation and have this separately from the boot disk(s), using another one or two SATA ports or whether you are willing to ignore this recommendation and use the same disk(s) for boot &amp; apps pools. It is pretty likely that you can get a low-cost relatively small SSD and that it will still be large enough for boot pool and apps, and since you are buying a boot SSD(s) anyway using the same hardware can save you a reasonable amount of $$ <strong>and</strong> save you a SATA port or two.&nbsp;</p>
+<h2>HDD data pool(s)</h2>
+<p>This is often &nbsp;the simplest pool to select hardware for. Larger storage is still really only available / economic on spinning hard drives though this is likely to change in the future.</p>
+<p>Unless you have special requirements, a general recommendation would be to have a single pool made up of one or more vDevs each of which has up to 12 disks including one or two disks for redundancy (2 or 3 disks for redundancy for the upper range or for large e.g. 12TB+ drives). The issue with a wide vDev or large drives, and the reason to have 2 or 3 redundant disks is the extended time it can take to recover full redundancy after a disk replacement (technically called "resilvering"), and the stress that the resilvering places on the remaining drives whilst this is happening which can cause them to fail during the resilver.&nbsp;</p>
+<p>There are almost certainly several ways that you can fulfil the disk space you calculated you need using several disks. If your requirement was for (say) 14TB of data, then:</p>
+<ul>
+  <li>You could buy 2x 16TB drives and mirror them - you would be paying for 32TB of disk space and getting 16TB of useable disk space, and would need 2 SATA ports.</li>
+  <li>Or you could buy 3x 8TB drives and use RAIDZ1 - you would be &nbsp;paying for 24TB of disk space and getting 16TB of useable disk space, and would need 3 SATA ports.</li>
+  <li>Or you could buy (as I did) 5x 4TB drives and use RAIDZ1 - and you would be paying for 20TB of disk space and getting 16TB of useable disk space and would need 5 SATA ports.</li>
+</ul>
+<p>Of course this is the simplified explanation.&nbsp;</p>
+<p>So by widening the raid array and using smaller disks, you can reduce the cost of the redundancy disks, but it is likely that you will pay more for NAS hardware that has more drive bays so it's a trade-off.</p>
+<p>A discussion about the performance characteristics&nbsp;of each of the above options for random-read, sequential-read e.g. streaming, and write operations is a bit complex to cover here, but if you think that your requirements require above average performance, and you want to include performance as part of your decision process, then ixSystems have an excellent <a href="https://static.ixsystems.co/uploads/2020/09/ZFS_Storage_Pool_Layout_White_Paper_2020_WEB.pdf">ZFS Storage Pool Layout White Paper</a> which can provide you with a lot more technical flim-flam than even Gomez could achieve in his hay-day.</p>
+<h2>Special ZFS devices</h2>
+<p>ZFS has several types of special devices (vDevs) which can be used to improve performance - usually these will be SSDs or NVMe disks used to provide performance improvements for HDDs (because you will get far less and possible zero performance improvement using an SSD special device to speed up an SSD pool.</p>
+<p>The types of special ZFS devices you can use are as follows…</p>
+<h3>SLOG</h3>
+<p>SLOG is a device that can potentially speed up <strong>Synchronous</strong> writes to HDD. A <i>Synchronous-Write</i> is one where the network client or app or Virtual Machine expects to wait until the data has been written to disk and TrueNAS confirms this before it continues with other work. By comparison an <i>Asynchronous-Write</i> is one where TrueNAS immediately stores the data in normal (volatile) RAM, confirms it to the client, and then writes it as soon as it can to disk - and the risk is that the client thinks that the data has been written when in fact it is still in memory and will be lost of there is an operating system crash or power outage. For transactional databases (e.g. for bank transactions) need to be certain that data has been written and is consistent, so writes need to be synchronous - but for the vast majority of file sharing data, and possibly for many non-mission-critical apps, asynchronous-writes are perfectly normal and safe.</p>
+<p><strong>Note:</strong> ZFS itself is extremely robust - whilst the extremely recent asynchronous data may be lost in the event of an O/S crash or a power failure, the file system itself is pretty much guaranteed to remain consistent - the Windows SCANDISK or Linux FSCK scans are never needed with ZFS.</p>
+<p>Some guidelines:</p>
+<ul>
+  <li>You usually don't need an SLOG for SSD pools</li>
+  <li>You don't need an SLOG for writes from Windows over SMB (because they are always asynchronous)</li>
+  <li>You usually don't need an SLOG unless synchronous write performance to HDDs is critical (and perhaps you should be using SSDs instead)</li>
+  <li>Apps, VMs, NFS and Macs writing over SMB use synchronous writes - so if the data is on HDD and cannot be on SSD, then an SLOG may be beneficial</li>
+</ul>
+<h3>Metadata special devices</h3>
+<p>All pools store metadata about their ZFS datasets, the directories and files, the attributes of these directories and files, the location of files and freespace etc., and accessing this metadata from HDDs can contribute significantly to the perceived performance of your NAS, particularly soon after boot when there is no metadata in the RAM-based cache (ARC) - however as metadata is read and used it will be cached in RAM and reused on later accesses.</p>
+<p>A Metadata special device allows you to store the metadata of an HDD pool on an SSD or (even better/faster) an NVMe drive - and for performance critical applications this can speed up both metadata-reads (for metadata not in cache) and metadata-writes.</p>
+<p>However, because the Metadata special device holds the primary / only copy of the metadata, if your metadata special device fails, you <strong>will</strong> lose all the data in your pool so it is <strong>essential</strong> that a Metadata special device is mirrored (either a 2x or 3x mirror). This therefore requires significant hardware resources to do safely.</p>
+<p>Some guidelines:</p>
+<ul>
+  <li>You usually don't need a Metadata device for SSD pools</li>
+  <li>Unless your reads are response time critical, you usually don't need a Metadata device for HDD pools</li>
+  <li>Unless your writes are volume critical, you usually don't need a Metadata device for HDD pools</li>
+</ul>
+<p>If you are primarily concerned with speeding up metadata reads from HDD, then you might want to consider a Metadata-only L2ARC device instead.</p>
+<h3>L2ARC</h3>
+<p>ZFS provides a very efficient cache as standard using all the unused RAM in the system (ARC) and this caches both metadata and actual data on the basis of both most recently used and most frequently used data. Metadata tends to be used more frequently than actual data, and so metadata tends to remain in the ARC in preference to most data. ZFS also does read-ahead into ARC for e.g. media streaming, which increases the ARC hit rate and reduces the need for L2ARC.</p>
+<p>However it is possible to use an SSD or NVMe drive to cache metadata and / or actual data read from HDD <strong>in addition</strong> to the ARC. If metadata or data is not in the RAM-based ARC, then if it is on SSD/NVMe in the L2ARC, it can be read from there much quicker than from HDD.</p>
+<p>Because it is a cache copy rather than a primary source, the failure of an L2ARC device does <strong><u>not</u></strong> cause the pool to be lost, although the performance improvements from the L2ARC will no longer be available.</p>
+<p>Some guidelines:</p>
+<ul>
+  <li>Check Reports / ZFS to see what your existing ARC hit rates are. If your existing hit rates are high, an L2ARC will not give you any significant benefit. (On my 10GB system using c. 1GB for Apps i.e. effectively a 9GB system, I get 99.5% hit rates from normal ARC.)</li>
+  <li>The L2ARC has its own metadata, and this needs to be held in ARC, reducing the amount of ARC available for normal metadata/data caching and hence reducing the ARC hit rates. For this reason, use of L2ARC for data caching is not recommended by iXsystems unless your system has at least 60GB of normal ARC (normally at least 64GB of RAM). The amount of ARC space used for L2ARC metadata is dependent upon the size of the L2ARC, so a very large L2ARC may be detrimental to performance.</li>
+  <li>If your ARC hit rates are lower than you like, if your hardware supports it you should probably increase the amount of RAM rather than add an L2ARC.</li>
+  <li>Unless your uncached reads are response time critical, you usually don't need an L2ARC.</li>
+  <li>Use of an NVMe device for L2ARC caching of performance critical HDD pools may be beneficial.</li>
+  <li>If you are going to use an L2ARC, caching only metadata may give you the biggest performance boost with the least impact on normal ARC usage (because the L2ARC can be much much smaller).</li>
+  <li>If you have enough memory as ARC, you can encourage metadata to be cached by using a CRON job to do a directory listing of the relevant directories. This increases the frequency that these metadata blocks are read, making it more likely that ZFS will keep these blocks in ARC - but this will be to the detriment of holding data blocks in ARC so only do this if you have enough ARC so that data block hit rates are not significantly adversely affected.</li>
+</ul>
+<h2>Other Guidelines</h2>
+<p>The ZFS file system that TrueNAS uses has some specific requirements, which can be briefly summarised as follows:</p>
+<ul>
+  <li>Storage controllers that present the native disk devices to the operating system (i.e. <strong>NOT</strong> a RAID controller that consolidates multiple disks into a single device). Be very careful about the controller hardware you select and consult community experts if you have any uncertainties.</li>
+  <li>Use HDDs that are CMR technology and do <strong>NOT</strong> use disks that are SMR technology.^[Add a footnote here with a reference to more details.] Again, if you are unsure, ask for advice from community experts.</li>
+</ul>
+<p>How to configure the physical disks into storage areas (called Pools) is also important, and some generic guidelines are:&nbsp;</p>
+<ul>
+  <li>All non-boot devices should have redundancy against failure of at least a single drive if not simultaneous failure of 2 or 3 drives)</li>
+  <li>Use mirrors for high performance data (especially Zvols for VMs or iSCSI use)</li>
+  <li>Use mirrors or RAIDZx for other data</li>
+  <li>Use of additional SSD disks for secondary cache (L2ARC), Synchronous Logs (SLogs) or to store metadata are normally unnecessary and will create additional complexity and risk for your data storage - if you think you need these special uses, seek advice from community experts.</li>
+</ul>
+<h2>Summary</h2>
+<p>Hopefully by now you will be able to calculate the various drive options and SATA ports they need, ready for considering what Server hardware to use.&nbsp;</p>
+<h2>Links</h2>
+<figure class="table" style="width:100%;">
+  <table>
+    <tbody>
+      <tr>
+        <td style="width:50%;">Previous - <a href="/fester/planning/minimum-hardware">2.3.1 Minimum / Other Hardware Guidelines</a></td>
+        <td style="text-align:center;"><a href="/fester/index">Index</a></td>
+        <td style="text-align:right;width:50%;">Next - <a href="/fester/planning/nas-appliances-commercial">2.3.3 Using commercial NAS appliances</a></td>
+      </tr>
+    </tbody>
+  </table>
+</figure>

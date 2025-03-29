@@ -1,0 +1,59 @@
+<!--
+title: 2.2.1 Network Data Types
+description: What types of data do you want to access over the network?
+published: true
+date: 2024-08-01T23:37:33.608Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-04-07T22:34:45.684Z
+-->
+
+<p>On this wiki page we are going to discuss all the types of data that you might want to hold on your NAS.</p>
+<h2>PC Application / Personal Data</h2>
+<blockquote>
+  <p>Pugsley uses TrueNAS to store his non-fungible collection of detailed 3d models of the top 1,000 worldwide crypts, whilst Wednesday uses it to take backups of her school homework and projects files from her laptop.&nbsp;</p>
+</blockquote>
+<p>Perhaps you only currently have a bunch of application files on your PCs (mail, spreadsheets documents, pictures) for your own use. Or perhaps you also have some personal or other videos also on your PC. In technical terms these are “sequential access” files - they are either read and written by applications in their entirety, or they are streamed (i.e. read but not written) sequentially even if you start and / or finish reading them part way through. TrueNAS - and &nbsp;the underlying ZFS file system - is an excellent place to store and access such files <strong>instead</strong> of off your PCs disk-drive. In other words, you can if you wish store the primary copy of these files on TrueNAS.&nbsp;</p>
+<p>Of course, it is likely that the speed of accessing these files across the network is going to be slower than if they are on your PC, especially if your PCs disk is a Solid State Drive (SSD) - so you probably only want to store the primary copy of these files on the NAS if:</p>
+<ul>
+  <li>You are only going to access them rarely; and</li>
+  <li>You don't have a laptop and will need them when away from your NAS location (though if you are prepared for the complexities, even this is possible using a VPN); or</li>
+  <li>They are large files (e.g. videos) and you don't have enough space on your PC's disk drive(s) to store them.</li>
+</ul>
+<p>Alternatively, if they don't fit into the above category, then perhaps you want to keep the primary copy on your PC and put a backup copy on your NAS whenever it gets updated.</p>
+<p>It is possible - or indeed reasonably likely as I will cover in a minute or so - that you have one or more files that are read and (more importantly written) randomly. Microsoft Access files are an example where you might want to overwrite a part of the file in the middle. But, equally, so are the Microsoft Outlook files that store your emails - and possibly other mail storage files. The ZFS file system that underlies TrueNAS is (by design) very poor at handling such files<mark class="pen-green"><sup>[1]</sup></mark> - and so the primary copy needs to remain on your PCs disk drive, but again you may wish to store a backup copy on your NAS on a regular basis.</p>
+<p>Later on in the Implementation part of the wiki we will talk about how to read and write files on the NAS from your PC and various ways to backup files or an entire disk to the NAS, but we don't need to discuss how right now, you just need to be able to work out what data you want to hold on the NAS as Primary files and what data you want to hold as backups.<br>&nbsp;</p>
+<hr>
+<p><sup>&nbsp; &nbsp;</sup><mark class="pen-green"><sup>[1]</sup></mark> The reason that ZFS is poor at handling partial writes of files is because it is a “Copy on write” file system - which means that instead of simply changing the bytes in the middle of a file, every time you want to do this it makes a copy of an entire block first including these changed bytes. This is by design because it enables a whole bunch of other functionality which are very useful for a NAS (like resilience and snapshots - don't worry if you don't know what these are right now as we will cover these later), but it does make ZFS unsuitable for these types of file.</p>
+<h2>Media files</h2>
+<blockquote>
+  <p>Morticia and Gomez use TrueNAS to store and stream their collection of Vampire and Zombie movies to their 60" ceiling mounted TV to watch as part of their foreplay ritual.&nbsp;</p>
+</blockquote>
+<p>Perhaps you also already hold video files on your PC, but even if you don't one of the biggest opportunities you gain from implementing a NAS is that it can be used to hold <strong>and</strong> stream media files - your photo collection, your mp3 music collection and your videos - to your PC / smart TV device / smart speakers / mobile phone / tablet. Again, we will cover how to stream these in a later part of the Wiki, but right now you need to decide whether you want to do this, and if so just how much disk space you want to provide for this.</p>
+<p>Media files are large - a single photo can be 10x the size of an email or small word document - and music files are much larger, and video files much larger again. A word or PDF document might be a few MB in size, but depending on the resolution to store it at, the video file for a feature film can be between (say) 1GB and 50GB in size. So deciding whether you want this functionality and if so how much you want to store may dwarf the data storage requirements of everything else.</p>
+<p>And because of this, your normal PC disk drive simply may not have the capacity to store this amount of data.</p>
+<p>When you are thinking about the amount of network-data storage you need e.g.&nbsp;for your video files, you should also allow extra space for your media manager / streamer app (such as Plex or Jellyfin) to store its index to your video files. As a rule of thumb, Protopia Addams notes that his NAS server uses about 2.5% of the video file space for the Plex metadata. So remember to add 2.5%-5% to your video file size to cover this.&nbsp;</p>
+<h2>PC backups</h2>
+<p>Leaving aside using the NAS to store primary or backup copies of individual files (where you can easily access each file individually), having an image backup of the “system disk” of your PC can be a real help if this system drive gets corrupted or has a hardware failure and you want to restore it to where it was.</p>
+<p>Most operating systems have a means of creating an image backup of their system disk that can be restored in its entirety on the same system at a later date, but the files that are created are almost as big as the disk drive they are on, so again you need to decide now whether you want to hold these, and if so for how many PCs and how many copies. (And, in case you are worried whether a NAS &nbsp;is suitable for this, the answer is yes - providing you allow enough disk capacity and providing that your LAN is fast enough to handle the data, a NAS is a great place to store these.)&nbsp;</p>
+<h2>Smart Phone / Tablet backups</h2>
+<p>These days Smart Phones and Tablets are more mobile computers than dumb devices - by which I mean Android Phones and iPhones, and Android tablets and iPads etc. - and they can hold quite a lot of your valuable data. And because they are mobile devices that you take with you wherever you go, they are perhaps the data storage devices that are most at risk of being lost or stolen or damaged.</p>
+<p>But how many of us back up the data that we hold on our phones and tablets? Implementing a NAS is an opportunity to get these sorts of mobile devices to back themselves up whenever you are charging them at your home location.</p>
+<p>Of course all of the Addams Family with the exception of Wednesday and Pugsley are too luddite to have mobile phones. Wednesday is way too laid back to be bothered with a mobile phone but she does use an iPad for her gothic artwork, and Pugsley's Android phone has hundreds of photos and videos of his pranks that he shares with his schoolfriends - and both of them are planning to back up their devices to TrueNAS.</p>
+<p>If you decide to do this, how much data will you need to back-up?</p>
+<h2><strong>Torrents</strong></h2>
+<p>This is a bit of a specialised area, but for those people who already use BitTorrent file sharing, you may want to consider using your NAS not only to store your torrents, but also to run your torrent software.</p>
+<p>This is undoubtedly more complex to implement than anything we have talked about so far, but &nbsp;if you are already using torrents and you want to move them, then again you need to account for the disk space they will use.&nbsp;</p>
+<p>&nbsp;</p>
+<h6><span class="text-big">Links</span></h6>
+<figure class="table" style="width:100%;">
+  <table>
+    <tbody>
+      <tr>
+        <td style="width:50%;">Prev - <a href="/fester/planning/data-requirements">2.2 Data Requirements</a></td>
+        <td style="text-align:center;"><a href="/fester/index">Index</a></td>
+        <td style="text-align:right;width:50%;">Next - <a href="/fester/planning/requirements-non-network-data">2.2.2 Server-only Data Types</a></td>
+      </tr>
+    </tbody>
+  </table>
+</figure>

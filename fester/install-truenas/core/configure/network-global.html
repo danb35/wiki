@@ -1,0 +1,24 @@
+<!--
+title: Network Global Configuration
+description: 
+published: true
+date: 2024-04-07T14:36:02.030Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-01-13T12:23:02.132Z
+-->
+
+<h1>Network Global Configuration</h1>
+<p>Click “Network” in the left column, then “Global Configuration”.</p>
+<figure class="image"><img src="/network_global.png"></figure>
+<ul>
+  <li>Give your server a name by typing into the “Hostname” text box.</li>
+  <li>Your server will most likely be on your private network behind the router so the “Domain” should be “local”.</li>
+  <li>Input the Default Gateway IP address of your private network into the “IPv4 Default Gateway:” text box (in Fester’s case this is 192.168.1.1).</li>
+  <li>In the Nameserver 1:” text box put in the IP address of your ISPs Primary DNS server. You should be able to get this from your router or the ISPs website.</li>
+  <li>In the Nameserver 2:” text box put in the IP address of your ISPs Secondary DNS server.</li>
+  <li>In the Nameserver 3:” text box put in the IP address of your ISPs Tertiary DNS server. Not all ISPs have a third DNS server so leave it blank if this is the case.</li>
+  <li>Now click the “Save” button.</li>
+</ul>
+<p>If you do not know, and cannot find, the IP addresses for your ISP's DNS servers, you can use Cloudflare's Public DNS servers. Use 1.1.1.1 for the primary DNS server, and 1.0.0.1 for the secondary.</p>
+<p>The server can now find the Primary and Secondary DNS servers. This means web addresses (URLs) can now be resolved to IP addresses.</p>

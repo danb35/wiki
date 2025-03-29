@@ -1,0 +1,335 @@
+<!--
+title: 3.5.1 HDD/SSD Validation
+description: 
+published: true
+date: 2024-11-16T15:05:53.742Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-01-13T11:22:34.266Z
+-->
+
+<p>HDD validation basically involves 4 stages for each physical disk (HDD or SSD):</p>
+<ol>
+  <li>A SMART short test. This is a test that looks at certain aspects of the electrical and mechanical performance of the HDD. It is not a thorough test of the HDD. The tests take somewhere in the region of 2-5 minutes to complete.</li>
+  <li>A SMART conveyance test. This is a test performed on HDDs to check if they have survived transit without any damage. (I don’t know how they differ from the short or long test if someone wants to give me the information Fester will try to add it.)</li>
+  <li>A Badblocks test. This is a test where every physical location on the HDD has a write/read test performed on it. The test consists of a block of data that gets written to every physical location on the HDD in sequence. Every physical location on the HDD is then read back also in sequence and each time at each location the value is checked to see if it is correct. This is one pass. The whole process if repeated with a different block of data, this is the second pass. The badblocks test uses 4 patterns by default. This test will take a very long time, usually between 24 hours to a few days depending on the capacity of the drive.<br><br><strong>Note 1: </strong>This test overwrites any data on the drive - do <strong>NOT</strong> run this test unless you are sure that the drive is empty of data.<br><strong>Note 2:</strong> SSDs support a finite volume of writes, so be aware that running this test will use a small proportion of these.</li>
+  <li>A SMART long test. Think of this as an extended version of the short test. It is a much more thorough test of the HDD and will include a surface scan of the drive. This test will take many hours to complete depending on the capacity of the HDD.</li>
+</ol>
+<h2>SMART Tests: A Short Introduction</h2>
+<p>SMART stands for Self-Monitoring Analysis and Reporting Technology.</p>
+<p>A SMART test is a test a HDD or SDD can perform by itself on itself. These tests, often referred to as “self tests” are carried out by the HDD’s/SDD’s onboard firmware, not a separate piece of software running on the server as we have already seen.</p>
+<p>The results of these tests are stored in the drives onboard non-volatile memory so they can be retrieved and utilised by simply interrogating the drive in the correct way.</p>
+<p>However, to be able to use the SMART capabilities built into the drives we need a program or an OS that is capable of communicating with the built in SMART functions of the drive.</p>
+<p>With such a program or OS present we can simply issue commands to invoke the firmware to initiate a SMART test and/or interrogate a SMART drive to obtain the results of that test (very convenient).</p>
+<p>Only one SMART test can be performed per drive. So you cannot run the short test and the long test on the same drive simultaneously. Also the current SMART test must complete before another can be run on the same drive. If a SMART test is running on a drive and you start another then the current test is stopped and abandoned in favour of the newly requested test.</p>
+<p>Fortunately, you can run SMART tests in parallel on different drives. So you could have any number of drives all performing the short test at the same time, or the long test or a mix if you wish (i.e. some performing the short test and some performing the long test).</p>
+<h2>HDD/SSD Validation Via the TrueNAS OS Route</h2>
+<p>There is more than one way to carry out the HDD/SDD validation tests on the server.</p>
+<p>A program specially written for this purpose could be used in a bootable form and run on the server.</p>
+<p>However, the easiest way to conduct the HDD/SDD validation tests is to install the TrueNAS OS on the server. It has everything we need. This is not a proper installation of the OS, but just a test installation so we can conduct the SMART and badblocks tests needed.</p>
+<p>There are a number of ways the TrueNAS OS can be installed, for example from a CD/DVD, or across a network using PXE. Fester favours a USB stick.</p>
+<p><a href="/fester/write-image-to-usb">Create the installer USB stick</a>, <a href="https://www.familybrown.org/dokuwiki/doku.php?id=fester:install_installing">install </a>TrueNAS, and <a href="https://www.familybrown.org/dokuwiki/doku.php?id=fester:ssh_setup">enable the SSH service</a>, as described on the linked pages. When you first log in to the web GUI, you'll likely see the Initial Wizard; you can just exit out of this at this time.</p>
+<h2>Conducting The HDD/SDD Validation Tests (Finally!) In TrueNAS Via An SSH Console</h2>
+<p>TrueNAS comes with certain software tools and capabilities built into it that will make the task of HDD/SDD validation much easier. This is why we needed to install it before conducting the tests.</p>
+<p>The SSH console provides no tools for validation purposes, but does provide the means by which we can flexibly interact with the built in tools in TrueNAS to accomplish the validation tests. This is why we needed to set this up before carrying out the tests.</p>
+<h3>SMART Short Tests Via The SSH Console</h3>
+<p>Open up the TrueNAS web GUI in your browser and log in.</p>
+<p>Go to the “Storage” page (1) and click “Disks” (2).</p>
+<figure class="image"><img src="/screenshot_2024-01-13_at_06.29.56.png"></figure>
+<p>This should bring up a list of the storage HDDs (i.e. for data, not the OS) that are currently in your system.</p>
+<p>Make a list of the names of each drive (shown in a red box in the screen shot) these will be needed soon. &nbsp;Do not include the name of the boot device, which is shown in the list as belonging to <code>boot-pool</code>.</p>
+<p>(On Fester’s system this would be <strong>da0 – da7</strong>, giving a total of 8 HDDs; the screen shot above is from a different system. &nbsp;On this system, the only disk you'd use would be <code>da1</code>.)</p>
+<p>Under TrueNAS SCALE, the drive names will most likely be in the form of <code>sda</code>, <code>sdb</code>, etc. &nbsp;Again, make a list of all drives that are <strong>not</strong> part of <code>boot-pool</code>.</p>
+<h4>Install the script</h4>
+<p>To run the drive tests, we're going to use a helpful <a href="https://github.com/dak180/disk-burnin-and-testing">script</a> created by user <a href="https://forums.truenas.com/u/dak180">dak180</a> on the TrueNAS forums.</p>
+<p>If you're using TrueNAS CORE, ssh to your server as the root user. &nbsp;If you're using SCALE, either SSH to your server as the <code>admin</code> user, or use the built-in shell in the web GUI (System → Shell). &nbsp;Then, at the command prompt, run <code>git clone https://github.com/dak180/disk-burnin-and-testing</code>. &nbsp;This will download the script and its documentation into a new directory. &nbsp;Change into that directory by typing <code>cd disk-burnin-and-testing</code>.</p>
+<h4>Run the script</h4>
+<p><strong>WARNING:</strong> This test is destructive. &nbsp;Data on any disks tested will be destroyed. &nbsp;<strong>DO NOT</strong> run this test on disks that are part of a pool, or that otherwise contain data you want to keep.</p>
+<p>To run the script under CORE, type <code>./disk-burnin.sh -tm ‘da1 da2 …’</code>, including the names of each disk you want to test, and then press Enter.</p>
+<p>To run the script under SCALE, type <code>sudo ./disk-burnin.sh -tm ‘sda sdb sdc …’</code>, again including the names of each disk you want to test, and then press Enter. &nbsp;You'll likely be prompted for the password for your <code>admin</code> user, so enter it.</p>
+<p>Once you run that command, you'll see output like <code>0: 1 windows (created Sat Nov 16 10:02:50 2024)</code>, and you'll then be returned to the command prompt. &nbsp;The tests are running in the background using <code>tmux</code>, which is described below.</p>
+<h4>Badblocks Test Using tmux</h4>
+<p>Start an SSH session and log in.</p>
+<p>Before starting tmux we need to enable the kernel geometry debug flags, so type in this command at the command prompt.</p>
+<p><code>sysctl kern.geom.debugflags=0x10</code></p>
+<p>(When all the Badblocks tests are done the kernel geometry debug flags must be returned to their normal state. Thankfully no additional command is necessary, just reboot the server as this setting is not persistent and cannot survive the reboot.)</p>
+<p>Now type the following command at the command prompt.</p>
+<p><code>tmux</code></p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:4a215d740e93e13f525077809182f5a6.png" alt=""></figure>
+<p>You should see a screen something like this. Notice the green band at the bottom of the screen, this is a tmux session.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:4dcfa5900d17534756dc73075b2f11b5.png" alt=""></figure>
+<p>I will not be running the Badblocks test on ada0 (the SSD drive) there is no point as already explained and this is a destructive test (the TrueNAS OS is on this drive!).</p>
+<p>This leaves the 8 data storage drives to check.</p>
+<p>This means I will need 8 sessions opened in tmux (open the number of sessions that suits your requirements).</p>
+<p>Let us start by renaming the current session in tmux to something more meaningful than “csh”.</p>
+<p>In the tmux window press the “Ctrl” and “b” keys together, release them and then press the “,” key.</p>
+<p>The bar at the bottom of the window should turn yellow and you can now delete the “csh” text and rename it (Fester called his “da0” after the drive that will be tested).</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:1ca4b4377f61e21efd0955f084ee351f.png" alt=""></figure>
+<p>When you have typed in the new name press the “Return/Enter” key, the bar should now resort back to its original green colour and the session should be renamed.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:d507060531c4fe2526fdbe55d4423dda.png" alt=""></figure>
+<p>At this point we need to create an additional session and rename it for the next drive to be tested.</p>
+<p>To create a new session press the “Ctrl” and “b” keys together, release them and then press the “c” key.</p>
+<p>You should get something like this where “1:csh*” is the newly created session. Incidentally the asterisk just denotes the currently selected session.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:f385fa179c0c65a69fc266c35ee57a09.png" alt=""></figure>
+<p>Let us rename this session by pressing the “Ctrl” and “b” keys together, releasing them and then pressing the “,” key. Type in the new name and press the “Return/Enter” key (just as we did before, I called this one “da1” after the next drive to be tested).</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:f9a8ba177073914e8d2bb88b7fbba6a2.png" alt=""></figure>
+<p>Navigation between the different sessions is achieved by pressing the “Ctrl” and “b” keys together, releasing them and then pressing the “n” key. This will take you to the next session along.</p>
+<p>Alternatively you can also press the “Ctrl” and “b” keys together, release them and then press the “p” key. This will take you to the previous session.</p>
+<p>By using the next and previous navigational keystroke combinations you can navigate through the different sessions, the asterisk signifying which session you are currently viewing.</p>
+<p>Using the key combinations already explained let us create the remaining sessions needed and rename each one.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:d5881d189bd31b0f972fdfd49c58b15d.png" alt=""></figure>
+<p>Now we can run the Badblocks tests from within tmux.</p>
+<p>Navigate to the first session (i.e. “0:da0”) and type in the following command at the prompt.</p>
+<p><code>badblocks -ws /dev/da0</code></p>
+<p>Fester uses a slightly different command to improve the efficiency of the tests with the WD40EFRX drives. These drives have a sector size of 4096 bytes (even though they report 512 bytes, naughty Western Digital). I also like a more verbose output from these tests so the command includes the –v switch. I include it here for informational purposes only. In addition to improving efficiency, the “-b 4096” below is required with larger disks (<i>i.e.</i>, larger than about 4 TB).</p>
+<p><code>badblocks –b 4096 –vws /dev/da0</code></p>
+<p>If the command executes properly you should see something like this.</p>
+<p>You will see from the screen the completion progress expressed as a percentage (1) and any errors that have occurred expressed like this “(0/0/0 errors)” (2).</p>
+<p>There should be zero errors throughout the test. If you get even one error then you should return the disk for testing.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:f50e14a41e8e32abb7e8c1e62b9d8185.png" alt=""></figure>
+<p>Now navigate to the next session (in Fester’s case that is “1:da1”) and type this at the command prompt.</p>
+<p><code>badblocks -ws /dev/da1</code></p>
+<p>(Or Fester’s variation if it suits you better, but remember to change the drive name from “da0” to “da1”.)</p>
+<p>Repeat this process of changing session and running the Badblocks command for every drive in your system that you want to test. In Fester’s case this means running these commands while changing sessions each time.</p>
+<p><code>badblocks -ws /dev/da2</code></p>
+<p><code>badblocks -ws /dev/da3</code></p>
+<p><code>badblocks -ws /dev/da4</code></p>
+<p><code>badblocks -ws /dev/da5</code></p>
+<p><code>badblocks -ws /dev/da6</code></p>
+<p><code>badblocks -ws /dev/da7</code></p>
+<h3>Stopping A Badblocks Test</h3>
+<p>If for any reason you need to stop a Badblocks test then navigate to the applicable session at press the “Ctrl” and “c” keys together, then release them. This should stop the test.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:2729f13d558ab0f4f9a4edee5ebd986c.png" alt=""></figure>
+<h3>Detaching a tmux Session</h3>
+<p>Once you've started all your tests running, you can “detach” your tmux session to let the tests run while you do something else with your SSH session (or just close the SSH connection entirely). To do this, press the “Ctrl” and “b” keys together, then press the “d” key. This will return you to your SSH session, without the tmux session (you'll notice that the green bar isn't present on the bottom of the screen).</p>
+<h3>Resuming A Session In tmux</h3>
+<p>Badblocks tests can take a long time (when the tests completed Fester was far from where he had started due to Continental Drift and Plate Tectonics).</p>
+<p>You do not need to keep the terminal open or the client computer switched on in order to keep the tmux session running.</p>
+<p>If you need to pack up for the night then just close the window that the sessions are running in (just don’t shut down the server). Then get your ferrets to shut down your client computer and your pigeons to knock up a suitable night cap (I find a Multiple Orgasm very agreeable before bed).</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:159bf7d2a0b8a2cb328b5e8322a0a72e.png" alt=""></figure>
+<p>When you need to re-establish the connection with the tmux session/s simply start an SSH session and log in.</p>
+<p>Type the following command in the command prompt.</p>
+<p><code>tmux attach</code></p>
+<p>or simply</p>
+<p><code>tmux a</code></p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:29505b0dbee390dd1dddeb6dd009e50f.png" alt=""></figure>
+<p>This should return you to the tmux session(s).</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:17d1b1f52baacdfbdc94391348c2f86f.png" alt=""></figure>
+<p>When the tests are complete navigate to an open session, note the results if you need to and then type the following into the command prompt.</p>
+<p><code>exit</code></p>
+<p>This will close that particular session in tmux.</p>
+<p>Do this for each session in turn until you have exited all the sessions in tmux.</p>
+<p>You will find that on exiting the last open session in tmux you will be returned to the standard SSH console (in Fester’s case PuTTY).</p>
+<p>Now reboot the server to reset the kernel geometry debug flags to their standard setting.</p>
+<p>That’s the Badblocks tests complete.</p>
+<p>In order to complete all the HDD validation tests we must now repeat the SMART long tests. As this has already been documented I won’t repeat it here. Just go back to the relevant section and repeat again.</p>
+<p>Once the SMART long tests have completed then it is time to collect the results.</p>
+<h2>Getting Your Test Results</h2>
+<p>Getting your test results is always a tense moment.</p>
+<p>(I remember such an instance in the doctor’s examination room after an unforgettable trip to Bognor Regis, often referred to as “The Riviera of the South West”. Unfortunately the doctor confirmed Fester had come back with more than just fond memories, but with the liberal application of a strong antibiotic cream Fester was as good as new in a couple of weeks.)</p>
+<p>Here is how to get your results.</p>
+<p>(Do not start this section until all HDD tests have been completed.)</p>
+<p>Open an SSH console and log in.</p>
+<p>We are going to issue a command to each HDD/SDD in succession that will interrogate and retrieve the results of the tests stored in each drives memory using SMART commands.</p>
+<p>At the command prompt type in the following command using the name of the first drive you want to interrogate (in Fester’s case this is ada0).</p>
+<p><code>smartctl –a /dev/ada0</code></p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:34575799200aec7f192df26e22dfbfbf.png" alt=""></figure>
+<p>This should produce the following screen with the test results. The window displaying the information has been maximised (1) so it is easier to read.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:748fe2ad03dbdf87fbd109dc8ee80c58.png" alt=""></figure>
+<p>At this point Fester copies the information and pastes it into a text editor for ease of use.</p>
+<p>If you want to do this then select the text in the SSH console by clicking with the left mouse button where you want to begin, hold it down and then highlight the text you want to include.</p>
+<p>When you have done this press the “Ctrl” button and the “v” button together. This keystroke will copy the highlighted text into the clip board.</p>
+<p>Open the text editor you wish to use (Fester uses Notepad in Windows) and paste it into the text into the editor.</p>
+<p>You now need to repeat this process for the next drive in your system.</p>
+<p>At the command prompt type in the following command using the name of the next drive you want to interrogate (in Fester’s case this is da0).</p>
+<p><code>smartctl –a /dev/da0</code></p>
+<p>This will produce the next set of results in the SSH console. Copy and paste as before (if you want to).</p>
+<p>Now repeat the process for the next drive and the next until all the drives have been interrogated and their data copied and pasted.</p>
+<p>(In this way you will build up a list of each drives test results in a single text file that can be saved for examination later.)</p>
+<p>In Festers case this would mean issuing the following commands in the SSH console.</p>
+<p><code>smartctl –a /dev/da1</code></p>
+<p><code>smartctl –a /dev/da2</code></p>
+<p><code>smartctl –a /dev/da3</code></p>
+<p><code>smartctl –a /dev/da4</code></p>
+<p><code>smartctl –a /dev/da5</code></p>
+<p><code>smartctl –a /dev/da6</code></p>
+<p><code>smartctl –a /dev/da7</code></p>
+<p>These commands produce copious amounts of information about the drives. If you want something a little less gregarious then use this command instead (don’t forget to change the drive name each time, and note the capital -A rather than the lowercase -a).</p>
+<p><code>smartctl –A /dev/ada0</code></p>
+<p>This should produce a screen that looks something like this (much more compact).</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:7a146af501c56cb6375b83159bf9b42c.png" alt=""></figure>
+<p>So you have now gathered your results, but they make about as much sense as a bacon butty at a bar mitzvah.</p>
+<p>What now?</p>
+<h3>Making Sense of SMART Data</h3>
+<p>When looking at SMART data from a SMART storage device certain entries in the table are not important in terms of data integrity and health. They just give general information (e.g. Model, serial number, etc) and other types of information that could be useful in certain circumstances.</p>
+<p>Other entries are very important and should immediately ring alarms bells if certain values are present.</p>
+<p>In terms of HDD/SDD hardware validation these are the entries in the SMART data you need to scrutinise.</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td><i>ID#</i>&nbsp;<br>&nbsp;</td>
+        <td><i>ATTRIBUTE_NAME</i>&nbsp;<br>&nbsp;</td>
+        <td><i>FLAG</i>&nbsp;<br>&nbsp;</td>
+        <td><i>VALUE</i>&nbsp;<br>&nbsp;</td>
+        <td><i>WORST</i>&nbsp;<br>&nbsp;</td>
+        <td><i>THRESH</i>&nbsp;<br>&nbsp;</td>
+        <td><i>TYPE</i>&nbsp;<br>&nbsp;</td>
+        <td><i>UPDATED</i>&nbsp;<br>&nbsp;</td>
+        <td><i>WHEN_FAILED</i>&nbsp;<br>&nbsp;</td>
+        <td><i>RAW_VALUE</i>&nbsp;<br>&nbsp;</td>
+      </tr>
+      <tr>
+        <td>1&nbsp;<br>&nbsp;</td>
+        <td>Raw_Read_Error_Rate&nbsp;<br>&nbsp;</td>
+        <td>0x002f&nbsp;<br>&nbsp;</td>
+        <td>200&nbsp;<br>&nbsp;</td>
+        <td>200&nbsp;<br>&nbsp;</td>
+        <td>051&nbsp;<br>&nbsp;</td>
+        <td>Prefail&nbsp;<br>&nbsp;</td>
+        <td>Always&nbsp;<br>&nbsp;</td>
+        <td>-&nbsp;<br>&nbsp;</td>
+        <td>0&nbsp;<br>&nbsp;</td>
+      </tr>
+      <tr>
+        <td>5&nbsp;<br>&nbsp;</td>
+        <td>Reallocated_Sector_Ct&nbsp;<br>&nbsp;</td>
+        <td>0x0033&nbsp;<br>&nbsp;</td>
+        <td>200&nbsp;<br>&nbsp;</td>
+        <td>200&nbsp;<br>&nbsp;</td>
+        <td>140&nbsp;<br>&nbsp;</td>
+        <td>Prefail&nbsp;<br>&nbsp;</td>
+        <td>Always&nbsp;<br>&nbsp;</td>
+        <td>-&nbsp;<br>&nbsp;</td>
+        <td>0&nbsp;<br>&nbsp;</td>
+      </tr>
+      <tr>
+        <td>7&nbsp;<br>&nbsp;</td>
+        <td>Seek_Error_Rate&nbsp;<br>&nbsp;</td>
+        <td>0x002e&nbsp;<br>&nbsp;</td>
+        <td>200&nbsp;<br>&nbsp;</td>
+        <td>200&nbsp;<br>&nbsp;</td>
+        <td>000&nbsp;<br>&nbsp;</td>
+        <td>Old_age&nbsp;<br>&nbsp;</td>
+        <td>Always&nbsp;<br>&nbsp;</td>
+        <td>-&nbsp;<br>&nbsp;</td>
+        <td>0&nbsp;<br>&nbsp;</td>
+      </tr>
+      <tr>
+        <td>10&nbsp;<br>&nbsp;</td>
+        <td>Spin_Retry_Count&nbsp;<br>&nbsp;</td>
+        <td>0x0032&nbsp;<br>&nbsp;</td>
+        <td>100&nbsp;<br>&nbsp;</td>
+        <td>100&nbsp;<br>&nbsp;</td>
+        <td>000&nbsp;<br>&nbsp;</td>
+        <td>Old_age&nbsp;<br>&nbsp;</td>
+        <td>Always&nbsp;<br>&nbsp;</td>
+        <td>-&nbsp;<br>&nbsp;</td>
+        <td>0&nbsp;<br>&nbsp;</td>
+      </tr>
+      <tr>
+        <td>11&nbsp;<br>&nbsp;</td>
+        <td>Calibration_Retry_Count&nbsp;<br>&nbsp;</td>
+        <td>0x0032&nbsp;<br>&nbsp;</td>
+        <td>100&nbsp;<br>&nbsp;</td>
+        <td>100&nbsp;<br>&nbsp;</td>
+        <td>000&nbsp;<br>&nbsp;</td>
+        <td>Old_age&nbsp;<br>&nbsp;</td>
+        <td>Always&nbsp;<br>&nbsp;</td>
+        <td>-&nbsp;<br>&nbsp;</td>
+        <td>0&nbsp;<br>&nbsp;</td>
+      </tr>
+      <tr>
+        <td>196&nbsp;<br>&nbsp;</td>
+        <td>Reallocated_Event_Count&nbsp;<br>&nbsp;</td>
+        <td>0x0032&nbsp;<br>&nbsp;</td>
+        <td>200&nbsp;<br>&nbsp;</td>
+        <td>200&nbsp;<br>&nbsp;</td>
+        <td>000&nbsp;<br>&nbsp;</td>
+        <td>Old_age&nbsp;<br>&nbsp;</td>
+        <td>Always&nbsp;<br>&nbsp;</td>
+        <td>-&nbsp;<br>&nbsp;</td>
+        <td>0&nbsp;<br>&nbsp;</td>
+      </tr>
+      <tr>
+        <td>197&nbsp;<br>&nbsp;</td>
+        <td>Current_Pending_Sector&nbsp;<br>&nbsp;</td>
+        <td>0x0032&nbsp;<br>&nbsp;</td>
+        <td>200&nbsp;<br>&nbsp;</td>
+        <td>200&nbsp;<br>&nbsp;</td>
+        <td>000&nbsp;<br>&nbsp;</td>
+        <td>Old_age&nbsp;<br>&nbsp;</td>
+        <td>Always&nbsp;<br>&nbsp;</td>
+        <td>-&nbsp;<br>&nbsp;</td>
+        <td>0&nbsp;<br>&nbsp;</td>
+      </tr>
+      <tr>
+        <td>198&nbsp;<br>&nbsp;</td>
+        <td>Offline_Uncorrectable&nbsp;<br>&nbsp;</td>
+        <td>0x0030&nbsp;<br>&nbsp;</td>
+        <td>100&nbsp;<br>&nbsp;</td>
+        <td>253&nbsp;<br>&nbsp;</td>
+        <td>000&nbsp;<br>&nbsp;</td>
+        <td>Old_age&nbsp;<br>&nbsp;</td>
+        <td>Always&nbsp;<br>&nbsp;</td>
+        <td>-&nbsp;<br>&nbsp;</td>
+        <td>0&nbsp;<br>&nbsp;</td>
+      </tr>
+      <tr>
+        <td>199&nbsp;<br>&nbsp;</td>
+        <td>UDMA_CRC_Error_Count&nbsp;<br>&nbsp;</td>
+        <td>0x0032&nbsp;<br>&nbsp;</td>
+        <td>200&nbsp;<br>&nbsp;</td>
+        <td>200&nbsp;<br>&nbsp;</td>
+        <td>000&nbsp;<br>&nbsp;</td>
+        <td>Old_age&nbsp;<br>&nbsp;</td>
+        <td>Always&nbsp;<br>&nbsp;</td>
+        <td>-&nbsp;<br>&nbsp;</td>
+        <td>0&nbsp;<br>&nbsp;</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>If you get any value other than <i>zero</i> in the “RAW VALUE” for these entries you should be suspicious of this drive and may need to return the device for testing depending on the manufacturer’s warranty.</p>
+<p>Another area you should look at is the “SMART Self-test log structure”. Here is an example. It will tell you if the drive passed its tests. Any result other than “Completed without error” is cause for concern.</p>
+<p>SMART Self-test log structure revision number 1</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td><i>Num</i>&nbsp;<br>&nbsp;</td>
+        <td><i>Test_Description</i>&nbsp;<br>&nbsp;</td>
+        <td><i>Status</i>&nbsp;<br>&nbsp;</td>
+        <td><i>Remaining LifeTime(hours)</i>&nbsp;<br>&nbsp;</td>
+        <td><i>LifeTime(hours)</i>&nbsp;<br>&nbsp;</td>
+        <td><i>LBA_of_first_error</i>&nbsp;<br>&nbsp;</td>
+      </tr>
+      <tr>
+        <td># 1&nbsp;<br>&nbsp;</td>
+        <td>Extended offline&nbsp;<br>&nbsp;</td>
+        <td>Completed without error&nbsp;<br>&nbsp;</td>
+        <td>00%&nbsp;<br>&nbsp;</td>
+        <td>503&nbsp;<br>&nbsp;</td>
+        <td>-&nbsp;<br>&nbsp;</td>
+      </tr>
+      <tr>
+        <td># 2&nbsp;<br>&nbsp;</td>
+        <td>Conveyance offline&nbsp;<br>&nbsp;</td>
+        <td>Completed without error&nbsp;<br>&nbsp;</td>
+        <td>00%&nbsp;<br>&nbsp;</td>
+        <td>494&nbsp;<br>&nbsp;</td>
+        <td>-&nbsp;<br>&nbsp;</td>
+      </tr>
+      <tr>
+        <td># 3&nbsp;<br>&nbsp;</td>
+        <td>Short offline&nbsp;<br>&nbsp;</td>
+        <td>Completed without error&nbsp;<br>&nbsp;</td>
+        <td>00%&nbsp;<br>&nbsp;</td>
+        <td>75&nbsp;<br>&nbsp;</td>
+        <td>-&nbsp;<br>&nbsp;</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>(If Fester is misinformed about interpreting SMART data or has omitted something important please let me know and I will try to put it in the guide or you could replace this or any section with your own?)</p>
+<p>That’s the HDD/SDD validation completed. Now it is time to reinstall TrueNAS and create a basic server.</p>

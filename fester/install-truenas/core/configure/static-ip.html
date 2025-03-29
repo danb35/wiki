@@ -1,0 +1,50 @@
+<!--
+title: Configuring a Static IP Address
+description: 
+published: true
+date: 2024-04-07T14:34:57.336Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-01-13T12:16:07.513Z
+-->
+
+<h1>Configuring a Static IP Address</h1>
+<p>So far we have relied upon the DHCP server built into the router to assign IP addresses to the NICs in the server. This is inconvenient for reasons already outlined.</p>
+<p>So let us assign static IP addresses to these NICs. This will ensure that the FreeNAS web GUI IP address will no longer change. This is much more expedient when administering a server.</p>
+<p>Make sure it is outside of the range of the DHCP server.</p>
+<p>There are two ways to do this. You can do it via the FreeNAS web GUI. This is the preferred method in most cases.</p>
+<p>The other way is via the console, either directly at the server with a keyboard and monitor, or using an IPMI remote console viewer. This can be useful if you're unable to reach the web GUI.</p>
+<p>I have included both methods in the guide so you can see which works best for you.</p>
+<h2>Configuring Static IP Addresses Via The FreeNAS GUI</h2>
+<p>Click on “Network” in the left column, and then “Interfaces”.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190526-225333.png" alt=""></figure>
+<p>Click the <strong>Add</strong> button in the upper right. The “Add Interface” window will pop up.</p>
+<p>In this window select the NIC you wish to configure from the “NIC:” drop down selection box.</p>
+<p>Give the NIC a name if you wish in the “Interface name:” text box.</p>
+<p>Do not tick the “DHCP:” tick box.</p>
+<p>Now assign the static IP address to the NIC in the “IPv4 Address:” text box (in Fester’s case this is 192.168.1.138).</p>
+<p>Select from the “IPv4 Netmask:” drop down menu (7) the correct value for the subnet mask of your private network (Fester’s is 24, and this will be correct for most cases).</p>
+<p>My ISP does not use IPv6 at present so there is nothing to configure for this.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190526-225616.png" alt=""></figure>
+<p>Now scroll down to the bottom of this window and click the “Save” button.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190526-225636.png" alt=""></figure>
+<p>If you attempt to configure a second NIC with an IP address on the same subnet as the first within the FreeNAS web GUI, you will get an error that looks like this:</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:b3acc44a9fcb37b3216afa9bdf9f87e3.png" alt=""></figure>
+<p>This is because multiple interfaces on the same subnet is an invalid configuration. For an explanation of why this is the case, see <a href="https://forums.freenas.org/index.php?resources/multiple-network-interfaces-on-a-single-subnet.45/">this resource</a> on the FreeNAS Forums.</p>
+<h2>Configuring Static IP Addresses Using The FreeNAS Console Setup</h2>
+<p>Start the IPMI remote console viewer, or connect a keyboard and monitor to your server. You should see a screen similar to this.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:c199f0688326360af94ea4a1ecec4386.png" alt=""></figure>
+<p>For “Enter an option from 1-14:” enter <strong>1</strong> and press the “Return/Enter” key.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:da91e7d5f10759fffe31a61dffe8eed4.png" alt=""></figure>
+<p>Input the number that corresponds to the NIC you wish to configure in “Select an interface (q to quit):” (1).</p>
+<p>Input <strong>n</strong> for “Delete Interface? (y/n):” (2).</p>
+<p>Input <strong>n</strong> for “Reset network configuration? (y/n):” (3).</p>
+<p>Input <strong>n</strong> for “Configure interface for DHCP? (y/n):” (4).</p>
+<p>Input <strong>y</strong> for “Configure IPv4? (y/n):” (5).</p>
+<p>Give the NIC a name if you wish at “Interface name:” (6). If you don’t want to give it a name then leave it empty and press the “Return/Enter” key.</p>
+<p>Type in the static IP address you require at “IPv4 Address:” (7).</p>
+<p>Now enter the subnet mask of the private network at “IPv4 Netmask:” (8).</p>
+<p>The console should confirm that the configuration has been saved with an “OK”.</p>
+<p>If you don’t need or use IPv6, then just type <strong>n</strong> at “Configure IPv6? (y/n):” (9).</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:d21ccbc5cdd0d6857d092dd9012fbb56.png" alt=""></figure>
+<p>That’s the static IP addresses assigned.</p>

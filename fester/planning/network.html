@@ -1,0 +1,90 @@
+<!--
+title: 2.6 Configuring & Upgrading your Network
+description: For decent performance you may need a network upgrade
+published: true
+date: 2024-11-13T13:11:45.674Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-04-07T13:20:06.956Z
+-->
+
+<p>Whether your existing network is going to give you the performance you need / want is going to be highly dependent on the amount of data you are trying to send over it, so we can only give some general guidelines here.</p>
+<p>Older network technology is pretty common in households who may not have upgraded their internet connection for some years.&nbsp;</p>
+<p>Equally, it is quite likely that they started with a network that was standard technology at the time (say 100Mb ethernet and Wifi G or N) but have subsequently had an internet speed increase but (for example) still retained the existing wifi.</p>
+<p>So, here are some simple guidelines to help you decide whether a network upgrade is needed and if so where and what…</p>
+<h2>Requirements</h2>
+<p>I would expect that most people have a mix of requirements across their home:</p>
+<ul>
+  <li>A normal place for using your PC(s) - say your lounge or home office - and you might need to download large files from the internet or from your NAS.</li>
+  <li>One or more Smart TVs or streaming boxes in specific rooms, and you may have a 1080p or 4K or even 8K TV and you don't want the screen to freeze whilst it buffers or get pop-up messages (from e.g. Plex) saying that there isn't enough bandwidth to stream properly.</li>
+  <li>Internet access from their mobile phone or tablet wherever they are in the house. If you are watching video on a large-screen tablet wherever you happen to be, you may need significant bandwidth, but generally speaking your mobile / tablet bandwidth requirements are going to be lower.</li>
+  <li>You NAS may or may not need fast internet access, but if you are streaming media from it then it almost certainly will need fast LAN access.</li>
+</ul>
+<h2>Analysis</h2>
+<ul>
+  <li>Work out which areas of your home need fast access to the NAS or to the internet. For these areas (rooms) you will want (say) Gb ethernet / wifi AC, whereas (say) 100Mb ethernet / wifi N may be sufficient everywhere else.</li>
+  <li>If your media streaming is 1080p or higher, you should probably be thinking of Gb ethernet / wifi AC for those rooms needing this.</li>
+  <li>If your internet connection is (say) 60Mb or more, then you probably should be looking for Gb ethernet connection to the LAN from your router.</li>
+  <li>If you need Gb ethernet anywhere, then you will need a Gb Ethernet switch. Your router may have a Gb Ethernet switch inside if it has sufficient ports for your needs, otherwise you may need to buy one.</li>
+  <li>If you are having a Gb switch, then you almost certainly also want a Gb port on your NAS hardware.</li>
+</ul>
+<p>These days, you should be able to see from hardware lights or from a web-GUI what speed each device on your network is achieving i.e<br>&nbsp;</p>
+<figure class="table" style="width:66%;">
+  <table>
+    <tbody>
+      <tr>
+        <th>TrueNAS SCALE</th>
+        <td style="width:300px;">
+          <figure class="image image_resized" style="width:100%;"><img src="/planning/planning-truenas-ethernet-speed.png"></figure>
+        </td>
+      </tr>
+      <tr>
+        <th>Windows</th>
+        <td style="width:300px;">
+          <figure class="image image_resized" style="width:100%;"><img src="/planning/planning-windows-wifi-speed.png"></figure>
+        </td>
+      </tr>
+      <tr>
+        <th>Android</th>
+        <td style="width:300px;">
+          <figure class="image image_resized" style="width:100%;"><img src="/planning/planning-android-wifi-speed.png"></figure>
+        </td>
+      </tr>
+      <tr>
+        <th>Ubiquiti Unifi (Network Manager)</th>
+        <td style="width:300px;">
+          <p>Device / Uplink (Wired)</p>
+          <figure class="image"><img src="/planning/planning-ubiquiti-wifi-speed.png"></figure>
+        </td>
+      </tr>
+      <tr>
+        <th>TP-Link Omada (Network Manager)</th>
+        <td style="width:300px;">
+          <p>Device / Uplink (Wired)</p>
+          <figure class="image"><img src="/planning/planning-tplink-wifi-speed.png"></figure>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<h2>Technologies</h2>
+<p>For wired connections, the connection between the switch and another device depends upon:</p>
+<ul>
+  <li>The capabilities of the equipment at either end. If both are Gb capable, then in theory the link is Gb capable.</li>
+  <li>The quality of the wiring. In theory you will need Cat-6 cabling for Gb ethernet, but in practice for the short distances you might have in your house, Cat-5 cables can still be fine, however in both cases the quality of how the RJ-45 plugs are fitted at either end (and the quality of the RJ-45 resistance to corrosion) can have a significant impact.</li>
+  <li>If your e.g. Wifi Access Points are PoE, then you will probably want a PoE switch which will be a little more expensive.</li>
+</ul>
+<p>Unmanaged Gb switches are not expensive. For example, at the time of writing in mid-2024, an <a href="https://www.amazon.com/dp/B07PFYM5MZ">8-port unmanaged Netgear Gb switch can be &nbsp;bought in the USA for $20</a> or a <a href="https://www.amazon.com/dp/B07SCGFY3P">5-port unmanaged Tenda P-E Gb switch for c. $30</a>.</p>
+<p>&nbsp;</p>
+<h6><span class="text-big">Links</span></h6>
+<figure class="table" style="width:100%;">
+  <table style="background-color:rgb(33, 33, 33);border-bottom:1px solid rgb(117, 117, 117);border-left:1px solid rgb(117, 117, 117);border-right:1px solid rgb(117, 117, 117);border-top:1px solid rgb(117, 117, 117);">
+    <tbody>
+      <tr>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;width:50%;">Previous - <a href="/fester/planning/applications">2.5 Other Applications &amp; Services</a></td>
+        <td style="background-color:rgb(23, 23, 23);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;text-align:center;"><a href="https://wiki.familybrown.org/fester/index">Index</a></td>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;text-align:right;width:50%;">Next - <a href="/fester/planning/virtualisation">2.7 Virtualisation</a></td>
+      </tr>
+    </tbody>
+  </table>
+</figure>

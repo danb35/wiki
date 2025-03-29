@@ -1,0 +1,34 @@
+<!--
+title: 1.1 So you think you want or need a NAS?
+description: But what exactly do you want it to do for you? 
+published: true
+date: 2024-08-01T23:15:10.013Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-04-11T10:03:10.973Z
+-->
+
+<h2>Basics</h2>
+<p>If you want to store some of your personal, family or business data on a shared device on your local area network (LAN) rather than on your own PC, then Network Attached Storage (NAS) is probably what you want. TrueNAS is a specialised NAS operating system developed over a period of more than a decade by ixSystems, and it provides functionality for storing and managing (potentially large amounts of) data, including having redundant disks so that the failure of one disk (or even 2 disks if you invest for that) doesn't result in any loss of data.</p>
+<p>You might be a home user who just wants some shared disk storage to use for backup <strong>copies</strong> of your personal data held on your PCs? Or perhaps also to use it as a Media server to stream video or audio to your home devices? Or maybe run other services such as a VPN? Or even more advanced stuff? But remember, Gomez Addams is a goth, and a post-war baby (American War of Independence rather than WW2) and definitely non-technical so don't expect to find details of “advanced stuff” here!!</p>
+<h2>Criticality</h2>
+<p>You might want this for your home environment, to store backup copies of data you hold on your PCs. In this case, if the server or disks fail, you still have a copy of the original files on your PCs. In this case, the NAS server isn't essential to the survival of your family.</p>
+<p>On the other hand, perhaps it is going to hold all your family pictures and home movies of your children growing up, and whilst it would only be a minor inconvenience if the NAS temporarily stops working, so long as the images and videos can survive any individual piece of hardware failing (such as a single disk), it probably won't be the end of the world.</p>
+<p>Finally, perhaps you are going to run your family business using this NAS to store all your business records, and not only is it important that your data is safeguarded, but also it will be a major disruption (or even kill your business entirely) if the server is unavailable for any extended period. In this case, the server is what NASA calls “mission critical”.</p>
+<p>These are very different requirements, needing significantly different server hardware and significantly different costs, so you really need to have a decent idea about what your requirements are before you go any further and start thinking about what hardware you need, what your network needs to look like, what software to use etc. much less start building something.</p>
+<h2>Redundant storage - no single point of failure</h2>
+<p>The other thing that you probably should have is a basic grasp of how TrueNAS provides disk redundancy using a file system called ZFS. There is an excellent <a href="https://www.truenas.com/community/resources/introduction-to-zfs.111/download">Introduction to ZFS</a> paper on the old archived TrueNAS Community forums and whilst it is a bit technical, we do recommend that you take the time to download and look at it because understanding the ZFS concepts now will help you a lot during the detailed planning and configuration stages of your NAS project. (Don't worry if you find this a bit much to digest fully at this stage - Pugsley will be shamelessly plagiarising parts of this document when you start to explain how to configure these features.)</p>
+<p><span class="text-big"><strong>And so onwards…</strong></span></p>
+<p>&nbsp;</p>
+<h6><span class="text-big">Links</span></h6>
+<figure class="table" style="width:100%;">
+  <table>
+    <tbody>
+      <tr>
+        <td style="width:50%;">Previous - <a href="/fester/introduction">1. Introduction</a></td>
+        <td style="text-align:center;"><a href="/fester/index">Index</a></td>
+        <td style="text-align:right;width:50%;">Next - <a href="/fester/introduction/so-you-want-a-nas">1.2 </a><a href="https://wiki.familybrown.org/fester/introduction/what-did-truenas-ever-do-for-you">What did TrueNAS ever do for you?</a></td>
+      </tr>
+    </tbody>
+  </table>
+</figure>

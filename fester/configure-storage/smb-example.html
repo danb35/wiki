@@ -1,0 +1,196 @@
+<!--
+title: Basic Starter Share
+description: 
+published: true
+date: 2024-11-13T22:44:03.486Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-01-13T13:09:46.294Z
+-->
+
+<h1>Fester's Very Basic One User/One Dataset Experimental Starter Share</h1>
+<p>Fester is still learning about shares and in particular share permissions.</p>
+<p>As Fester learns more I will try to pass on what I have learned by adding to this section and creating additional guides for more “real world” share scenarios (if time permits).</p>
+<p>This particular share will not be much use to most people, but it will get you going.</p>
+<p>Don’t forget the official FreeNAS guide has lots of information on shares. But for now, this will be a very basic share on a FreeNAS system and is designed to get you started so you can experiment with shares.</p>
+<h2>Share Scenario</h2>
+<p>This share is designed for one user who wants to access the same share from different client machines.</p>
+<p>The client machines will mostly be running Windows (or Mac OS X).</p>
+<p>It will utilise one dataset and show you how to share it.</p>
+<p>It is designed to get you started with shares so that you can experiment.</p>
+<h2>Share Creation and Configuration</h2>
+<h3>User Creation</h3>
+<p>Click “Accounts” in the left column, then “Groups”.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-121129.png" alt=""></figure>
+<p>Click the “Add” button. A new smaller window will pop up, where we can create a new Group.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-121356.png" alt=""></figure>
+<p>Leave the “Group ID:” at its default value of <strong>1001</strong>.</p>
+<p>Now type in a name for the new group in the “Name” text box (because this is a starter share from which you can experiment, Fester used <strong>TestGroup</strong>).</p>
+<p>Do not tick the “Permit Sudo:” or “Allow repeated GIDs:” tick boxes.</p>
+<p>Now click the “Save” button.</p>
+<p>If all goes well an entry should appear in the Account → Groups page. You should see something like this.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-121439.png" alt=""></figure>
+<p>Now click “Accounts” in the left column, then “Users”.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-121531.png" alt=""></figure>
+<p>Click the “Add” button. A new window will pop up, where we can create a new User.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-121744.png" alt=""></figure>
+<p>Leave the “User ID:” at its default value of <strong>1001</strong>.</p>
+<p>Now type in a name for the new user in the “Username” text box (because this is a starter share from which you can experiment, Fester used <strong>TestUser</strong>).</p>
+<p>Untick the “New Primary Group” tick box.</p>
+<p>The “Primary Group” drop down selection box should now become active. The group we created earlier (i.e. TestGroup) should be available for selection.</p>
+<p>Leave the “Home Directory” text box at the default <strong>/nonexistent</strong>.</p>
+<p>Leave “Shell” at its default setting.</p>
+<p>Type in a name for the new user (Fester chose <strong>Test User</strong>).</p>
+<p>Create a password in the “Password” text box and confirm it by retyping it in the “Confirm Password” text box (because this is a starter share to experiment with Fester just used <strong>12345</strong>. Make sure you use a stronger and less predictable password unless you want Planet Spaceball to steal all your air.)</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-121840.png" alt=""></figure>
+<p><i>Do not tick the “Disable password login:” you will lock yourself out of the share</i>.</p>
+<p>Leave the “Lock user:” and “Permit Sudo:” at their default settings of unticked.</p>
+<p>Fester will be accessing this account from a windows machine so I tick the “Microsoft Account:” tick box.</p>
+<p>Now click the “Save” button.</p>
+<h3>Dataset Creation</h3>
+<p>Now we need to create the dataset.</p>
+<p>Click “Storage” in the left column, then “Pools”.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-122135.png" alt=""></figure>
+<p>Click the three vertical dots to the right of your pool, and choose “Add Dataset” from the pop-up menu.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-122247.png" alt=""></figure>
+<p>A new smaller window will pop up for creating the dataset.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-122455.png" alt=""></figure>
+<p>In the “Name” text box give the share a name (because this is a starter share from which you can experiment, Fester used <strong>TestShare</strong>).</p>
+<p>Leave the “Compression level:” drop down selection box set to <strong>Inherit (lz4)</strong>.</p>
+<p>Set the “Share Type” to whatever suits the type of clients on your network (Fester has mainly Windows machines so I set this to <strong>Windows</strong>).</p>
+<p>Leave the “Case Sensitivity” drop down selection box and “Enable Atime” at their default settings as shown.</p>
+<p>Now click the “Save” button.</p>
+<p>The dataset will now be created and you should see something like this. If you don't see your newly-created dataset, click the <strong>&gt;</strong> next to your pool name.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-122555.png" alt=""></figure>
+<p>Click the three vertical dots to the right of your dataset, and select “Edit Permissions” from the pop-up menu.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-122715.png" alt=""></figure>
+<p>A new window will pop up for changing the permissions of the new dataset.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-123000.png" alt=""></figure>
+<p>Leave the “Apply User” tick box at its default setting (with a tick).</p>
+<p>In the “User” drop down selection box select the new user you created a moment ago (in Fester’s case this was TestUser).</p>
+<p>Leave the “Apply Group” tick box at its default setting (with a tick).</p>
+<p>In the “Group” drop down selection box select the new group you created a moment ago (in Fester’s case this was TestGroup).</p>
+<p>Set the “ACL Type” radio button to match the clients on your network (Fester has mostly Windows machines so I set this to <strong>Windows</strong>).</p>
+<p>Put a tick in the “Apply permissions recursively” tick box. When you do this, you'll see a pop-up warning box.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-123036.png" alt=""></figure>
+<p>Put a tick in “Confirm”, then click the “Continue” button.</p>
+<p>Now click the “Save” button.</p>
+<h3>Share Creation</h3>
+<p>Now we need to create a SMB share. On a network that utilises predominately Windows or macOS clients this is a good choice.</p>
+<p>Click “Sharing” in the left column, then “Windows (SMB) Shares”</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-123313.png" alt=""></figure>
+<p>Click the “Add” button.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-123436.png" alt=""></figure>
+<p>A new smaller window will pop up.</p>
+<p>In the “Path” section, you can type in the path (it's <code>/mnt/tank/TestShare</code> in this example), or click the folder icon on the left to browse.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-123601.png" alt=""></figure>
+<p>The “Path” text box should now display the chosen dataset.</p>
+<p>Do not tick the “Use as home share:” tick box at the moment.</p>
+<p>Give the share a name in the “Name” text box.</p>
+<p>Do not tick the “Allow Guest Access:” tick box.</p>
+<p>Now click the “Save” button.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-124042.png" alt=""></figure>
+<p>You will now be asked if you wish to enable the SMB share service. Click the “Cancel” button.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-124131.png" alt=""></figure>
+<p>You should now see your newly-created share.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-124204.png" alt=""></figure>
+<h3>SMB Configuration</h3>
+<p>Now click “Services” in the left column, and scroll down to find SMB.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-124302.png" alt=""></figure>
+<p>Click on the little pencil next to the “SMB” service.</p>
+<p>A new window will pop up.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-124551.png" alt=""></figure>
+<p>The NetBIOS name will already be present in the “NetBIOS Name” text box.</p>
+<p>In the “Workgroup” text box (3) type in the name of the workgroup you want to use on the client machines (Fester used <strong>T ESTWORKGROUP</strong> because it is an experimental starter share). If you don’t know your Workgroup then skip to the relevant section on how to do this.</p>
+<p>Type in a good name for the SMB share in the “Description” text box.</p>
+<p>Do not alter the default values of the “DOS charset”, the “Unix charset” and the “Log level:”.</p>
+<p>Leave the “Use syslog only” at its default (no tick).</p>
+<p>Make sure the “Local Master” tick box is ticked.</p>
+<p>Leave “Domain logons” unticked.</p>
+<p>Leave “Time Server for Domain” ticked.</p>
+<p>Leave “Guest account” at <strong>nobody</strong>.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-124619.png" alt=""></figure>
+<p>Do not put anything in the “File mask” and “Directory mask” text boxes unless you really understand UNIX permissions (Fester can’t help you here).</p>
+<p>Do not tick the “Allow Empty Password” tick box as this weakens the security of the share.</p>
+<p>Leave the “Unix Extensions” and “Zeroconf share discovery” tick boxes as they are.</p>
+<p>Untick the “Hostnames lookups:” tick box otherwise you will keep getting a name mismatch error.</p>
+<p>Leave the “Allow execute always” tick box in its default setting (with a tick).</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-124728.png" alt=""></figure>
+<p>Fester has no idea what the “Obey pam restrictions:” setting actually does. I just leave it ticked, but I have no idea how it should be set.</p>
+<p>Don’t tick any of the IP address text boxes in the “Bind IP Addresses” section.</p>
+<p>The “Idmap Range Low:” and “Idmap Range High” settings Fester does not touch as I don’t know what they do.</p>
+<p>Now click on the “Save” button.</p>
+<p><i>Do not turn on the SMB share service yet</i>. We first need to check if the Workgroup on the Windows client is set correctly.</p>
+<h3>Windows Client Configuration</h3>
+<p>Click on the “Start” button and go into the “Control Panel” in Windows and select “System and Security” (this was on a Windows 7 machine).</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:285f02e0814b9fc4ae4714f33f0b8c97.png" alt=""></figure>
+<p>Now click on “System”.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:ed861c178031eea4b90cdaac607cb5fd.png" alt=""></figure>
+<p>In the “System” page we can see the Workgroup is set to <strong>TWERKGROUP</strong> (1). This must be changed to match the Workgroup name you created in the SMB settings a moment ago (in Fester’s case this was TESTWORKGROUP).</p>
+<p>Click on “Change settings” blue text (2) to access the screen where we can change the Workgroup name.</p>
+<p>You will probably be asked for the administrator’s password at this point.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:07d89cce9015759fdc43adf1350bcbc8.png" alt=""></figure>
+<p>A smaller window will now pop up.</p>
+<p>Click on the “Change” button.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:ffe170aa4d994b093a3a19feb04f52a0.png" alt=""></figure>
+<p>Another window will now pop up.</p>
+<p>Change the text in the Workgroup text box (1) to the one you created in the SMB settings page (in Fester’s case this was <strong>TESTWORKGROUP</strong>) and click the “OK” button (2).</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:15d826e4f7390cf28c497a89ad06ffde.png" alt=""></figure>
+<p>Yet another window will pop up showing the Workgroup has now been changed.</p>
+<p>Click the “OK” button.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:351ba8f0155e35a283ef240ea8495d77.png" alt=""></figure>
+<p>A message window will now appear telling you the changes will be implemented when the computer is restarted.</p>
+<p>Click the “OK” button.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:29e80c4aaacfffcb06eb183c3689f9ac.png" alt=""></figure>
+<p>As can be seen from the next screen shot the Workgroup has been changed to “TESTWORKGROUP” (1).</p>
+<p>Click the “Close” button (2).</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:7977462292e4639533049286a0bcc4e7.png" alt=""></figure>
+<p>The system will now ask to be restarted. This must be done before going any further.</p>
+<p>Close any open windows, save and close any open programs, etc.</p>
+<p>Now click on the “Restart Now” button.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:a2a1f060b969997f6143576c85ae83bd.png" alt=""></figure>
+<p>That’s the Windows Workgroup configured.</p>
+<p>The client computer will now reboot, when it does log back into the FreeNAS GUI.</p>
+<h3>Enable SMB Service</h3>
+<p>Now click “Services” in the left column, and turn on the SMB share service.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-124936.png" alt=""></figure>
+<p>Give the server some time to get the share up and running, then it is time to map the network folder to a drive letter.</p>
+<h3>Mapping the share to a drive letter</h3>
+<p>On the Windows client click on the “Start” button and go into “Computer” (this was on a Windows 7 machine).</p>
+<p>This should bring up a window that shows all the hard drives and any other devices connected to the Windows computer.</p>
+<p>Click on the “Map Network Drive” button.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:ad8674121658f676c199d1522feae02f.png" alt=""></figure>
+<p>From the “Drive:” drop down selection box (1) chose the drive letter you wish to assign to the shared folder (Fester accepted the default <strong>Z</strong> letter).</p>
+<p>Now click the “Browse…” button (2).</p>
+<p>This will cause a window to pop up.</p>
+<p>Navigate to the location of the shared folder by clicking on the server (in this case TestNAS1) (3) and then clicking on the shared folder itself (in this case Fester’s TestShare) (4).</p>
+<p>Now click the “OK” button (5).</p>
+<p>The shared folder’s path name should appear in the “Folder:” text box (6).</p>
+<p>Tick the “Reconnect at logon” Tick box (7).</p>
+<p>Now click the “Finish” button (8).</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:6a37b15c4f92514567c5cce73bf14fad.png" alt=""></figure>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:4498ea47a21b30f4956d1f1715388dd7.png" alt=""></figure>
+<p>At this point another window will pop up and ask you for the username and password for the share.</p>
+<p>The name of the server is shown next to the text at the top of the window (1).</p>
+<p>Type in your username in the first text box (2) (in Fester’s case this was <strong>TestUser</strong>).</p>
+<p>Now type in your password in the second text box (3) (in Fester’s case this was <strong>test</strong>).</p>
+<p>If you don’t want to type in your username and password exact time you log into your client machine then tick the “Remember my credentials” tick box (4).</p>
+<p>Now click the “OK” button (5).</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:ae6daec7c9a542646db78245c8133142.png" alt=""></figure>
+<p>If all has gone well you should find yourself in the shared folder. Here you can create other folders and save files. Test this to make sure there are no permissions problems.</p>
+<p>The shared folder will now appear as another drive on your system and should look something like this.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:aa3ccd5f757d3220edf0042cb21196f3.png" alt=""></figure>
+<p>That’s the starter share done.</p>
+<p>If you want to play with the permissions for this share then feel free. It is the only real way to learn about these things.</p>
+<p>Remember the permissions for a share on Windows clients are in two parts.</p>
+<p>Part one is the “Share” permissions and part two is “NTFS” permissions.</p>
+<h3>Share Permissions</h3>
+<p>“Share” permissions relate to the permissions of the actual shared folder on the server.</p>
+<p>Be very careful changing these. The FreeNAS GUI will stop you making most catastrophic changes to the permissions that would otherwise break the share.</p>
+<p>However, if you go behind the GUI to the command prompt you could really mess things up. Do not use the <strong>chmod</strong> command here or you will probably break the share. Use the <strong>getfacl</strong> and <strong>setfacl</strong> commands.</p>
+<p>Another way you can alter the “Share” permissions is by using an application that runs on the client specifically for this purpose. I have not used any of these programs so I cannot comment on how useful or easy they are to use. However, you still need to be careful when using them because you are still going behind the FreeNAS GUI here.</p>
+<h3>NTFS Permissions</h3>
+<p>“NTFS” permissions relate to the permissions you set for the shared folder on the client side through the Windows OS.</p>
+<p>It is considered good practice (this is debateable) to leave the “Share” permissions as they are and lock down the share using NTFS permissions. This has the advantage of controlling the share regardless of how it is accessed (i.e. locally or via a network).</p>
+<p>It is much easier for the beginner and those that are unfamiliar with Linux or FreeBSD to configure permissions in this way as the permissions are controlled by a series of tick boxes (not cryptic commands). As long as you understand what each of the settings mean you should be fine.</p>
+<p>However, be careful as it is possible using the “Everyone” group to lock yourself out of the share (Fester did this and could not regain control of the share).</p>

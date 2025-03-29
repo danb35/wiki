@@ -1,0 +1,90 @@
+<!--
+title: 3.4 Configuring the BIOS
+description: Hints on configuring your server's BIOS/UEFI settings
+published: true
+date: 2024-08-04T20:41:26.650Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-01-13T11:15:27.702Z
+-->
+
+<p>We now need to configure the BIOS of the server motherboard.</p>
+<p>You can do this via a keyboard and monitor attached to the server or through IPMI as outlined in a previous section.</p>
+<h2>Summary (tl;dr)</h2>
+<p>Default BIOS settings will be fine in most cases--once you enter the Setup menu, you'll likely be able to press a function key to “load optimized defaults” or similar language. &nbsp;This will be a great place to start. &nbsp;Once you've done that, you'll want to check a few specifics:</p>
+<ul>
+  <li>Boot mode should be UEFI-only if possible</li>
+  <li>Secure Boot, if it's an option, should be disabled.</li>
+  <li>Any SATA interfaces should be set to AHCI</li>
+  <li>Watchdog should be disabled</li>
+  <li>You'll likely want to enable AES-NI and any virtualization features of your CPU</li>
+  <li>Set Boot order to boot from the correct device</li>
+</ul>
+<p>The settings and screen shots below are all taken from a Supermicro X10SRH-CLN4F, but are likely to be relevant to other systems as well.</p>
+<h2>Getting Into Your BIOS</h2>
+<p>In order to gain access to the motherboard’s BIOS the user is required to press a certain key at a certain point in time (usually as the POST messages are displayed).</p>
+<p>Consult your motherboard documentation to find out how to gain access to your motherboard’s BIOS.</p>
+<p>On Fester’s motherboard it is done by pressing the “DEL” key at a specific point.</p>
+<p>Incidentally, motherboards usually display a screen at some point during the POST process that tells you what key to press, something like this.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:94c6e18bdb6bd389e71de5c5b3531a94.png" alt=""></figure>
+<p>When you have access to the BIOS it’s time to configure it.</p>
+<p>Most BIOS settings are navigated using the “←→↑↓” keys.</p>
+<h2>BIOS Settings</h2>
+<h3>Quiet Boot</h3>
+<p>This setting is entirely optional.</p>
+<p>It determines if POST messages are displayed on screen or a graphic logo (so the POST messages are hidden from view) when you first turn on the server. Fester likes to see the POST messages so I disabled this function.</p>
+<p>Navigate to the “Advanced” page.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:d8522b3a234972889e6cae3bfea826b5.png" alt=""></figure>
+<p>Select the submenu “Boot Feature”.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:598b861c7cfd26d240bd607d2c616cc5.png" alt=""></figure>
+<p>Now go to “Quiet Boot” and select “Disabled”.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:121ebb481316a793fd256996eb91c0a4.png" alt=""></figure>
+<h3>Watch Dog Function</h3>
+<p>Remain in the “Advanced → Boot Feature” page and select “Watch Dog Function”.</p>
+<p>The watch dog function serves to reboot the server if it experiences an error it cannot recover from (and so hangs) for more than 5 minutes. It works by starting a 5 minute count-down timer when the server hangs. When this timer reaches zero the system is forced to reboot.</p>
+<p>When I first tried this in FreeNAS it caused my system to spontaneously reboot every 5 minutes even though the system was not hanging, so I disabled it.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:e67357e796d4f007ff943fd86ce3f70b.png" alt=""></figure>
+<h3>AES-NI Encryption</h3>
+<p>If you intend to encrypt the information on your storage drives then you need to enable this in the BIOS.</p>
+<p>This can be useful as it allows a failing HDD in a vdev to be discarded without worrying about wiping the information before disposal.</p>
+<p>Go to the “Advanced” page.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:d8522b3a234972889e6cae3bfea826b5.png" alt=""></figure>
+<p>Now navigate to “CPU Configurtion”.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:1a1fa05bff7f91bae574f5788093b363.png" alt=""></figure>
+<p>Then scroll down (it is towards the bottom) to “AES-NI” and select “Enable”.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:3a6c951479ea3763d4012e3156539ff9.png" alt=""></figure>
+<h3>AHCI SATA Configuration</h3>
+<p>There are certain advantages to putting the SATA controller in AHCI mode. By enabling this option any SATA devices connected to the SATA ports on the motherboard will operate in AHCI mode.</p>
+<p>Go to the “Advanced” page.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:d8522b3a234972889e6cae3bfea826b5.png" alt=""></figure>
+<p>Now select “SATA Configuration” from the submenu.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:96792cf3d16846247823152940e7d3e8.png" alt=""></figure>
+<p>Now navigate to “Configure SATA as” and select “AHCI” from the options.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:8ea5f6daec072fd9fb0416c3da60c4ec.png" alt=""></figure>
+<h3>IPMI Configuration</h3>
+<p>You do not have to configure the IPMI of the server through the BIOS. You can use the IPMI web GUI which I will cover in a later section. However, if you decide to do this through the BIOS the following should help.</p>
+<p>Go to the IPMI page.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:d9335772f5556d00da6748d7e811cc8c.png" alt=""></figure>
+<p>Now select “BMC Network Configuration” (BMC=Board Management Controller and is the hardware through which IPMI is managed and implemented on the motherboard).</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:d5cf4e80c2f921f4618792fb19c62814.png" alt=""></figure>
+<p>Navigate to the “Update IPMI Lan Configuration” and select “Yes” (1). At this point the greyed out text below should become active (it may go from grey to blue) allowing you to input your own values.</p>
+<p>In “Configuration Address Source” select “Static” (2).</p>
+<p>In the “Station IP Address” text box (3) type in an IP address of your choosing. Make sure you give it an IP address that is outside the range of the DHCP server in the router (Fester used 192.168.0.2).</p>
+<p>Now put in the subnet mask of the private network which you obtained earlier in the “Subnet Mask” text box (4) (Fester’s was 255.255.255.0).</p>
+<p>Now place the Default Gateway IP address in the “Gateway IP Address” text box (5) if it is not already there.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:130a9c9c6f0303988f9d1de18f5be876.png" alt=""></figure>
+<p>You have now assigned a static IP address to the IPMI web GUI. We will now always know where to find the IPMI GUI and it will not change even when the router gets rebooted.</p>
+<h3>Boot Order Configuration</h3>
+<p>FreeNAS can be installed in a number of ways. It can be installed from a bootable CD/DVD, a bootable USB stick or even across a network using PXE.</p>
+<p>When you boot the server and watch the various pages of information come and go as the server goes through its POST, you may have noticed that a certain key press at the correct time will allow you to boot from an attached storage device of your choice temporarily (i.e. just that one time).</p>
+<p>This is fine, but if you install FreeNAS from one particular type of storage device regularly then it might be more convenient to change the boot order of the server.</p>
+<p>The boot order is the order in which the motherboard’s BIOS will look for an OS or something it can boot from, on the various storage devices connected to it. This change is persistent (i.e. it applies each time the server is booted).</p>
+<p>The regular method by which you install FreeNAS will determine the boot order, if that’s how you want to do things.</p>
+<p>Fester favours a USB stick so “USB Key” must be the first device selected in the boot order list. Why? If we had the HDD/SDD (with the installed FreeNAS OS on it) listed before the USB key (with the bootable FreeNAS installation program on it) then if we want to reinstall the FreeNAS OS again, a problem would occur. The BIOS will encounter the installed FreeNAS OS on the HDD/SDD before it encounters the bootable FreeNAS installation program on the USB key and reinstallation will not take place (unless you temporarily alter the order through the key press at POST boot up method).</p>
+<p>So if you would like to alter the boot order (it’s completely optional) this is how you do it.</p>
+<p>Select the “Boot” page.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:8722dc20723bc7a90dd8490ce6e3137e.png" alt=""></figure>
+<p>Navigate to “Dual Boot Order #1” (“Boot Mode Select” should be set to “Dual” or this part will look different) and select “USB Key” (1), in Fester’s case this is where the bootable FreeNAS intallation program will reside.</p>
+<p>Notice how the storage device that contains the actual FreeNAS OS appears further down the list, in Fester’s case it’s the Samsung SSD (2).</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:ff4eb858ec8001892e675662791d0c9b.png" alt=""></figure>
+<p>There doesn’t seem to be a lot of information on the configuration of a server BIOS for a FreeNAS installation. I suspect there are other essential settings that need to be made (e.g. power management, etc), but this is all I could find. If I have missed any please let me know and I will try to include them in the guide or you could replace this or any section with your own?</p>

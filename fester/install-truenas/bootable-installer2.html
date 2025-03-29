@@ -1,0 +1,37 @@
+<!--
+title: Writing an Image File to a USB Stick
+description: 
+published: true
+date: 2024-04-07T17:00:15.313Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-01-13T12:26:06.303Z
+-->
+
+<h1>Write an Image File to a USB Stick</h1>
+<p>Many of the procedures in this guide require writing an image file (usually the file name ends in .img or .iso) to a USB stick, so that you can boot from that stick. Here's how you can do that.</p>
+<h2>Windows</h2>
+<p>Download the program “<a href="https://sourceforge.net/projects/win32diskimager/">Win32DiskImager</a>” to your Windows machine.</p>
+<p>Now run the “Win32DiskImager” installer under an administrator’s account or right click on it and run as an administrator (have your administrator’s password ready).</p>
+<p>When the program is installed run it under an Administrator’s account or right click and run as Administrator.</p>
+<p>Now insert the USB stick you intend to use and wait for the computer to recognise it.</p>
+<p>Click the small folder icon (1) and navigate to the location of the image file and select it. Now select the USB device by clicking the drop down selector under “Device” (2) if it isn’t already selected.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:0f9faf9f16c3183f480b46f146ccff9c.png" alt=""></figure>
+<p>If you cannot see the image file and you know you are in the correct location then click on the drop down selector that determines the file type to be displayed (1) (this will likely be initially set to display only IMG files, if your image is in the form of an ISO file it won’t be shown) and chose the wild card “*.*” (2) this will display all files present.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:3f976f2a7f2c455880d4c42a5372ee59.png" alt=""></figure>
+<p>The image file should now appear.Now select it (1) and click “Open” (2).</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:e7c4f7a0b4a93fc7bcce5f72d66c64e2.png" alt=""></figure>
+<p>With the image file now loaded click on the “Write” button to begin making the bootable USB installer.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:c937f835279cd35851b8c4a55f73eb43.png" alt=""></figure>
+<p>At this point a small window will pop up giving a “confirm write” warning message, click the “Yes” button to proceed.</p>
+<p>The image file will now be written to your USB stick.</p>
+<p>When the process completes successfully a small window will pop up with “Write Successful” displayed. Click the “OK” button.</p>
+<p>Close the application and eject the USB stick.</p>
+<h2>Mac OS X</h2>
+<p>I can’t help you here as I don’t know how and I don’t own a Mac.</p>
+<p>However, the <a href="http://doc.freenas.org/9.10/freenas_install.html#on-os-x">FreeNAS documentation</a> has a full description of how to do this.</p>
+<p>If anyone would like to provide the relevant information with copyright free screen shots I would be happy to include them in this guide or you could replace this or any section with your own?</p>
+<h2>Linux, FreeBSD, or other Unix-like OS</h2>
+<p>I can’t help you here as I don’t know how.</p>
+<p>However, the <a href="http://doc.freenas.org/9.10/freenas_install.html#on-freebsd-or-linux">FreeNAS documentation</a> has a full description of how to do this (but no screen shots).</p>
+<p>If anyone would like to provide the relevant information with copyright free screen shots I would be happy to include them in this guide or you could replace this or any section with your own?</p>

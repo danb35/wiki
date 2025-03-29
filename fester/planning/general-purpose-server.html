@@ -1,0 +1,245 @@
+<!--
+title: 2.3.5 Using a General Purpose Server
+description: Server systems designed for small- to -large scale datacenters may be what you need - and used equipment can be surprisingly affordable.
+published: true
+date: 2024-12-27T15:15:36.939Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-05-13T22:18:16.097Z
+-->
+
+<p>TrueNAS is at heart a file server, and using general purpose server hardware can be a good choice because they are usually designed with both reliability and significant numbers of disks in mind.&nbsp;</p>
+<p><strong>Note:</strong> What we are talking about here are systems specifically designed by the manufacturer from the ground upwards to be servers. We are NOT considering generic desktop or tower PCs that can be used to run a server operating system like TrueNAS.</p>
+<p>Such servers usually support ECC memory, significant amounts of memory and numbers of hard drives, and often also support hot-swappable disks where you can remove a failed disk and replace it with a new one whilst your server remains running.&nbsp;</p>
+<p>If your NAS is for use in a business where loss of data would be a disaster, and where server downtime equates to business downtime, then it is highly recommended that you use server-grade hardware.&nbsp;</p>
+<p>Such servers also offer remote hardware management - where you can connect over the network even if the main server is powered off and e.g. power up the server and configure the BIOS. If you are considering running your TrueNAS server remotely for e.g. remote backups to another location, then this is a highly recommended capability.</p>
+<p><strong>Note:</strong> Some consumer grade specialised NAS boxes (from the likes of Synology, QNAP, TerraMaster and ilk) do not qualify under the above definitions because their memory may not be ECC or may not be large enough, or because they have insufficient drive slots or because they don't provide remote management.</p>
+<p>If you only need (say) between 4x and 8x drive bays then e.g. the HPE Microserver product line can meet your need.</p>
+<p>But if you need more drive bays than these micro-servers can provide i.e. 8x to 12x drive bays, then you are starting to look at rack mounted servers and whilst buying these new with all the necessary components will get you a system that is an exact match for your needs, this can easily get quite expensive. An alternative that many users find attractive is to buy a used server, particularly since the processor power needed by TrueNAS use as a file server can easily be met by older, lower CPU-power systems.</p>
+<h2>Pros and Cons</h2>
+<p>Everything in life has its pros and cons, and the choice of hardware for your NAS is no exception.</p>
+<h3>Pros</h3>
+<ul>
+  <li>Server hardware is designed to run 24x7 for many years. It's likely to work well for as long as you care to use it.</li>
+  <li>Servers will usually include useful features like ECC RAM and remote management, which other hardware doesn't ordinarily include.</li>
+  <li>Used equipment gives lots of bang for the buck compared to buying new.</li>
+  <li>Particularly with rack-mount servers, you'll get the greatest possible number of drives in the least possible space.</li>
+  <li>If you are creating a new small-office IT environment, you will likely need other equipment (such as a network switch, a UPS, a firewall appliance etc.) and these can share a rack with your server. A (lockable) rack can also provide increased physical security.</li>
+</ul>
+<h3>Cons</h3>
+<ul>
+  <li>Many used rack-mount servers in particular are two-socket systems, populated with two fairly powerful multi-core CPUs. The CPU requirements for a file server are really very modest, and so most used servers are going to have more CPU power than you will need simply for managing NAS storage. However, if you plan to run lots of applications or virtual machines this may be useful, because applications and especially VMs will require additional CPU capacity. This isn't inherently a problem, however...</li>
+  <li>Partially as a result of the above, these sorts of servers are often somewhat power-hungry. The CPUs take power, sometimes over 100W each, the cooling fans take power, lots of spinning disks take power. If energy-efficiency is important to you, this could be a serious drawback.</li>
+  <li>All those watts are going to generate heat, which needs airflow to remove it from the server and then often air-conditioning to remove the heat from the building. Ensuring sufficient airflow through a densely-packed chassis (as rack-mount systems tend to be) generally results in noise, so expect general purpose servers to be noisier than appliances. If you are thinking about reducing the noise by replacing the stock fans with quieter fans e.g. Noctua or similar, then think carefully about doing so because getting it wrong and reducing the airflow may overheat and cook your system.</li>
+</ul>
+<h2>Hardware RAID controllers</h2>
+<p>Hardware RAID controllers typically consolidate disks into RAID arrays and present to the operating several real disks combined into one larger logical and redundant disk.</p>
+<p>TrueNAS / ZFS is a software RAID technology which does not need hardware RAID and expects disks to be presented natively (including their firmware capabilities like SMART and model/serial-number details).</p>
+<p>Used servers will often come with a hardware RAID controller, and if you want to use this you will need to be able to disable the RAID functionality and switch it so that it presents the drives in their native form. Not all hardware RAID controllers can do this.</p>
+<p>So if you are thinking of buying a server with a hardware RAID controller, check that it can be configured to present drives natively before buying. Most LSI/Broadcom/Avago Host Bus Adapters (HBAs) can do this e.g. most LSA HBAs can have firmware flashed that puts them into "IT Mode".&nbsp;</p>
+<p>Alternatively motherboard native SAS/SATA ports or NVMe slots are also fine.</p>
+<h2>Manufacturer recommendations</h2>
+<p><strong>Note:</strong> <a href="https://forums.truenas.com/u/dan">The initial author of this page (Dan Addams)</a> own experience with server hardware has mainly been with Dell and Supermicro equipment, and a little bit with HPE's MicroServers. There are many other big-name manufacturers that make Intel/AMD enterprise servers (for example Hewlett Packard (HP) or Lenovo) but the author doesn't have any experience with these.</p>
+<h3>Dell</h3>
+<p>The Dell 13th-generation (model number R/Tx30 - R for rack-mounted, T for tower) servers represent the earliest systems you'd really want, and there are a few good choices here:</p>
+<ul>
+  <li>The T430 is a modestly-priced tower server which can be configured with up to 8 3.5" drive bays</li>
+  <li>The R630 is a nice 1U rack server with up to 10 2.5" drive bays, four of which can be configured for U.2 NVMe--a good choice for an all-SSD NAS</li>
+  <li>The R730/R730xd is a 2U unit which can be configured with either 12 3.5" bays, or 24 2.5" bays</li>
+</ul>
+<p>All of these systems have Dell's iDRAC remote management. The web interface is slow, but it gives a HTML5 remote console (no need for Java or other browser plugins). The built-in lifecycle controller also allows for a bulk update of all the system firmware--BIOS, iDRAC, PSU, HBA, NIC, etc. It will download it all from Dell and install it, automagically.</p>
+<p>With Dell systems, you're going to want the HBA330 controller, not one of their PERC RAID controllers.</p>
+<p>If you want something newer, similar choices are available with Dell's 14th-generation models (model numbers of R/Tx40), though naturally the prices will be higher.</p>
+<h3>Supermicro</h3>
+<p>Supermicro is probably the best choice for larger systems; their CSE847 chassis models give you 36 3.5" drive bays in 4U of rack space. They sell a variety of pre-built servers, as well as individual components from which you can assemble (or upgrade) your own. Some specific pointers for Supermicro systems include:</p>
+<ul>
+  <li>You want a SAS expander backplane. Their -A backplanes can be OK on a smaller system (e.g., 2U, 12-bay, which would require three SAS cables to the backplane); the -TQ backplanes (which require individual SATA cables for each bay) should absolutely be avoided.</li>
+  <li>You want an X10-series or newer motherboard. Not only are the X9 series getting long in the tooth; their remote management system requires Java for the remote console. The X10 and newer motherboards can use HTML5 for the remote console, making it much easier to use with modern browsers.</li>
+  <li>If you can get PSUs with SQ in the model number, those are Supermicro's "super-quiet" line and will reduce noise levels</li>
+</ul>
+<h3>HPE MicroServers</h3>
+<p>HPE has made several generations of MicroServers--physically small servers with four 3.5" drive bays (which are <strong>not</strong> hotswap-capable according to their documentation), single CPU sockets, fairly low power consumption, and fairly low noise levels, but that nonetheless support ECC RAM and remote management, features that are usually limited to much higher-end hardware.</p>
+<p>The biggest limitation of the MicroServers today is an interface for a boot device. They have an internal USB port that can be used for a small USB SSD<sup>[</sup><a href="#footnotes"><sup>1</sup></a><sup>]</sup>, but none of them - not even the newest - have m.2 sockets available on the motherboard. <strong>Note:</strong> This page is primarily aimed at &nbsp;- however for home use this may be acceptable.&nbsp;</p>
+<p>The Gen 8 models have a fifth SATA port for the built-in optical drive, but the system can't boot using that port, so it isn't available as a boot device without playing around with Grub a bit. (That said, you could probably put a non-boot SATA drive on this port and use one of the other ports for your boot drive.</p>
+<p>In short, they're nice, compact (in the case of the Gen 10+, rivaling the size of a commercial four-bay NAS), quiet servers, but unless you are prepared to use a USB SSD as a boot drive, there are probably better alternatives.</p>
+<h2>An example from c. 2016…</h2>
+<p>For those who don’t have the time, here is a specific list of hardware for a quiet FreeNAS server I (i.e., Uncle Fester) made in early January 2016.</p>
+<p>The intention was to build an expandable, 8 bay, quiet TrueNAS system that would be situated in the living room. (The “quiet” part was very important as I did not want to upset the psychopath I share a house with, although she preferred to be introduced to people as my girlfriend.)</p>
+<h3>Parts List</h3>
+<figure class="table">
+  <table style="background-color:rgb(33, 33, 33);border-bottom:1px solid rgb(117, 117, 117);border-left:1px solid rgb(117, 117, 117);border-right:1px solid rgb(117, 117, 117);border-top:1px solid rgb(117, 117, 117);">
+    <thead>
+      <tr>
+        <th style="background-color:rgb(66, 66, 66);border-bottom:none;border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;"><strong>Item&nbsp;</strong></th>
+        <th style="background-color:rgb(66, 66, 66);border-bottom:none;border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;"><strong>Description&nbsp;</strong></th>
+        <th style="background-color:rgb(66, 66, 66);border-bottom:none;border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;"><strong>Qty&nbsp;</strong></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">Processor&nbsp;</td>
+        <td style="background-color:rgb(23, 23, 23);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">Intel Xeon E5-2620v3&nbsp;</td>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">1&nbsp;</td>
+      </tr>
+      <tr>
+        <td style="background-color:rgb(46, 46, 46);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">CPU Heatsink/Fan&nbsp;</td>
+        <td style="background-color:rgb(41, 41, 41);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">Noctua NH-U12DX i4 High Performance Intel Xeon CPU Cooler &amp; 120mm Fan&nbsp;</td>
+        <td style="background-color:rgb(46, 46, 46);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">1&nbsp;</td>
+      </tr>
+      <tr>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">Motherboard&nbsp;</td>
+        <td style="background-color:rgb(23, 23, 23);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">Supermicro X10SRH-CLN4 Single socket R3 (LGA 2011) 8 SAS3 12Gb and 10 SATA 3 6GB&nbsp;</td>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">1&nbsp;</td>
+      </tr>
+      <tr>
+        <td style="background-color:rgb(46, 46, 46);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">Memory&nbsp;</td>
+        <td style="background-color:rgb(41, 41, 41);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">Samsung 8GB DDR4 2133MHz ECC Registered Server Memory - M393A1G40DB0&nbsp;</td>
+        <td style="background-color:rgb(46, 46, 46);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">2&nbsp;</td>
+      </tr>
+      <tr>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">Graphics Card&nbsp;</td>
+        <td style="background-color:rgb(23, 23, 23);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">Not needed&nbsp;</td>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">&nbsp;</td>
+      </tr>
+      <tr>
+        <td style="background-color:rgb(46, 46, 46);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">OS HDD&nbsp;</td>
+        <td style="background-color:rgb(41, 41, 41);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">256GB Samsung 850 PRO&nbsp;</td>
+        <td style="background-color:rgb(46, 46, 46);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">1&nbsp;</td>
+      </tr>
+      <tr>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">Data HDDs&nbsp;</td>
+        <td style="background-color:rgb(23, 23, 23);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">WD Red 4 TB&nbsp;</td>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">8&nbsp;</td>
+      </tr>
+      <tr>
+        <td style="background-color:rgb(46, 46, 46);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">HBA Card&nbsp;</td>
+        <td style="background-color:rgb(41, 41, 41);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">Not needed&nbsp;</td>
+        <td style="background-color:rgb(46, 46, 46);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">&nbsp;</td>
+      </tr>
+      <tr>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">Optical Drive&nbsp;</td>
+        <td style="background-color:rgb(23, 23, 23);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">Not needed&nbsp;</td>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">&nbsp;</td>
+      </tr>
+      <tr>
+        <td style="background-color:rgb(46, 46, 46);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">Operating System&nbsp;</td>
+        <td style="background-color:rgb(41, 41, 41);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">Not needed&nbsp;</td>
+        <td style="background-color:rgb(46, 46, 46);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">&nbsp;</td>
+      </tr>
+      <tr>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">PSU&nbsp;</td>
+        <td style="background-color:rgb(23, 23, 23);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">Seasonic AU-650x&nbsp;</td>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">1&nbsp;</td>
+      </tr>
+      <tr>
+        <td style="background-color:rgb(46, 46, 46);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">Case&nbsp;</td>
+        <td style="background-color:rgb(41, 41, 41);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">Fractal Design Define XL R2 Titanium Gray&nbsp;</td>
+        <td style="background-color:rgb(46, 46, 46);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">1&nbsp;</td>
+      </tr>
+      <tr>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">Rails&nbsp;</td>
+        <td style="background-color:rgb(23, 23, 23);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">Not Needed&nbsp;</td>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">&nbsp;</td>
+      </tr>
+      <tr>
+        <td style="background-color:rgb(46, 46, 46);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">Case Fans (Front)&nbsp;</td>
+        <td style="background-color:rgb(41, 41, 41);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">Noctura NF-A14&nbsp;</td>
+        <td style="background-color:rgb(46, 46, 46);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">2&nbsp;</td>
+      </tr>
+      <tr>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">Case Fans (Back)&nbsp;</td>
+        <td style="background-color:rgb(23, 23, 23);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">Noctura NF-A14&nbsp;</td>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">1&nbsp;</td>
+      </tr>
+      <tr>
+        <td style="background-color:rgb(46, 46, 46);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">Gigabit Network Switch&nbsp;</td>
+        <td style="background-color:rgb(41, 41, 41);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">Not needed&nbsp;</td>
+        <td style="background-color:rgb(46, 46, 46);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">&nbsp;</td>
+      </tr>
+      <tr>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">UPS&nbsp;</td>
+        <td style="background-color:rgb(23, 23, 23);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">Eaton 5SC 1000i&nbsp;</td>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">1&nbsp;</td>
+      </tr>
+      <tr>
+        <td style="background-color:rgb(46, 46, 46);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">SAS Cable&nbsp;</td>
+        <td style="background-color:rgb(41, 41, 41);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">LSI 0.6m Cable SFF8643 to X4 SATA CBL-SFF8643-SATASB-06M (SFF8643 to X4 SATA)&nbsp;</td>
+        <td style="background-color:rgb(46, 46, 46);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">2&nbsp;</td>
+      </tr>
+      <tr>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">Server Rack&nbsp;</td>
+        <td style="background-color:rgb(23, 23, 23);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">Not needed&nbsp;</td>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">&nbsp;</td>
+      </tr>
+      <tr>
+        <td style="background-color:rgb(46, 46, 46);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">KVM Switch&nbsp;</td>
+        <td style="background-color:rgb(41, 41, 41);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">Not needed&nbsp;</td>
+        <td style="background-color:rgb(46, 46, 46);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">&nbsp;</td>
+      </tr>
+      <tr>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">SATA Cable&nbsp;</td>
+        <td style="background-color:rgb(23, 23, 23);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">&nbsp;</td>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">1&nbsp;</td>
+      </tr>
+      <tr>
+        <td style="background-color:rgb(46, 46, 46);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">Bay Adaptor&nbsp;</td>
+        <td style="background-color:rgb(41, 41, 41);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">&nbsp;</td>
+        <td style="background-color:rgb(46, 46, 46);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">1&nbsp;</td>
+      </tr>
+      <tr>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">Molex-to-SATA Adaptor&nbsp;</td>
+        <td style="background-color:rgb(23, 23, 23);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">&nbsp;</td>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;">1&nbsp;</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>&nbsp;</p>
+<figure class="image image_resized image-style-align-right" style="width:10.89%;"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:fester.jpg" alt="fester.jpg"></figure>
+<h3>Outcome</h3>
+<p>The whole thing came to just over £2,600 (2016 GBP) including a UPS (when the bill came in I slightly soiled myself).&nbsp;</p>
+<p>If you decide to go with this very expensive build then it should look something like this when completed.</p>
+<p>&nbsp;</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td>
+          <figure class="image image_resized" style="width:100%;"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?w=800&amp;tok=1217a3&amp;media=fester:good_server_1.jpg" alt=""></figure>
+        </td>
+        <td>
+          <figure class="image image_resized" style="width:100%;"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?w=800&amp;tok=7cc549&amp;media=fester:good_server_2.jpg" alt=""></figure>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>However, if you let ferrets build your server you will get this:</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:fce96dd14aef9159a2ab8ec39603cdab.png" alt=""></figure>
+<p>&nbsp;</p>
+<h3>Some notes</h3>
+<ul>
+  <li>If you don’t need a quiet system you can dispense with the costly Noctua fans and use the ones that come as standard in the case.</li>
+  <li>Also, rack mounting your equipment makes things very neat and tidy, but I couldn’t find a rack mount case that accommodated the Noctua fans.</li>
+  <li>The SSD capacity (in this case 256GB) is excessively large. If you can get smaller you will save some money. As long as it is 16GB or more you should be fine.</li>
+  <li>The big expense with this system was the storage hard drives. If you don’t need 8 of these then the total cost of the server can be significantly reduced.</li>
+  <li>I do not recommend the SilverStone SST-SDP10B bay adaptor. In the words of my old Professor, “Bag of shite!” He was a plain speaking man.</li>
+</ul>
+<h2>Summary</h2>
+<p>In brief, a used rack-mount server can be a good choice if you don't mind the power consumption and noise, i.e. if you can locate it away from your living/office areas.</p>
+<p>If you don't need the drive density, a used tower server (e.g., Dell PowerEdge T430) or mini-server (e.g., HPE MicroServer) avoids most of the cons, but also limits the benefit from the pros. It will still give you useful server features, and solid bang-for-buck, but won't give you the storage density of a rack-mount system.</p>
+<h2>Links</h2>
+<figure class="table" style="width:100%;">
+  <table>
+    <tbody>
+      <tr>
+        <td style="width:50%;">Previous - <a href="/fester/planning/nas-appliances-diy">2.3.4 Building a DIY NAS appliance</a></td>
+        <td style="text-align:center;"><a href="/fester/index">Index</a></td>
+        <td style="text-align:right;width:50%;">Next - <a href="/fester/planning/tower-pc">2.3.6 What About Using an Ordinary Tower PC?</a></td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<h6>&nbsp;</h6>
+<h6>Footnotes</h6>
+<p><span class="text-small"><sup>[1]</sup> For high-reliability business use, using a USB SSD (different from USB Flash Drives - don't make this mistake)&nbsp;as a boot drive is absolutely <strong>NOT</strong> recommended because a) it will significantly reduce system reliability, and b) using USB drives (for boot or any other purpose) are officially <strong>not</strong> supported by ixSystems. For home use, if you only need 2 or 3 slots for your hard drives, you will probably be better off using one of the SATA ports for a SATA SSD boot device instead, but a USB SSD (but not a Flash drive) will work if you accept the lower reliability and loss of some level of support.</span></p>

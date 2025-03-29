@@ -1,0 +1,33 @@
+<!--
+title: Creating a Periodic Snapshot Task
+description: 
+published: true
+date: 2024-04-07T16:55:56.940Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-01-13T13:03:09.079Z
+-->
+
+<h1>Creating a Periodic Snapshot Task</h1>
+<p>This is an extremely useful function within TrueNAS. It allows you to travel back in time (without the use of a DeLorean car) to a point when that important file you deleted was still on your TrueNAS system (and Fester’s restraining order was not yet in place). OK I am exaggerating about time travel, but this marvelous function does work a bit like that. It takes a snapshot of the volume or any dataset on the TrueNAS system at a particular point in time. A snapshot in this case is basically a file that contains within it all and any changes to the volume or dataset that have occurred since the last snapshot. This allows the volume or dataset to revert back to a particular point in time. A corollary of this is that the files within that volume or dataset also revert back to the condition they were in at the time the snapshot was taken.</p>
+<p>Imagine for example you deleted a file from your TrueNAS system two days ago and then discover you now need that file. If a snapshot is available that has the file still present you can roll the volume or dataset back to that time and recover the file using the relevant snapshot (that’s freaking cool!).</p>
+<p>If you want to set up a periodic snapshot here is how.</p>
+<p>Click “Tasks” in the left column, then “Periodic Snapshot Tasks”.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-113822.png" alt=""></figure>
+<p>Click on the “Add” button.</p>
+<p>A new window should now pop up.</p>
+<p>Fester wants 1 snapshot to be taken every day between the hours of 12:00 midnight and 1:00am in the morning. The server should not be busy at that time (unlike Fester who can be found in the nearest Discotheque in black crush velvet flares and a tangerine orange shirt (with matching cravat) dancing the night away, or as the manager refers to it “frightening the customers”, cheeky sod!).</p>
+<p>Select the pool or dataset you want from the “Pool/Dataset:” drop down selection box (in Fester’s case this was <strong>tank</strong>).</p>
+<p>Put a tick in the “Recursive” tick box. <strong>Important:</strong> A recursive snapshot includes snapshots of all the “child” datasets within the pool or dataset you selected above. If the Recursive box is not ticked, this snapshot task <strong>will not</strong> include child datasets.</p>
+<p>Determine how long you want the system to keep the snapshot before deleting it by typing a number into the “Lifetime” text box and then selecting the duration unit from hours, days, weeks, months, etc from the drop down selection box (Fester’s snapshot will last 2 weeks before the system deletes it).</p>
+<p>Select the time after which the system will allow a snapshot to be taken in the “Begin” drop down selection box.</p>
+<p>Select the cut off time after which the system is prohibited from making a snapshot from the “End” drop down selection box.</p>
+<p>Select the minimum interval between snapshots from the “Interval” drop down selection box.</p>
+<p>Next put a tick next to every day of the week in the “Day of week” section. By default only weekdays are checked, not weekend days.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-114336.png" alt=""></figure>
+<p>Make sure the snapshot is enabled by ticking the “Enabled” tick box.</p>
+<p>Now click the “Save” button.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-115035.png" alt=""></figure>
+<p>An entry should be created in the Periodic Snapshot Tasks window and you should see something like this.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-115058.png" alt=""></figure>
+<p>That’s periodic snapshots done.</p>

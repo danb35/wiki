@@ -1,0 +1,134 @@
+<!--
+title: 2.4 Storage Services & Protocols
+description: What protocols are you going to use to access your data over the network
+published: true
+date: 2024-08-07T11:18:54.933Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-04-07T13:16:59.969Z
+-->
+
+<p>This section is simply here to determine what protocols you are going to use to access your NAS and do some high-level planning about how to handle e.g. shares and security.</p>
+<p>We are going to cover three types of protocol:</p>
+<ol>
+  <li>Straight forward file sharing, where you access your files from the NAS in (almost) the same way you access files on your own PC.</li>
+  <li>Batch file transfer, whereby a program on your PC (or other device) copies files from one device to another automatically.</li>
+  <li>Application data sharing - where a server app running on TrueNAS shares data with an app running on your PC or other device (e.g. streaming)</li>
+</ol>
+<p>The protocols we are going to cover for each of these are as follows:</p>
+<ol>
+  <li><a href="#file-sharing">File sharing</a>
+    <ul>
+      <li><a href="#smb">SMB</a></li>
+      <li><a href="#nfs">NFS</a></li>
+      <li><a href="#iscsi">iSCSI</a></li>
+    </ul>
+  </li>
+  <li><a href="#batch-file-transfer">Batch file transfer</a>
+    <ul>
+      <li><a href="#ftp">FTP</a></li>
+      <li><a href="#rsync">Rsync</a></li>
+      <li><a href="#syncthing">SyncThing</a></li>
+      <li><a href="#incremental-file-backup-tools">Incremental file backup tools</a></li>
+      <li><a href="#system-image-backup-tools">System-Image backup tools</a></li>
+    </ul>
+  </li>
+  <li><a href="#application-data-sharing">Application Data Sharing</a>
+    <ul>
+      <li><a href="#media-streaming-applications">Streaming applications (such as Plex or Jellyfin)</a></li>
+    </ul>
+  </li>
+</ol>
+<p>If you are not interested in the detail and reasoning, a summary at the end gives a simplified set of recommendations.</p>
+<h2>File Sharing</h2>
+<p>File sharing allows you to access remote data in real-time as if it is located on your own PC. SMB and NFS are alternative ways of accessing folders and files - generally SMB for Windows and Mac, and NFS for Linux - whilst iSCSI is a way of emulating an entire disk drive on your PC (rarely used).&nbsp;</p>
+<h3>SMB</h3>
+<p>SMB is the standard file sharing protocol defined by Microsoft and used by Windows and is the file sharing protocol you almost certainly want to use if you have Windows or Mac PCs (though both of these can also use NFS and Linux can use SMB).</p>
+<p>To store and access your data using SMB, you need to define one or more SMB shares. The root of an SMB share corresponds to a mounted directory in one of your TrueNAS pools and has its own settings for various things. The important ones you need to take into account when deciding how many different shares you need are:</p>
+<ol>
+  <li>The Snapshot definitions you want to use to keep backups of older versions of your files.&nbsp;<br><br>The smaller the files and the less frequently they are updated the more snapshots you can afford to hold because a snapshot backup only uses space when a file is changed after the snapshot is taken. So for backups of your normal PC data files, you can probably afford to have a SMB share with (say) daily snapshots that you keep for (say) 90 days.<br><br>But for big files, and especially frequently changed ones e.g. your Microsoft Office Outlook data file (which changes every time you send or receive or delete an email and which can easily grow to several GB or even several hundred GB) you probably want an SMB share which has a much shorter snapshot retention of (say) 14 days.</li>
+  <li>The security settings you want to apply.</li>
+  <li>Whether you want to automatically have different root sub-directories for each different user.</li>
+</ol>
+<blockquote>
+  <p>For example, Protopia Addams has 4 SMB shares on his home TrueNAS server as follows:</p>
+  <ul>
+    <li>Multimedia - Many large infrequently changed media files - fewer snapshots, common root directory</li>
+    <li>Shared data - Many small shared user-data primary files - many snapshots, common root directory</li>
+    <li>System backups - A few, large system-image backup files - few snapshots, individual user root subdirectories</li>
+    <li>User backups - Many small individual user-data backup files - many snapshots, individual user root subdirectories</li>
+  </ul>
+</blockquote>
+<h3>NFS</h3>
+<p>NFS is the standard file sharing protocol used by Linux and is the file sharing protocol you almost certainly want to use if you have Linux PCs (though Linux can also use SMB and Windows and Macs can use NFS).</p>
+<p><i>NFS guidelines to be written.</i></p>
+<h3>iSCSI</h3>
+<p>iSCSI uses a zfs volume dataset as a way of emulating an entire raw disk rather than as a way of sharing individual files. The operating system access this virtual disk needs to be responsible for the file system. It is difficult to see what the use-case is for iSCSI in a typical TrueNAS small- or medium-sized environment - but it is available if you need it. (Some Youtube experts use iSCSI to store their PC games on as it gives them large, centrally managed storage but with good performance (assuming a high-performance LAN.)</p>
+<h2>Batch file transfer</h2>
+<p>Batch file transfer differs from normal file transfer in that it is not accessed in real-time as if it were a local folder or file.&nbsp;</p>
+<p>Batch file transfer can be used to run regular file-based backups from your PCs and other devices to your NAS and to allow people to access your NAS (securely) from the Internet (because making SMB or NFS shares available over the internet (without a VPN) is not considered safe &amp; secure).&nbsp;</p>
+<p>This section is primarily concerned with listing the <i>protocols</i> that can be used to access files in ways where they <i>don't</i> look as if they are local, however you can also use tools which perform bulk writes to SMB or NFS shares and these are covered in detail in the wiki pages related to implementation and are only briefly covered here to set the scene. &nbsp;</p>
+<h3>FTP</h3>
+<p>The FTP protocol has been around since the very early days of the internet as <strong>the</strong> protocol in the early internet days for transferring data between systems. It therefore has <strong>very</strong> widespread usage and if you want to share data from your TrueNAS server directly to other <strong>internet</strong> users, opening ports on your firewall to let traffic through - then you will almost certainly want to use FTP. That said, you might want to consider an alternative of using TrueNAS' Cloud Sync services to send a copy of certain data to e.g. Google Drive and then share links to these files with others. &nbsp; &nbsp;</p>
+<h3>Rsync</h3>
+<p>Rsync is a well known Linux tool for synchronising files between Linux machines, so if you want a file-by-file backup from Linux to TrueNAS this might be the protocol to use.</p>
+<p>Rsync is no longer a native TrueNAS service - you will need to install Rsync as an application to use it.</p>
+<h3>Syncthing</h3>
+<p>“<a href="https://syncthing.net/">Syncthing</a> is a continuous file synchronization program. It synchronizes files between two or more computers in real time…”</p>
+<p>Syncthing is open source, and symetric i.e. all nodes are by default equal, and by default synchronisation is real-time and bi-directional, however you can (for example) install it on your mobile phone and configure it to synchronise only from your phone to the NAS, only at night, only when your phone is charging and only when it is connected to your home wifi.</p>
+<p>On TrueNAS, Syncthing is installable as an app and there are two versions available:</p>
+<ul>
+  <li>TrueNAS Charts - Standard</li>
+  <li>TrueNAS Charts - Enterprise</li>
+</ul>
+<p>Syncthing clients are available for Windows, Mac,&nbsp;Linux (and many other Unix-like O/S') and Android. There is also a 3rd party app <a href="https://www.mobiussync.com/">Möbius Sync</a> for iPhone and iPad.</p>
+<h3>Incremental file backup tools</h3>
+<p>Incremental file backup tools allow you to copy only new or changed files from one location to another - and it can be used to backup files from your PC to your NAS.</p>
+<p>NOTE: Because of the way TrueNAS / ZFS works, you do NOT want to copy files that have not changed - leaving aside the extra time and network traffic of doing this, because of the way ZFS works, a new completely new copy will be stored on disk and the identical old copy will also be available in snapshots (so you are likely rapidly to run out of disk space if you do this).</p>
+<ul>
+  <li>Windows - SyncBackFree is a Windows utility with a GUI that allows you to schedule incremental backup i.e. only new or changed files to an SMB share.</li>
+  <li>Windows - Robocopy is a Microsoft command line tool that can be scripted to do the same.</li>
+  <li>Windows - File History - which creates new copies of files that have changed (as an alternative to TrueNAS snapshots - and since IMO snapshots are better, I don't recommend this solution)</li>
+  <li>Mac - Time machine</li>
+</ul>
+<p><i>Note: If you know of other tools please add them here.</i></p>
+<h3>System-Image backup tools</h3>
+<p>Most operating systems have a way to backup the system image so that it can be restored if it gets corrupted. However to be useful you need to store it (at a minimum) on a different partition, preferably on a different disk or on your NAS (using e.g. an SMB share).</p>
+<ul>
+  <li>Windows - Windows 7 System Image Backup (C:\Windows\System32\sdclt.exe)</li>
+  <li>Windows - Windows 7 Backup (for data files + optionally a system image)</li>
+  <li>Windows - Macrium Reflect (limited availability for the free version)</li>
+</ul>
+<p><i>Note: If you know of other tools please add them here.</i></p>
+<h2>Application Data Sharing</h2>
+<h3>Media Streaming applications</h3>
+<p>Media Streaming applications such as Plex or Jellyfin can be used to stream music or video files from your NAS to a matching application running on your Smart TV (or stick), mobile phone/tablet or browser.</p>
+<p>Typically you need to set aside separate storage areas for the media files and for the metadata that the app uses to index the media.</p>
+<p>There are various ways to get media files onto your NAS, but typically the media storage area will be made available as a file share (SMB or NFS) so that you can transfer your media files from your PC, whilst the metadata storage is a private area somewhere on your data pools.</p>
+<h3>Other</h3>
+<p><i>Note: If you know of other applications please add them here or create a sub-heading for them.</i></p>
+<h2>Summary</h2>
+<p>Most TrueNAS home / family business users will typically have Windows-based PCs (some Macs, a very few may use Linux) and perhaps want media streaming, and for these users here are a few rules of thumb:</p>
+<ul>
+  <li>Use SMB shares for PC files (Windows / Mac - Use NFS for Linux)<ul>
+      <li>Use SyncBack Free for data file synchronisation between PCs and NAS</li>
+      <li>Use Windows own System Image Backup (using task scheduler and a command line call) if you want to back up your Windows O/S</li>
+    </ul>
+  </li>
+  <li>Use rSync for any Linux boxes you have (like Raspberry Pis etc.)</li>
+  <li>Use syncthing for mobile phone backup</li>
+  <li>Use Plex or Jellyfin for media streaming</li>
+</ul>
+<p>&nbsp;</p>
+<h6><span class="text-big">Links</span></h6>
+<figure class="table" style="width:100%;">
+  <table style="background-color:rgb(33, 33, 33);border-bottom:1px solid rgb(117, 117, 117);border-left:1px solid rgb(117, 117, 117);border-right:1px solid rgb(117, 117, 117);border-top:1px solid rgb(117, 117, 117);">
+    <tbody>
+      <tr>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;width:50%;">Previous - <a href="/fester/planning/server-selection">2.3.7 Server Hardware Selection Time</a></td>
+        <td style="background-color:rgb(23, 23, 23);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;text-align:center;"><a href="https://wiki.familybrown.org/fester/index">Index</a></td>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;text-align:right;width:50%;">Next - <a href="/planning/applications">2.5 Other Applications &amp; Services</a></td>
+      </tr>
+    </tbody>
+  </table>
+</figure>

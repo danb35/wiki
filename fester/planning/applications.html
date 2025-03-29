@@ -1,0 +1,70 @@
+<!--
+title: 2.5 Other Applications & Services
+description: 
+published: true
+date: 2024-08-07T16:46:12.015Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-04-07T13:18:49.892Z
+-->
+
+<p>Both TrueNAS CORE and TrueNAS SCALE can run both apps and virtual machines.</p>
+<h2>TrueNAS CORE</h2>
+<p>In TrueNAS CORE, you can run <a href="https://www.truenas.com/docs/core/coretutorials/jailspluginsvms/">Jails, Plugins and VMs</a>.&nbsp;</p>
+<p><a href="https://www.truenas.com/docs/core/coretutorials/jailspluginsvms/jails/">Jails</a> are essentially roll-your-own containerised apps (a bit like Docker), but there are a lot of apps for which pre-written instructions or scripts are available to create a Jail. (For a quick explanation of Jails, see <a href="https://www.truenas.com/community/threads/a-quick-intro-to-jails.39220/">“A Quick Intro to Jails” on the TrueNAS Community Archive</a>.)</p>
+<p><a href="https://www.truenas.com/docs/core/coretutorials/jailspluginsvms/plugins/">Plugins</a> are essentially pre-packaged Jails provided by ixSystems, but are now very limited in number.</p>
+<p>VMs are for completely virtualised operating systems under which you can run apps. VMs use significantly more CPU and memory (which need to be permanently allocated) than containerised Jails, so you will need to design your system carefully if you plan to use VMs. Bear in mind also that these VMs will not have a GUI console, so you will need to use some form of remote login to setup and manage these VMs.</p>
+<h2>TrueNAS SCALE</h2>
+<p>In TrueNAS SCALE you can currently run either Apps or Virtual machines - in versions up to Bluefin 22.10 also Docker images, and in versions since DragonFish 24.04 also Sandboxes (which are a bit like Jails and configured using a utility called JailMaker).</p>
+<h3>TrueNAS SCALE Apps</h3>
+<p><a href="https://www.truenas.com/docs/scale/24.04/scaletutorials/apps/">Apps</a> are pre-packaged containerised applications (almost all open source or free 3rd party apps)&nbsp;delivered using Kubernetes K3S containerisation. Obviously pre-packaging makes installing the app simpler &nbsp;- though be warned that the configuration of these can still be daunting, and the documentation for doing this configuration is often limited or almost non-existent.&nbsp;</p>
+<p>TrueNAS SCALE comes with a pre-installed catalogue of TrueNAS Chart apps provided by ixSystems.</p>
+<p>However there are thousands more apps (with some considerable overlap) also available from TrueCharts - and you can integrate the TrueCharts catalogue into TrueNAS SCALE so that you can see and install them in exactly the same way as TrueNAS Charts.</p>
+<blockquote>
+  <p>The names of these catalogues are very similar, so be careful to understand the distinction:</p>
+  <ul>
+    <li>TrueNAS Charts - from ixSystems</li>
+    <li>TrueCharts - from an independent Community group of Kubernetes experts</li>
+  </ul>
+</blockquote>
+<p>You can also create your own K3S containers using a docker image as a “Custom App”.</p>
+<p><i><strong>Caveat:</strong> ixSystem is </i><a href="https://forums.truenas.com/t/reporting-only-shows-7-days-worth-of-data/269/44"><i>on-the-record</i></a><i> as indicating that the Kubernetes charts infrastructure currently available in TrueNAS SCALE may be replaced at some point by a Docker/Composer-based alternative because the overheads would be lower, the integration complexity lower and so more reliable, and configuration of Docker can be significantly simpler. There are currently no details about the plans for this. We assume that if it happens, existing TrueNAS Charts will have 1-for-1 equivalents with Docker, and perhaps there might be automated migration, however we are unclear about what will happen with TrueCharts which is heavily committed to Kubernetes (though ultimately (almost?) all TrueCharts apps are Docker-based anyway.</i></p>
+<h3>TrueNAS SCALE Virtual Machines</h3>
+<p>VMs are for completely virtualised operating systems under which you can run apps. <strong>VMs use significantly more CPU and memory</strong> (which need to be permanently allocated) than containerised Apps, so you will need to design your system carefully if you plan to use VMs. Bear in mind also that these VMs will not have a GUI console, so you will need to use some form of remote login to setup and manage these VMs.</p>
+<p>There are actually two ways to deliver both NAS and Virtual Machines:</p>
+<ol>
+  <li>You can run TrueNAS on the native hardware, and run VMs within TrueNAS; or</li>
+  <li>You can run a hypervisor (like <a href="https://www.proxmox.com/">Proxmox</a>) and run both TrueNAS in a virtual machine alongside your other VMs.</li>
+</ol>
+<p>Both of these are valid options, but they have different characteristics and degrees of complexity. A few simple rules of thumb to help give an indication which might be best for you:</p>
+<ul>
+  <li>Only one (or perhaps two) VMs which are of secondary importance to TrueNAS - run them as VMs under TrueNAS and do not add the extra complexity of e.g. Proxmox.</li>
+  <li>Two or more VMs, or VMs which are more important than TrueNAS or which have huge resource requirements) - use Proxmox and run TrueNAS in a VM.</li>
+</ul>
+<h3>TrueNAS SCALE Docker</h3>
+<p>In TrueNAS SCALE versions up to Bluefin 22.04, because Kubernetes K3S was using Docker under the covers, SCALE also provided support for you to define Docker based apps of your own.</p>
+<p>When Kubernetes switched to a different containerisation technology in SCALE Cobia 23.10, support for Docker apps was dropped.</p>
+<h3>TrueNAS SCALE Sandboxes</h3>
+<p><a href="https://www.truenas.com/docs/scale/24.04/scaletutorials/apps/sandboxes/">Sandboxes</a> are new to TrueNAS SCALE but are based on existing open source technologies (systemd-nspawn and jailmaker) - and I am sure I read somewhere that upgrade-compatible support is guaranteed for future versions (but somewhat typically I can't find the link now).</p>
+<p>A few notes about Sandboxes:</p>
+<ul>
+  <li>Configuring Sandboxes does not have GUI support - CORE has a Jail setup wizard, but SCALE Sandboxes are purely CLI.</li>
+  <li>Apps have automated upgrade functionality - Sandboxes don't.</li>
+  <li>ixSystems warns that Apps and Sandboxes may have compatibility issues, but a community comment suggests that this is intended to warn about conflicts of resources between the two such as duplicated Port allocations.</li>
+  <li>You can easily use Docker inside a Sandbox, so this is effectively bringing back Docker support to SCALE DragonFish and future versions.</li>
+  <li>Jailmaker/Docker Sandbox apps apparently use significantly less resources than equivalent Apps, so if your NAS is resource constrained you may wish to convert over anyway, regardless of the lack of</li>
+</ul>
+<p>There is an excellent <a href="https://www.youtube.com/watch?v=S0nTRvAHAP8">Youtube video</a> by TrueNAS MVP user <a href="https://forums.truenas.com/u/Stux">@stux</a> which demonstrates how to setup JailMaker <strong>and</strong> Docker <strong>and</strong> (as an example) JellyFin.</p>
+<p>&nbsp;</p>
+<h6><span class="text-big">Links</span></h6>
+<figure class="table" style="width:100%;">
+  <table style="background-color:rgb(33, 33, 33);border-bottom:1px solid rgb(117, 117, 117);border-left:1px solid rgb(117, 117, 117);border-right:1px solid rgb(117, 117, 117);border-top:1px solid rgb(117, 117, 117);">
+    <tbody>
+      <tr>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;width:50%;">Previous - <a href="/fester/planning/storage-services">2.4 Storage Services &amp; Protocols</a></td>
+        <td style="background-color:rgb(23, 23, 23);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;text-align:center;"><a href="https://wiki.familybrown.org/fester/index">Index</a></td>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;text-align:right;width:50%;">Next - <a href="/fester/planning/network">2.6 Configuring and Upgrading your Network</a></td>
+      </tr>
+    </tbody>
+  </table>
+</figure>

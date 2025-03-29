@@ -1,0 +1,92 @@
+<!--
+title: 2. Planning Your TrueNAS Solution
+description: What services do you want? What hardware do you need to deliver them?
+published: true
+date: 2024-07-31T06:40:01.652Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-04-06T22:46:58.300Z
+-->
+
+<figure class="image image_resized image-style-align-right" style="width:19.17%;"><img src="/planning/planning-franklin-quote.jpg"></figure>
+<p>Deciding to store your data on a NAS rather than on disks directly attached to a PC is a <span class="text-huge"><mark class="pen-red"><strong><u>BIG</u></strong></mark></span> decision:</p>
+<ul>
+  <li>Server Cost</li>
+  <li>Other Costs</li>
+  <li>Build Effort</li>
+  <li>Data migration</li>
+  <li>Performance</li>
+</ul>
+<p>NAS hardware does not cost just pennies to buy. You are going to need several disks, and decent server hardware that they will attach to. Even a small NAS server, populated with disks, can easily cost in excess of $1,000 (or your equivalent local currency), so you really don't want to buy the wrong hardware. And your LAN network needs to have sufficient bandwidth to transfer the data over - so you may need a small or possibly an extensive network upgrade.</p>
+<p>Equally, another likely reason you are planning to implement a NAS is to safeguard your data from being lost in the event of a (single) hardware failure - and so the last thing you want to do it to transfer your data onto something unreliable or to make a mistake and lose that data.</p>
+<p>And you need to make sure that you get the configuration right, as changing it later may require you to migrate all your data off the server, reconfigure it and migrate the data back again. So getting it wrong could double your spending as well as double your trouble.</p>
+<p>The best way to mitigate these risks is to take a reasonable amount of time thinking about your needs, and researching and planning how you are going to meet them <strong>before</strong> you start spending money or time actually building, and help you decide:</p>
+<ul>
+  <li>What data do we want to store and how much?</li>
+  <li>How will we want to access this data?</li>
+  <li>What other applications do we want? And what are their data requirements?</li>
+  <li>In what ways can we deliver the disks to hold this data?</li>
+  <li>What are the other hardware requirements?</li>
+  <li>What is the best type of hardware to use?</li>
+  <li>What are the detailed hardware options?</li>
+  <li>What do I decide to buy, spending real money?</li>
+</ul>
+<p>and thus avoid:</p>
+<ul>
+  <li>Spending more money than you need to;</li>
+  <li>Going down blind alleys and making mistakes that will be difficult or impossible or VERY expensive to correct later;</li>
+  <li>Having problems later and finding that a bad design contributed to these problems occuring;</li>
+  <li>Ending up with a poorly performing solution</li>
+</ul>
+<p>And this is the purpose of this section of the wiki - to help you plan ahead and to help you achieve this quicker by explaining the basics and guiding you through creating a plan. Here is a checklist of things that you need to decide before you start building:</p>
+<ul>
+  <li>How much disk storage do you need anyway? And what is the best way of providing it?</li>
+  <li>How easy (or difficult) will it be to add more disks (or replace existing with bigger ones) if you find you need more storage later?</li>
+  <li>Just how should you configure storage for redundancy and performance?</li>
+  <li>Will advanced features of TrueNAS and ZFS (like SLOG, L2ARC, dedicated Metadata devices) benefit you or just increase the complexity of your build?</li>
+  <li>What server hardware do you need? Processor, memory, disk controller, disk slots, M.2 NVMe slots, network cards, redundancy</li>
+  <li>Should you buy a ready-made NAS server hardware, or build your own?</li>
+  <li>What NAS operating system are you going to use? TrueNAS SCALE or something else entirely? If a pre-built NAS server (like Synology or QNAP or TerraMaster), do you run the software that comes with it or TrueNAS?</li>
+  <li>What networking hardware do you need? Do you need a LAN / Wifi upgrade?</li>
+</ul>
+<p>And so onwards to look at all the information you need to gather to allow you to answer all of the above questions and choose the hardware you need.&nbsp;</p>
+<h2>Section Contents</h2>
+<ol>
+  <li><a href="/fester/planning/overview">Overview of Server Hardware Planning</a></li>
+  <li><a href="/fester/planning/data-requirements">Data Requirements</a>
+    <ol>
+      <li><a href="/fester/planning/requirements-data-types">Network Data Types</a></li>
+      <li><a href="/fester/planning/requirements-non-network-data">Server-only Data Types</a></li>
+      <li><a href="/fester/planning/requirements-data-volumes">Data Volumes</a></li>
+      <li><a href="/fester/planning/requirements-data-protocols">Client Access</a></li>
+    </ol>
+  </li>
+  <li><a href="/fester/planning/choose-hardware">Choosing your Server Hardware</a>
+    <ol>
+      <li><a href="https://wiki.familybrown.org/fester/planning/minimum-hardware">Minimum / Other Hardware Guidelines</a></li>
+      <li><a href="https://wiki.familybrown.org/fester/planning/what-disks">Storage hardware (HDDs, SSDs)</a></li>
+      <li><a href="https://wiki.familybrown.org/fester/planning/nas-appliances-commercial">Using commercial NAS appliances</a></li>
+      <li><a href="https://wiki.familybrown.org/fester/planning/nas-appliances-diy">Building a DIY NAS appliance</a></li>
+      <li><a href="/fester/planning/general-purpose-server">Using a General Purpose Server</a></li>
+      <li><a href="/fester/planning/tower-pc">What About Using an Ordinary Tower PC?</a></li>
+      <li><a href="https://wiki.familybrown.org/fester/planning/server-selection">Your Final Selection of a Server</a></li>
+    </ol>
+  </li>
+  <li><a href="/fester/planning/security">Security - Server userids, Network PC userids etc.</a></li>
+  <li><a href="https://wiki.familybrown.org/fester/planning/applications">Other Applications/Services</a></li>
+  <li><a href="https://wiki.familybrown.org/fester/planning/network">Configuring and Upgrading your Network</a></li>
+  <li><a href="https://wiki.familybrown.org/fester/planning/summary">Summary: The Addams Family advises you to…</a></li>
+</ol>
+<p>&nbsp;</p>
+<h6><span class="text-big">Links</span></h6>
+<figure class="table" style="width:100%;">
+  <table>
+    <tbody>
+      <tr>
+        <td style="width:50%;">Previous - <a href="/fester/introduction/structure">1.3 The Structure of this Wiki</a></td>
+        <td style="text-align:center;"><a href="/fester/index">Index</a></td>
+        <td style="text-align:right;width:50%;">Next - <a href="/fester/planning/overview">2.1 Overview of Server Hardware Planning</a></td>
+      </tr>
+    </tbody>
+  </table>
+</figure>

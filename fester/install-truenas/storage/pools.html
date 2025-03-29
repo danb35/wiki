@@ -1,0 +1,35 @@
+<!--
+title: Creating a TrueNAS Pool
+description: 
+published: true
+date: 2024-04-07T16:52:51.452Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-01-13T12:54:33.784Z
+-->
+
+<h1>Creating a TrueNAS Pool</h1>
+<p>There are many different ways to organise the storage of your TrueNAS server. I can’t tell you what is best for you because it depends on various factors, how many vdevs and pools you want, how many data storage drives you have available, etc. Review <a href="https://forums.freenas.org/index.php?members/cyberjock.22572/">cyberjock</a>'s <a href="https://www.truenas.com/community/threads/slideshow-explaining-vdev-zpool-zil-and-l2arc-for-noobs.7775/">guide to ZFS for newbies</a> if you aren't thoroughly familiar with it. &nbsp;Also review this <a href="https://www.ixsystems.com/community/resources/introduction-to-zfs.111/">introduction to ZFS</a>.</p>
+<p>Whatever way you decide to arrange things make sure you build in some sort of redundancy. This goes for the vdevs as well.</p>
+<p><i>Remember, if one vdev fails in a pool it takes the whole pool with it.</i></p>
+<p>This is how I arranged mine.</p>
+<p>Click “Storage” in the left column, then “Pools”.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190526-232837.png" alt=""></figure>
+<p>Now click on the “Add” button.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190526-232937.png" alt=""></figure>
+<p>At the this screen, the default selection is “Create a new pool”; leave this selected and click “Create Pool”.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190526-233327.png" alt=""></figure>
+<p>Give your volume a name in the “Name” text box. If you cannot think of anything then “tank” seems to be popular amongst TrueNAS users (I don’t know why?). &nbsp;It's recommended to avoid generic words like “truenas,” “storage,” or “data,” as these appear in other contexts and may complicate troubleshooting.</p>
+<p>If you want the pool to use encryption then tick the “Encryption” box. But only do this if your processor supports AES-NI encryption and you have enabled it in the BIOS, otherwise don’t use it. Remember to save a recovery key. <strong>Again, unless you have a specific legal or regulatory requirement for full-disk encryption, this is discouraged.</strong></p>
+<p>If you like, you can click “Suggest Layout”, and TrueNAS will select a layout that's generally sensible. Otherwise, you can manually select the disks you want in your pool as shown here:</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190526-233518.png" alt=""></figure>
+<p>Then click the right arrow button to move them to the “Data VDevs” list:</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190526-233601.png" alt=""></figure>
+<p>At the bottom of that list, you can select any form of vdev (strip, mirror, RAIDZ<i>n</i>) that's appropriate to the number of disks selected.</p>
+<p>Then click the “Create” button to create the pool.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190526-233808.png" alt=""></figure>
+<p>You'll see a pop-up window warning you that all data on the disks you're adding to the pool will be erased. Check the “Confirm” box, then click the “Create Pool” button.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190526-234050.png" alt=""></figure>
+<p>When the operation completes you'll be returned to the Pools page.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190526-234300.png" alt=""></figure>
+<p>That’s the TrueNAS storage pool created.</p>

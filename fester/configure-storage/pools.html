@@ -1,0 +1,89 @@
+<!--
+title: 6.1 Configuring Storage Pools
+description: What are pools and how do you create them?
+published: true
+date: 2024-11-14T00:14:05.806Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-05-12T18:12:03.256Z
+-->
+
+<p>A <i><strong>ZFS Pool</strong></i> is the basic unit of storage in ZFS, and therefore in TrueNAS. When you install TrueNAS to get your first pool created for you as standard (the <code>boot-pool</code>) and that is the only storage present in the directory tree. All the other NVMe/SSD/HDD disks you have installed cannot yet be accessed or used - to do that you need to group them into one or more storage pools.</p>
+<p><strong>Note:</strong> In case you hear the term used, pools are sometimes referred to as <code>tanks</code> by old-time ZFS users.</p>
+<h3>Virtual Devices (vDevs)</h3>
+<p>Unfortunately it is a bit more complicated than simply grouping disks into a pool. Firstly, a pool consists of one or more “virtual devices” or vDevs - and each vDev consists of one or several disks. There are several different types of vDev - the most obvious and standard one being a <code>Data vDev</code> - &nbsp;and there are several ways of combining two or more disks into a single vDev (such as mirrors, RAIDZ and DRAID).</p>
+<p>The other types of vDev have been previously described in section <a href="/fester/planning/requirements-special-devices">2.2.5 ZFS Special Devices</a> - but for most basic home TrueNAS servers, these will not be needed. Hopefully you will already have used the whole of section <a href="fester/planning">2. Planning</a> to pre-plan what your pools will look like, and if you need any of these other specialised types of vDev then that will have been highlighted much earlier than here and now.</p>
+<p>To recap, a pool consists of one or more Data vDevs<a href="#fn1"><sup>[1]</sup></a> (and possibly other specialised vDevs) and each vDev in turn consists of one or more disks or devices.</p>
+<h3>Types of vDev</h3>
+<p>Now, just in case you have jumped here and bypassed Planning, or are just dipping a toe in the water, we will recap the various ways of grouping disks into a vDev:&nbsp;</p>
+<h4>Mirrors</h4>
+<p>A mirror vDev consists of 1 or more disks/devices where each of them holds exactly the same data - you have as many copies as there are disks in the mirror.</p>
+<p>When you have two or more disks in the mirror, your data is protected against a disk (or an individual sector of a disk) failing. ZFS will typically recover from an individual sector failing without you even noticing it. If an entire disk fails, TrueNAS will keep working without it, and when you have replaced that failed disk with a new one, TrueNAS can copy all your data to it from the surviving disk(s) to recover you back to the number of copies you want.</p>
+<p>Although a single disk is not strictly technically a mirror, from the perspective of the technical rules of ZFS, a single disk is in essence a mirror with only one copy of the data.</p>
+<h4>RAIDZ</h4>
+<p>RAIDZ is a different way of combining drives to give you some redundancy in case of drive or sector failures. There are three types of RAIDZ which differ by &nbsp;the amount of redundancy you are providing: RAIDZ1 (one disk worth of space used for redundancy) RAIDZ2 (2 disks worth of space used for redundancy) and RAIDZ3 (3 disks … well you get the point by now).&nbsp;</p>
+<p>Although RAIDZ doesn't actually work this way technically, for the purposes of space planning you can conceptually think of the redundant disks as being dedicated to holding specially calculated versions of the equivalent blocks on the other disks so that if 1 or 2 or 3 of the disks holding the actual data have failed, you can use these equivalent blocks on the remaining data disks and remaining redundancy disks in order to calculate backwards what data was stored on the failed disk.&nbsp;</p>
+<p>This is how the original RAID5 used to work - dedicated redundancy devices - but if you really want to understand the difference between RAID5 and RAIDZ, then in RAIDZ the set of equivalent data and redundancy blocks are calculated as described, and they are written across all of the disks in the same way, but the data and redundancy blocks can be written to all the drives without worrying which drive gets the data blocks and which drive gets the redundancy blocks.</p>
+<p><strong>Maximum drives in a RAIDZ vDev:</strong> Whilst in theory you can&nbsp;have as many devices/disks as you like in a RAIDZ vDev (within reason anyway - there is undoubtedly a theoretical limit), in practice the number of drives should be limited to 12 (or possibly 16 if you believe &nbsp;the OpenZFS documentation).</p>
+<p><strong>Minimum drives in a RAIDZ vDev:</strong> You can have a minimum of 1 data drive and 1, 2 or 3 redundancy drives, so the minimum is 2, 3 or 4 devices.</p>
+<h4>Mirror vs. RAIDZ</h4>
+<p>At this point you may well be wondering what the difference is between a 2x drive mirror and a 2x drive RAIDZ1 (or a 3x drive mirror and a 3x drive RAIDZ2 etc.)??</p>
+<p>The fundamental similarities and differences between mirrors and RAIDZ are:</p>
+<ul>
+  <li>Redundancy level: You can increase or decrease the redundancy of a mirror, but the redundancy of a RAIDZ vDev is fixed</li>
+  <li>Usable storage: You can increase the useable storage of a RAIDZ vDev by adding drive(s), but not decrease it by removing them. The useable storage size of a mirror vDev is fixed to the single size of the smallest drive.</li>
+  <li>Useable disk size: For both Mirrors and RAIDZ, if the vDev consists of multiple drives of different sizes, then the space actually used on each drive is that of the smallest disk in the vDev, and any additional space on the other disks is wasted.</li>
+  <li>Replacement with bigger disks: For both Mirrors and RAIDZ,&nbsp;you can replace the existing disks in a vDev one-by-one with bigger disks, and once all disks have been replaced you can grow the pool to use the extra space.</li>
+</ul>
+<p>So the basic difference is that a 2x drive mirror can have redundancy adjusted, and a 2x drive RAIDZ1 can have the useable data increased.</p>
+<h4>DRAID</h4>
+<p>DRAID is a derivative of RAIDZ consisting of one or more RAIDZ sub-vDevs plus a hot spare combined together and prepopulating the hot-spare with partial redundancy data so that in the event of the hot-spare being brought into use it the “resilvering” can be achieved in a much shorter timescale.</p>
+<p>This is only really useful when you have several tens or hundreds of disks in your pool, so for the intended primary audience of this wiki it is highly unlikely to be relevant. In theory because the resilver is quicker it should allow for a wider RAIDZ sub-vDev than a normal equivalent RAIDZ or allow for e.g. use of RAIDZ2 instead of RAIDZ3.</p>
+<h3>Stripes</h3>
+<p>Stripes are what happens when you use multiple vDevs for data (or any other vDev type). In essence ZFS distributes your data evenly across the various vDevs in a stripe.</p>
+<p>To ensure consistent performance, &nbsp;it is usual to have each of the multiple vDevs in a stripe to be defined the same i.e. the same type and width as the others e.g. a 2x mirror or a 6x RAIDZ2. (This is not required technically, but you will have very inconsistent performance if you did otherwise.)</p>
+<h2>Why define multiple pools?</h2>
+<p>When you have different types of data with fundamentally different performance needs you need to put them on separate pools. Generally speaking there is no way within a single pool to put different performant data on different vDevs.</p>
+<p>So, in addition to the boot-pool, you might have an NVMe pool, a SATA SSD pool and an HDD pool.</p>
+<p>However, within these performance classes, it is normal only to have one Pool consisting of all of the disks of that type - and this is because the available space is in one single lump which reduces or eliminates the need for a storage administrator to keep moving files from one pool to another because one pool has run out of space whilst another of the same type as lots of available space.</p>
+<p>A typical TrueNAS server will have a main data pool (traditionally on HDDs - but increasingly commonly on NVMe). If your main data pool is on HDDs, you may well have an NVMe and/or a SATA SSD pool to hold applications and their data or VMs. &nbsp;</p>
+<h2>Before you Create a Pool</h2>
+<p>The only real decisions you need to make before creating a pool are:</p>
+<ul>
+  <li>What you are going to call it - and this determines where it (and its datasets) are mounted in the path hierarchy; and</li>
+  <li>A single technical value called <code>ashift</code> which should be set exactly to the fundamental block size of the disks you are using or sometimes a multiple of that size. HDDs are typically have either 512byte physical blocks or 4KB physical blocks and for both of these an <code>ashift</code> value of 12 (equivalent to 4KB) is used. Many SSDs also use a 4KB internal block size, but some can use 8KB in which case you need <code>ashift</code> of 13, (and in future potentially 16KB or <code>ashift</code> of 14).</li>
+</ul>
+<p>With these decisions made you are ready to create your pool…</p>
+<h2>Creating a Pool in TrueNAS SCALE</h2>
+<p>Select the <code>Storage</code> icon from the list running down the left side of the UI screen, and then click the <code>Create Pool</code> button.</p>
+<figure class="image image_resized" style="width:50%;"><img src="/configuration/scalepool1.png" alt="scalepool1.png"></figure>
+<p>Enter a pool name, then click <strong>Next</strong>.&nbsp;</p>
+<figure class="image image_resized" style="width:50.02%;"><img src="/configuration/scalepool2.png" alt="scalepool2.png"></figure>
+<p>Under the <strong>Data</strong> heading, select your desired layout ("Mirror" in this example). The system will suggest a layout that seems appropriate under the heading of <strong>Automated Disk Selection</strong>. If you feel the need to adjust this manually, you can click the <strong>Manual Disk Selection</strong> button. Once finished, click <strong>Save And Go To Review</strong>--the other pool options won't be used in this example.</p>
+<figure class="image image_resized" style="width:50.08%;"><img src="/configuration/scalepool3.png" alt="scalepool3.png"></figure>
+<p>In the <strong>Review</strong> section, you'll be able to see the summary of how your pool will be created. Click <strong>Create Pool</strong> to create the pool.</p>
+<figure class="image"><img src="/configuration/scalepool4.png" alt="scalepool4.png"></figure>
+<p>In the popup warning window, check the box to confirm that the contents of any disks you're adding to your pool will be lost, then click <strong>Continue</strong>. Your pool will be created.</p>
+<p>The root dataset of your new pool will be mounted at <code>/mnt/poolname</code>.</p>
+<h2>Creating a Pool in TrueNAS CORE</h2>
+<p>To create a pool in TrueNAS CORE, log into the web GUI and go to Storage -&gt; Pools (1), then click on the <strong>ADD</strong> button (2).</p>
+<figure class="image image_resized" style="width:49.91%;"><img src="/configuration/corepool1.png" alt="corepool1.png">
+  <figcaption>Select Pools in the left menu</figcaption>
+</figure>
+<p>On the next screen, leave the radio button set to its default of <strong>Create new pool</strong> (1), then click on <strong>CREATE POOL</strong> (2).</p>
+<figure class="image image_resized" style="width:50.2%;"><img src="/configuration/corepool2.png" alt="corepool2.png"></figure>
+<p>On the next screen, enter a pool name (1) and select the drives you want to add (2) (the warning about non-unique serial numbers shouldn't appear for you). Then click the arrow (3) to add them to a vdev.</p>
+<figure class="image image_resized" style="width:50.07%;"><img src="/configuration/corepool3.png" alt="corepool3.png"></figure>
+<p>Once the drives are added to the vdev (1), set the vdev layout appropriately (2, mirror in this case), then click <strong>CREATE</strong>.</p>
+<figure class="image image_resized" style="width:50.2%;"><img src="/configuration/corepool4.png" alt="corepool4.png"></figure>
+<p>In the popup warning window, check the box to confirm that the contents of any disks you're adding to your pool will be lost, then click <strong>CREATE POOL</strong>. Your pool will be created.</p>
+<h2>References</h2>
+<ul>
+  <li><a href="https://www.truenas.com/docs/references/zfsprimer/">ZFS Primer</a></li>
+  <li><a href="https://www.truenas.com/community/resources/introduction-to-zfs.111/">ZFS Introduction</a></li>
+  <li><a href="https://www.truenas.com/community/resources/zfs-storage-pool-layout.201/">ZFS Pool Layout</a></li>
+  <li><a href="https://www.truenas.com/docs/scale/24.04/scaleuireference/storage/poolcreatewizardscreens/">TrueNAS SCALE documentation - Pools</a></li>
+  <li><a href="https://www.truenas.com/docs/core/13.0/uireference/storage/pools/">TrueNaS CORE documentation - Pools</a></li>
+</ul>
+<hr>
+<p><sup>[1]</sup> Pools can also include special vdevs, such as spares, metadata, cache, and SLOG. These advanced topics will not be covered by this guide <a href="#fnref1">↩︎</a></p>

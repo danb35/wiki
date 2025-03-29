@@ -1,0 +1,114 @@
+<!--
+title: Setting up SSH
+description: 
+published: true
+date: 2024-04-07T16:48:53.569Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-01-13T13:06:43.638Z
+-->
+
+<h1>Setting Up an SSH Console</h1>
+<p>SSH stands for Secure SHell, and is a secure method to connect to a remote computer over a network. There are many advantages to using an SSH console rather than say the shell facility in the FreeNAS GUI.</p>
+<p>The SSH console is a window that has a scrolling function which means you can go back and view the output in the console. You can also select large bodies of text and copy and paste them. This can be particularly useful when trying to get help from someone as they need to see what you have done. It is also useful when compiling data (i.e. SMART test data).</p>
+<p>An SSH console is also very secure in two ways. Firstly it can be configured to require a Public/Private key and a password before you can log in to the session and the server. Secondly the connection between the server and the client is encrypted. This means any information that goes between the two cannot be read directly.</p>
+<h2>Configure SSH in FreeNAS</h2>
+<p>Open your web browser and type in the IP address of the FreeNAS web GUI that you noted down earlier (Fester used 192.168.0.58).</p>
+<p>The web GUI will present itself and ask for the login details. Enter the username which is <strong>root</strong> and your password (2) and click the “Log In” button.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190526-224554.png" alt=""></figure>
+<p>Now you are logged into FreeNAS.</p>
+<p>Click “Services” in the left column, then scroll down to SSH.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-115825.png" alt=""></figure>
+<p>Click the pencil icon to the right, then “Configure” from the pop-up menu.</p>
+<p>If you do not want the root user to be able to log in using only a password (i.e., if you want to require a public key, or if you don't want the root user to be able to log in remotely at all), uncheck the “Login as Root with password” tick box.</p>
+<p>If you want to require public key authentication, uncheck the “Allow password authentication” tick box.</p>
+<p>Make sure the remaining tick boxes are unchecked.</p>
+<p>Now click the “Save” button.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-115956.png" alt=""></figure>
+<p>Now turn on the SSH service.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-120029.png" alt=""></figure>
+<h2>Specify SSH Public Key For a User</h2>
+<p>If you have required public key authentication in the SSH configuration, you'll need to tell FreeNAS what the public key is for each user who will be connecting via SSH. To do that, click on “Accounts” in the left column, then “Users”.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-120159.png" alt=""></figure>
+<p>Now click the three vertical dots to the right of the “root” user account and click on “Edit” in the pop-up menu.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-120301.png" alt=""></figure>
+<p>The modify user window should now pop up. Scroll down till you come across the “SSH Public Key” entry. Now right click in the blank box next to it and paste in the previously copied public key.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-120421.png" alt=""></figure>
+<p>Now click the “Save” button.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-120443.png" alt=""></figure>
+<h2>Setting up PuTTY in Windows</h2>
+<p>Modern operating systems ship with an SSH client installed. Unfortunately, Windows, prior to Windows 10, is still not a modern operating system in this regard, so a third-party client will need to be used. Popular clients include <a href="https://www.bitvise.com/">Bitvise</a> and <a href="http://www.chiark.greenend.org.uk/~sgtatham/putty/">PuTTY</a>.</p>
+<h2>Public Key Authentication in PuTTY</h2>
+<p>Switch on and boot up a personal computer that is part of your private network (if you use it to connect to the internet then this will probably work).</p>
+<p>Download PuTTY and PuTTYgen to your personal computer (not the server).</p>
+<p>Install PuTTy and PuTTYgen under an administrator’s account or right click on their respective installation programs and run as an administrator.</p>
+<h3>Generating the keypair</h3>
+<p>When installed run PuTTYgen under an administrator’s account or right click on the program and run as an administrator.</p>
+<p>When the PuTTYgen window appears check “SSH-2 RSA” is selected (1), if it isn’t select it.</p>
+<p>Next check the “Number of bits in a generated key:” is set to 2048 (2).</p>
+<p>Now click the “Generate” button (3).</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:18ffc8b3f1e27ef37341321c53be2579.png" alt=""></figure>
+<p>Now move your mouse in a random way within the box labelled “Key” (1) in PuTTYgen until the green bar fills up (2).</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:313e3f2dee8179c9f6075fbdbc697226.png" alt=""></figure>
+<p>When the green bar is full the key will be generated and a new screen will appear.</p>
+<p>In the “Key comment” text box (1) type a comment which will help you identify the key.</p>
+<p>Now type in a password for the private key in the “Key passphrase” text box (2), remember it as this will be needed later (Fester just used <strong>test</strong> again).</p>
+<p>Retype the password into the “Confirm passphrase” text box (3).</p>
+<p>Now save the private key by clicking on the “Save private key” button (4).</p>
+<p>An additional window will pop up, navigate to where you would like to save the key, give it a name (5) and click the “Save” button (6). Save it somewhere convenient as this will be needed soon.</p>
+<p>Now right click in the “Public key for pasting into OpenSSH authorized_keys file:” window (7) and from the pop up submenu chose “Select All” (8).</p>
+<p>The text within this window should become highlighted. Now right click again in this window as you did a moment ago and from the pop up submenu this time select “Copy”.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:624d5ddaee04c599cc9d7a8a3aef67df.png" alt=""></figure>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:a305a7a81bbd1bf1b9b12a4cdd9bf082.png" alt=""></figure>
+<h3>Configuring the connection</h3>
+<p>Now run PuTTY under an administrator’s account or right click on it and run as an administrator.</p>
+<p>In the “Host Name or (IP address)” box (1) type in the IP address of the FreeNAS web GUI (Fester’s was 192.168.0.58).</p>
+<p>Check the port number in the “Port” box (2) is set to 22.</p>
+<p>The “Connection type:” should be set to SSH (3).</p>
+<p>Now in the “Category” window click the small plus symbol “+” next to SSH (4). This should open up this section to reveal subcategories.</p>
+<p>Then click on “Auth” (5), not the “+” sign but the actual text itself.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:682b107a46081e78692b0d0a56b58a63.png" alt=""></figure>
+<p>This should take you to a different screen.</p>
+<p>On this screen click the “Browse” (1) button next to the “private key file for authentication:” (2).</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:75a6170bf5395d095a4a523c99a94746.png" alt=""></figure>
+<p>This will bring up a window in which you can load in the private key into PuTTY. Navigate to where you stored the private key, click on it and then click the “Open” button.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:937aa3d832bb41ca7dbd57d8c83a7fcc.png" alt=""></figure>
+<p>With the key now loaded in, go back to the “Session” category in the “Category” window (1).</p>
+<p>It is possible to save the settings of this session. This is a good idea because otherwise we would need to re-enter all the details each time we wanted to start a session in PuTTY.</p>
+<p>In the “Saved Sessions” box (2) type a good name for the session (Fester called it “HDD Validation SSH”).</p>
+<p>Now click on the “Save” button (3). The saved session should now appear in the window to the left of this (4).</p>
+<p>Now click on the “Open” button (5) to start the session (have the password you created in PuTTYgen standing by).</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:855b55319b9478882150ad7d77282212.png" alt=""></figure>
+<p>A PuTTY security alert window should now open. It will show the server’s RSA2 key fingerprint and will ask if you trust this host before allowing the connection. Click the “Yes” button.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:5fccef248c0ccad4d3cb3b950af3da65.png" alt=""></figure>
+<p>(There is a way to check this by using the RSA2 fingerprint but I can’t remember how, if someone lets me know I will try to include it in the guide or you could replace this or any section with your own?)</p>
+<p>You will now have access to the PuTTY session as soon as you login. Type the username next to the “Login as:” text (1). In this case it is <strong>root</strong>.</p>
+<p>Next you will be asked for the password you created in PuTTYgen. Type it in next to the “Passphrase for key “Test SSH”:” text (2) (Fester used <strong>test</strong>).</p>
+<p>As you type the password the text will not appear on the screen, this is normal and a security feature.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:3955a477aaad5f7ea7e51fdcd30939c6.png" alt=""></figure>
+<p>To leave the SSH console just type <strong>exit</strong> and the session along with the window will close.</p>
+<p>That’s the SSH console configured in FreeNAS.</p>
+<h2>Using SSH on a Mac</h2>
+<p>Mac OS X includes an SSH client, but it must be used from the command line. To use it, you'll need to open a terminal window. Start by clicking the launchpad button in your dock (it looks like a rocket):</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:d21808b88190d84e81a91130f34f5201.png" alt=""></figure>
+<p>Begin typing “Terminal” into the search bar at the top, until you see the Terminal icon below:</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:d965627bf8dcb92930143db6b71dab8a.png" alt=""></figure>
+<p>Then click on the Terminal icon. You'll see a window like this:</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:ea1b4f71afc859294997119b0a7d4b3e.png" alt=""></figure>
+<p>To connect to a server using SSH, you can simply type</p>
+<p><code>ssh user@host</code></p>
+<p>Where “user” and “host” are the username and hostname, respectively, that you want to connect to. For example,</p>
+<p><code>ssh root@freenas</code></p>
+<p>Or you can use an IP address:</p>
+<p><code>ssh root@192.168.0.5</code></p>
+<p>If you have required public key authentication on your FreeNAS server, you'll need to generate a keypair. To do this, type</p>
+<p><code>ssh-keygen -t rsa</code></p>
+<p>…and simply accept the defaults. The result will look like this:</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:d5d36bb83afae578249c90599f08d75f.png" alt=""></figure>
+<p>The system will prompt you for a passphrase; this is optional. If you enter a passphrase, you will need to enter it every time you use this keypair (i.e., every time you use ssh). If you leave the passphrase blank, you won't need to enter it when you connect to a remote server, but neither will a thief who manages to steal your computer. You'll now need to view your public key, to enter it in the FreeNAS configuration. To do that, type</p>
+<p><code>cat .ssh/id_rsa.pub</code></p>
+<p>The result will look like this:</p>
+<p><code>ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCxoFuJ2Px8sIA0zla1FXjnG+af2kRNhj/FcQ5nhOn6F2LepgXf/4SQFjx5BWaD88H6/06lTaUAqprxKS4m33SKN7poH6RaeIfbJXwjJ/o0Cx0QbugGAeMKjHOBg4fsHwvqGLT7o0lcQ0ubmGBZlSx9R9IFNmnDLAru+Z5gjuAwKCXGw2dxVqbq2IwB3jEoA3bbo8gy6Dso5wV750EC+dYlB/lQrxW/uscgPjpi1XCFVuWtajyz9jujakR1uHuRRphsp56GXVTovwM3P6h52ADDhr5vkfskGKgmETj940x5+MFbmBvC9iIMIeRGLfWIAQY+8NjosQYfieU5U48oDmDb dan@Dan-MacBook-Pro-7.local</code></p>
+<p>Copy this, all on line line, and paste it into your FreeNAS configuration.</p>
+<h2>Using SSH on Linux</h2>
+<p>SSH on Linux works just like SSH on a Mac. Follow the instructions above.</p>

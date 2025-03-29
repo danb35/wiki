@@ -1,0 +1,28 @@
+<!--
+title: Configuration Of The TrueNAS SMART Monitoring Service
+description: 
+published: true
+date: 2024-04-07T16:57:57.276Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-01-13T13:16:35.449Z
+-->
+
+<h1>Configuration Of The TrueNAS SMART Monitoring Service</h1>
+<p>I would recommend you set up email notifications before configuring this.</p>
+<p>Click “Services” in the left column, scroll down to find “S.M.A.R.T.”, and click the pencil icon to the right.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-001450.png" alt=""></figure>
+<p>A window should now pop up.</p>
+<p>In the window leave the “Check interval:” set at its default value of 30 minutes.</p>
+<p>Fester sets the “Power mode:” drop down selection box to <strong>Never</strong>. This will ensure that the drives are checked no matter what their status.</p>
+<p>Leave the “Difference:” and “Informational:” text boxes at their default value of <strong>0</strong>.</p>
+<p>Now set the drive temperature warning threshold called “Critical:” by putting the desired value into the corresponding text box. Any figures placed here are in degrees Celsius (Fester favours a figure of 50<sup>o</sup> C, but the prevailing view among active members of the TrueNAS forums is 40<sup>o</sup> C). If any of the drives being monitored reaches or exceeds the temperature stated in the text box then the server will issue a warning.</p>
+<p>Now enter in the “Email” text box the internal email address of the user the SMART monitor service is to alert (in Fester’s case this is r<strong>oot@TestNAS1.local</strong>).</p>
+<p>Then click the “Save” button.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-001636.png" alt=""></figure>
+<p>The final thing is to test it works.</p>
+<p>Go back into the SMART service configuration window by clicking on that small spanner icon again.</p>
+<p>In the “Critical:” text box enter a value that is way below the ambient temperature of the room in which the server is situated (Fester suggests about 1<sup>o</sup> C should do it).</p>
+<p>Now click the “Save” button and wait.</p>
+<p>Due to the fact that the temperature of the HDDs in the server will be higher than the threshold we have set, a warning email should be triggered. When you get the email you know the service is working.</p>
+<p>Be sure to return the value in the “Critical:” text box to a more appropriate value when you are done.</p>

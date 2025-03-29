@@ -1,0 +1,52 @@
+<!--
+title: 2.3.6 What About Using an Ordinary Tower PC?
+description: I have some old hardware lying around. Can I use it?
+published: true
+date: 2024-08-10T10:03:25.955Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-07-30T16:45:28.130Z
+-->
+
+<p>There is absolutely no reason why you shouldn't create a TrueNAS server based on a Tower PC case and new components <strong>providing</strong> that you make sure to buy server components suitable for the number of drives you want to run now and in the future and that are fully compatible with one another (which can be troublesome unless you are a technical expert already). As an example, <a href="https://www.youtube.com/watch?v=w1TsBxYSviI">here is a Youtube video</a> showing not one but two such builds.</p>
+<p>However, many home IT enthusiasts will have some old hardware lying around, perhaps a Tower case, a motherboard with processor and some memory, and a few disks, and there is an obvious cost incentive to reuse this hardware.&nbsp;</p>
+<p>Indeed, that was my starting approach for my first (and only) TrueNAS build having been donated an ancient server, however it turned out that one or two components were unsuitable - like the tower (insufficient slots for drives), the motherboard (insufficient SATA and PCIe slots), the power supply (would not turn on), the motherboard (dead when I found a working PSU) and the memory (2GB was not enough) - but aside from these minor issues the hardware was perfect. So instead I bought a used TerraMaster 5-slot NAS, some memory and disks and was quickly up and running.</p>
+<p>So whilst there is no reason in theory why you shouldn't be able to build a solid TrueNAS system from whatever random hardware you might have lying around, in practice there are several risks associated with this approach and thus several reasons to think carefully before following it…</p>
+<h2>Disk Reliability</h2>
+<p>Used kit is generally in … well (obviously) … used condition, and probably in well-used condition. You are going to be building a NAS server which you (presumably) want to hold <i><strong>and safeguard</strong></i> the irreplaceable part of your IT - namely the data you have accumulated over the years (or even decades).&nbsp;</p>
+<p>Although TrueNAS and ZFS are designed from the ground upwards to hold your data as reliably as possible against single points of failure (assuming a correct design), do you really want to trust your data to old and therefore less reliable disks?</p>
+<h2>Disk Sizes</h2>
+<p>If you have a motley collection of old drives, they may well not all be the same size. ZFS will use the same amount of space on each drive, and so if the drives are of different sizes, it will only use space the size of the smallest off the drives even on the bigger drives.</p>
+<p>If you are serious about using drives of mixed sizes, you might be better off looking at Open Media Server or UnRAID instead of TrueNAS.</p>
+<h2>Disk Physical Mounting</h2>
+<p>Many tower units are simply not designed to physically mount large numbers of disk drives. Yes, you can find e.g. conversion kits to mount 3.25" drives in 5.25" optical bays, but this adds to the complexity of your build.</p>
+<h2>SATA Ports &amp; PCIe slots</h2>
+<p>Does this motherboard you have lying around have the number of SATA slots you need, and if not does it have the high bandwidth PCIe slots you might need for HBAs?</p>
+<h2>NVMe Slots</h2>
+<p>As this guide suggests elsewhere, if your TrueNAS server is going to be performance critical (i.e. doing more than normal file and media serving), and you are going to want L2ARC or SLOG (or even a Metadata special vDev), then you are going to want to do these on NVMe drives because they are orders of magnitude faster than SATA SSDs.&nbsp;</p>
+<p>And even if your server isn't going to be performance critical, you are likely to want 2x SSD for boot and application pools - and NVMe is a good way to provide these without using 2x SATA ports for them.</p>
+<p>Older motherboards may not have these slots, or perhaps not enough of them. &nbsp; &nbsp;</p>
+<h2>Cooling</h2>
+<p>Part of the design of specialised NAS boxes or General Purpose Servers is to ensure the cooling, not only of the CPU (and GPU) but also of the controller chips and all the disks (which can be located quite close together).</p>
+<p>You can certainly ensure that the air-flow in a well-populated Tower PC is of adequate volume and well directed in order to ensure that everything is cooled, however the last thing you will want to do is to find out that you got it wrong when one or more (or even all) of your hard drives overheat and start failing (and heat is the easiest and possibly the most common reason for drives to fail prematurely).</p>
+<p>Noise can also be an issue as the large volume of a tower unit will need more fans to cool it.</p>
+<h2>Power Supply</h2>
+<p>Disks take a reasonable amount of power when spinning, and even more power when spinning up from still. You will need a PSU that can deliver sufficient power for all these disks.</p>
+<p>You should note that the voltages used by disks are not necessarily the same voltages used by GPUs, so a PSU that has a high wattage (to drive a top-of-the-line GPU may still be unsuitable for a powering the many spinning-rust disk drives in your NAS.</p>
+<h2>Electricity Costs</h2>
+<p>General purpose motherboards, over powerful CPUs, overly powerful GPUs and loads of fans will (obviously) use more electricity than a NAS board specifically designed for NAS use. So your cheap components could end up costing you more in the long run due to electricity costs.&nbsp;</p>
+<h2>Summary</h2>
+<p>If you have the kit to hand <strong>and cannot afford to buy better</strong> then it is certainly better than nothing, but our advice is to avoid building a NAS system from a Tower unit and / or motherboard and / or disks that you happen to have lying around unless you know what you are doing, and test things carefully to avoid failure once you start to use it in production.</p>
+<p>&nbsp;</p>
+<h6><span class="text-big">Links</span></h6>
+<figure class="table" style="width:100%;">
+  <table style="background-color:rgb(33, 33, 33);border-bottom:1px solid rgb(117, 117, 117);border-left:1px solid rgb(117, 117, 117);border-right:1px solid rgb(117, 117, 117);border-top:1px solid rgb(117, 117, 117);">
+    <tbody>
+      <tr>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;width:508.094px;">Previous - <a href="/fester/planning/general-purpose-server">2.3.5 Using a General Purpose Server</a></td>
+        <td style="background-color:rgb(23, 23, 23);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;text-align:center;"><a href="https://wiki.familybrown.org/fester/index">Index</a></td>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;text-align:right;width:510.297px;">Next - <a href="/fester/planning/server-selection">2.3.7 Final Hardware Selection</a></td>
+      </tr>
+    </tbody>
+  </table>
+</figure>

@@ -1,0 +1,59 @@
+<!--
+title: 2.8 Maximising Performance
+description: How to get the best performance out of your TrueNAS server
+published: true
+date: 2024-11-13T13:11:45.674Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-11-13T12:26:21.304Z
+-->
+
+<p>This wiki is aimed at Home, family business and small business users without specialised network storage performance needs, but of course even these users want reasonably good performance e.g. to stream HD videos.</p>
+<p>If you fit into one of these categories of users, this wiki page exists to:</p>
+<ol>
+  <li>Set your mind at rest that there is not a lot you need to do to TrueNAS to get good performance from it out of the box.</li>
+  <li>Remind you where to focus your efforts on improving performance.</li>
+</ol>
+<p>If you are one of the above groups but have a specialised use case that needs particular performance, then this page should give you some further hints on where to focus and how to measure and tweak.</p>
+<h2>Standard Uses</h2>
+<p>By standard use, this page means:</p>
+<ul>
+  <li>Home, family business or small business users with (say) no more than 5 simultaneous users</li>
+  <li>Non-redundant networking</li>
+  <li>Network file sharing for normal desktop applications and media streaming (and not e.g. video editing or iSCSI or performance critical VMs or apps)</li>
+</ul>
+<p>The good news is that providing you follow the guidelines discussed on previous pages, TrueNAS and ZFS should perform pretty well out of the box, and you shouldn't need particularly powerful hardware to achieve great performance.</p>
+<p>For example, Protopia Addams' TrueNAS server is a fairly low-powered box - a 2-core Intel(R) Celeron(R) J3355 CPU&nbsp;running @ only 2.00GHz and 10GB of memory - yet it can still run a few apps, achieve 99% ARC hit rates, fully utilize a Gb ethernet network and stream HD quality video.</p>
+<p>But a few rules of thumb:</p>
+<ul>
+  <li>As previously outlined, it can often be the network which is the bottleneck - so focus your efforts there first.</li>
+  <li>Check your ARC hit rates - if they are below 99% then add more memory to your system.</li>
+  <li>Ensure that you are <i><mark class="pen-red"><strong><u>NOT</u></strong></mark></i> using SMR disks - these are completely and utterly unsuitable for use in a ZFS-based system. Period!</li>
+</ul>
+<h2>Specialised Performance</h2>
+<p>If you think you have specialised performance needs (e.g. video editing, iSCSI, large numbers of users), then here are a few rules of thumb you should follow:</p>
+<ol>
+  <li>Do not bother trying to run read OR write performance benchmarks on your TrueNAS server because the results you will get will almost certainly be highly misleading.<ul>
+      <li>An artificial benchmark will likely be completely different to your real-life workload</li>
+      <li>If you are trying to measure your server hardware performance, ZFS has a LOT of performance optimisations for both reads and writes, and even when you understand these in detail and try to eliminate them, it can still be VERY difficult to undertake a performance measurement which cancels these out and focuses in on the real hardware performance.</li>
+    </ul>
+  </li>
+  <li>Ensure that your LAN is working at full speed end-to-end.</li>
+  <li>Do not try to tweak more performance out of a system that has not been designed to meet your performance needs in the first place.</li>
+  <li>Do not tweak ZFS settings unless you really understand what you are doing. The design of ZFS has been done with performance in mind, and the default tuneable parameters represent an excellent general balance across various types of workload. If you tweak the tuneable parameters without knowing exactly what you are doing, then at best it may have no appreciable effect and at worse it might easily reduce your overall performance.&nbsp;</li>
+  <li>Try to define in as much detail you can what your use case is and then ask for advice in the TrueNAS forums. Because it can be very difficult to change fundamental pool design or settings after it has been created, please try to ask for advice before you build and populate your server rather than afterwards.</li>
+</ol>
+<p>&nbsp;</p>
+<h6><span class="text-big">Links</span></h6>
+<figure class="table" style="width:100%;">
+  <table style="background-color:rgb(33, 33, 33);border-bottom:1px solid rgb(117, 117, 117);border-left:1px solid rgb(117, 117, 117);border-right:1px solid rgb(117, 117, 117);border-top:1px solid rgb(117, 117, 117);">
+    <tbody>
+      <tr>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;width:50%;">Previous - <a href="/fester/planning/virtualisation">2.7 Virtualisation</a></td>
+        <td style="background-color:rgb(23, 23, 23);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;text-align:center;"><a href="https://wiki.familybrown.org/fester/index">Index</a></td>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;text-align:right;width:50%;">Next - <a href="/fester/build-hardware">2.9 Summary: Uncle Fester advises…</a></td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>&nbsp;</p>

@@ -1,0 +1,58 @@
+<!--
+title: Manual disk replacement in TrueNAS SCALE
+description: Partitioning and replacing disks from the shell
+published: true
+date: 2024-06-08T12:20:52.326Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-01-24T11:13:08.567Z
+-->
+
+<p>TrueNAS has long had the ability to expand a pool (or vdev) by replacing each of its disks with larger ones. &nbsp;Unfortunately, TrueNAS SCALE 23.10.0 and 23.10.1 have a <a href="https://ixsystems.atlassian.net/browse/NAS-126809">bug</a> that results in this procedure not working. &nbsp;One way to work around this bug is to do the replacement from the command line. &nbsp;This involves three basic steps:</p>
+<ul>
+  <li>Partition the disks</li>
+  <li>Determine the UUIDs for the new partitions</li>
+  <li>Initiate the disk replacement</li>
+</ul>
+<p>All of these will need to be done at the command line <strong>as the root user</strong>.</p>
+<h2>If you've already done a disk replacement</h2>
+<p>If you've been bitten by this bug (i.e., if you've already replaced disks in a vdev with larger ones, and haven't seen your pool expand), there's no need to go through the procedure below. &nbsp;Instead, just run <code>lsblk</code> to determine the partition number for data on your disk--it will be the largest partition, and by default with TrueNAS SCALE, it will be partition 1. &nbsp;Then run <code>parted /dev/&lt;device&gt; resizepart &lt;num&gt; 100%</code>. &nbsp;If it's partition 1 on <code>/dev/sdz</code>, the command would be <code>parted /dev/sdz resizepart 1 100%</code>. &nbsp;Repeat for each of the disks.</p>
+<h2>Partition the disks</h2>
+<p>You'll partition the disks using the <code>parted</code> command. &nbsp;For each disk, start by running <code>parted /dev/&lt;device&gt;</code>. &nbsp;Then make a new GPT partition table by running <code>mklabel gpt</code>. &nbsp;You'll next create a 2 GB swap partition by running <code>mkpart "" linux-swap 1 2048</code>. &nbsp;This partition size is the default for TrueNAS; if you've set your swap partition size to something different, you may want to modify this command (and the next) accordingly. &nbsp;Next, create the main data partition by running <code>mkpart "" zfs 2048 -1</code>--the <code>-1</code> will use the last sector on the disk as the end of the partition, thereby using all the remaining space on the disk. &nbsp;Run <code>print</code> to make sure the partition table is created correctly, and if it is, <code>quit</code>.</p>
+<p>The complete output will look like this:</p>
+<pre><code class="language-plaintext">root@truenas[~]# parted /dev/sdz
+GNU Parted 3.5
+Using /dev/sdz
+Welcome to GNU Parted! Type 'help' to view a list of commands.
+(parted) print
+Error: /dev/sdz: unrecognised disk label
+Model: ATA ST16000NM000J-2T (scsi)
+Disk /dev/sdz: 16.0TB
+Sector size (logical/physical): 512B/4096B
+Partition Table: unknown
+Disk Flags:
+(parted) mklabel gpt
+(parted) mkpart "" linux-swap 1 2048
+(parted) mkpart "" zfs 2048 -1
+(parted) print
+Model: ATA ST16000NM000J-2T (scsi)
+Disk /dev/sdz: 16.0TB
+Sector size (logical/physical): 512B/4096B
+Partition Table: gpt
+Disk Flags:
+
+Number  Start   End     Size    File system     Name  Flags
+ 1      1049kB  2048MB  2047MB  linux-swap(v1)        swap
+ 2      2048MB  16.0TB  16.0TB  zfs
+
+(parted) quit
+Information: You may need to update /etc/fstab.</code></pre>
+<p>More information can be found about <code>parted</code> in <a href="https://www.gnu.org/software/parted/manual/">its manual</a>.</p>
+<h2>Determine the UUIDs</h2>
+<p>TrueNAS identifies member devices in a ZFS pool using the partition UUIDs, which prevents issues when disks' identifiers change (e.g., from <code>/dev/sdc</code> to <code>/dev/sdg</code>). &nbsp;You'll need to determine the UUIDs of your newly-created partitions before beginning the disk replacement. &nbsp;To do this, run <code>lsblk -o NAME,SIZE,PARTUUID</code>. &nbsp;The command output will look like this:</p>
+<pre><code class="language-plaintext">sdaa       14.6T
+|-sdaa1     1.9G 74acda06-1302-4a9f-ad94-23355db0b481
+`-sdaa2    14.6T 941cb1d0-f341-47b1-b9e5-2dd21568eee2</code></pre>
+<p>The second UUID is the one you want, as it refers to the main data partition you created above. &nbsp;Note this UUID, along with those for all the other data partitions you created above.</p>
+<h2>Initiate the replacement</h2>
+<p>Now, you'll need to kick off the disk replacement process itself using the <code>zpool replace</code> command. &nbsp;Find the UUID of the first disk you want to replace (the output of <code>zpool status</code> will list all the UUIDs that are currently part of your pool). &nbsp;Then run <code>zpool replace &lt;poolname&gt; /dev/disk/by-partuuid/&lt;olduuid&gt; /dev/disk/by-partuuid/&lt;newuuid&gt;</code> (e.g., <code>zpool replace tank /dev/disk/by-partuuid/15bef7ff-980f-4afb-add9-ffe5c5dd6c6d /dev/disk/by-partuuid/e4ea41e6-230a-4df5-b856-6503c23955fd</code>). &nbsp;This will begin the disk replacement process, resilvering the new disk into your pool, and return you to the shell prompt momentarily.</p>

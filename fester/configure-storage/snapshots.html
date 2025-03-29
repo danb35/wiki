@@ -1,0 +1,179 @@
+<!--
+title: Snapshots for Dummies
+description: Perhaps the simplest possible explanation of snapshots
+published: true
+date: 2024-11-13T22:42:18.004Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-05-11T12:44:13.896Z
+-->
+
+<h1>Why ZFS “snapshots” don't make sense</h1>
+<p>This was posted to the <a href="https://forums.truenas.com/t/snapshots-defy-math-and-logic-they-dont-make-sense/4053">TrueNAS forum</a> by @<a href="https://forums.truenas.com/u/winnielinnie">winnielinnie</a> and copied here with permission.</p>
+<p><i>“I don’t really understand how snapshots work.”</i></p>
+<p><i>“Why doesn’t destroying my snapshot free up more space?”</i></p>
+<p><i>“How come these numbers don’t add up?”</i></p>
+<p>Does this sound like you? Stop thinking about ZFS, pools, datasets, blocks, and snapshots.</p>
+<p>You want to demystify snapshots? <strong>Think about trucks, boxes, and colored stickers.</strong></p>
+<hr>
+<h2>What this illustrative walkthrough <i><strong>is not</strong></i>:</h2>
+<p>❌ It’s not a technical explanation of ZFS, snapshots, or any related technology<br>❌ It’s not meant to cover all uses and nuances of snapshots<br>❌ It’s not meant for experienced users or admins of ZFS or TrueNAS</p>
+<h2>What this illustrative walkthrough <i><strong>is</strong></i>:</h2>
+<p>✅ A way to understand ZFS snapsots from a layperson’s view<br>✅ To help demystify snapshots for users new to ZFS or TrueNAS</p>
+<hr>
+<p>You own a truck. It only has so much room for boxes. <strong>Twelve boxes is its maximum capacity.</strong> You like to use your truck to store things for yourself and for others.</p>
+<p>Right from the start, your truck is empty. Say “hello” to your new truck.</p>
+<p>As Confucius said in ancient China, <i>“A truck is most useful when it is empty.”</i></p>
+<p>&nbsp;</p>
+<figure class="image"><img src="https://forums.truenas.com/uploads/default/optimized/2X/0/06bac94c353024081bd7596a9e3030850c99ef98_2_284x500.webp" alt="00-meet-your-empty-pool-and-dataset" srcset="https://forums.truenas.com/uploads/default/optimized/2X/0/06bac94c353024081bd7596a9e3030850c99ef98_2_284x500.webp, https://forums.truenas.com/uploads/default/original/2X/0/06bac94c353024081bd7596a9e3030850c99ef98.webp 1.5x, https://forums.truenas.com/uploads/default/original/2X/0/06bac94c353024081bd7596a9e3030850c99ef98.webp 2x" sizes="100vw" width="284"></figure>
+<p><a href="https://forums.truenas.com/uploads/default/original/2X/0/06bac94c353024081bd7596a9e3030850c99ef98.webp">00-meet-your-empty-pool-and-dataset384×676 5.72 KB</a></p>
+<p>&nbsp;</p>
+<p>There are some rules about your truck, and how to add, remove, and tag boxes.</p>
+<p>Here are the rules:</p>
+<ul>
+  <li>When you <strong>add a new box</strong>, it has a <strong>white sticker</strong> on it</li>
+  <li>If you want to <strong>remove a box</strong>, you must first rip off the white sticker</li>
+  <li>To <strong>tag colored stickers</strong> on your boxes, they must have existing white stickers</li>
+  <li>When you tag with a color, <strong>all boxes with white stickers</strong> must be color-tagged</li>
+  <li>You <strong>cannot use the </strong><i><strong>same</strong></i><strong> color</strong> to create <i>another</i> “color tag set”</li>
+  <li>When you rip off a <strong>colored</strong> tag, <strong>all stickers of this color</strong> must be ripped off</li>
+  <li>A box cannot be removed if it has <strong>at least one sticker</strong> on it</li>
+</ul>
+<p>Please read these rules again. They are very important. As a new truck owner, you are bound to these rules like the laws of nature.</p>
+<hr>
+<p>You decide to add some boxes inside your truck.</p>
+<p>Notice how they all come pre-tagged with white stickers?</p>
+<figure class="image"><img src="https://forums.truenas.com/uploads/default/original/2X/e/e537951901e7ed1a820a2353851e089c1c54d884.webp" alt="01-save-some-data-live-filesystem"></figure>
+<hr>
+<p>Let’s get rid of a couple of these boxes! Remember the rules? First rip off their white stickers!</p>
+<p>If we slow things down, you can see that there is nothing to “protect” these boxes from removal!</p>
+<p><strong>Which means…</strong></p>
+<figure class="image"><img src="https://forums.truenas.com/uploads/default/original/2X/9/95eb667a8ac8b259c5872a0fde885e3b2750ec15.webp" alt="02-prep-delete-no-snaps"></figure>
+<hr>
+<p><strong>…they are removed!</strong></p>
+<p>Good for you! You just made space for two more boxes by ripping off those two particular white stickers. (Not that you really needed the extra room.)</p>
+<p>This concludes the basics of: <i>“If you want to remove boxes, you must first rip off their white stickers. If a box has no more remaining stickers on it? It gets removed!”</i></p>
+<figure class="image"><img src="https://forums.truenas.com/uploads/default/original/2X/8/8f005d8eb2a57293d2f466d12811254a2d0b35a8.webp" alt="03-delete-no-snaps"></figure>
+<hr>
+<p><i>Let’s go back again to try something else instead.</i></p>
+<figure class="image"><img src="https://forums.truenas.com/images/emoji/twitter/clock1030.png?v=12" alt=":clock1030:"></figure>
+<p>Here we are again. You have four boxes with white stickers. Nothing was ever removed.</p>
+<figure class="image"><img src="https://forums.truenas.com/uploads/default/original/2X/e/e537951901e7ed1a820a2353851e089c1c54d884.webp" alt="01-save-some-data-live-filesystem"></figure>
+<hr>
+<p>You add several more boxes inside your truck. All come pre-tagged with white stickers, as expected.</p>
+<p>The truck isn’t full, but space is getting limited…</p>
+<figure class="image"><img src="https://forums.truenas.com/uploads/default/original/2X/7/74bf77fb3f84b21a45f136b4887614f045ae353d.webp" alt="05-add-more-new-files"></figure>
+<hr>
+<p>You like the way things are with your white sticker boxes. <strong>Just like </strong><i><strong>this</strong></i><strong>.</strong> Nothing more, nothing less.</p>
+<p>You’re so satisfied with the current inventory of white sticker boxes that you decide to commemorate this occasion by applying a red sticker to all boxes that currently have a white sticker.</p>
+<p>It’s at this point you realize that no matter what happens to any of your white stickers, you know exactly what this “beautiful set” of boxes was at this exact point in time, since they all have a red sticker on them.</p>
+<figure class="image"><img src="https://forums.truenas.com/uploads/default/original/2X/3/38dd1f3ea4d72c6c50ad474937c9bab9278eda5e.webp" alt="06-red-snapshot-taken"></figure>
+<hr>
+<p>To test this theory out, you rip off the white stickers from two boxes that aren’t so important.</p>
+<p>Lo’ and behold. They are not removed from the truck! Why? Remember the rules? As long as a box has <strong>even just one sticker,</strong> it cannot be removed.</p>
+<p>If you wanted to free up the space of two boxes, that’s too bad. They’re not going anywhere!</p>
+<p>This concludes the basics of: <i>“If a box has even a single sticker on it, whether white or colored, it cannot be removed from the truck.”</i></p>
+<figure class="image"><img src="https://forums.truenas.com/uploads/default/original/2X/9/92d8e4264d263bb2abfe57fab047b50ec36ce912.webp" alt="07-deleting-some-blocks"></figure>
+<hr>
+<p><i>Let’s go back again to try something else instead.</i></p>
+<figure class="image"><img src="https://forums.truenas.com/images/emoji/twitter/clock1030.png?v=12" alt=":clock1030:"></figure>
+<p>Here we are again. You have eight boxes. Nothing was ever removed.</p>
+<figure class="image"><img src="https://forums.truenas.com/uploads/default/original/2X/3/38dd1f3ea4d72c6c50ad474937c9bab9278eda5e.webp" alt="06-red-snapshot-taken"></figure>
+<hr>
+<p>You add a few more boxes in your truck.</p>
+<p>Notice how these newly added boxes have no red stickers on them?</p>
+<p>Unfortunately, you cannot use the same color again if you want to preserve this lovely “set of boxes” that currently have white stickers.</p>
+<p>But wait! You know of a brilliant way to commemorate this “lovely set”. You can tag all white sticker boxes with a <i>new</i> color!</p>
+<p><strong>How about…</strong></p>
+<figure class="image"><img src="https://forums.truenas.com/uploads/default/original/2X/9/9dc2c953885132cddca66b30347a015e644f48da.webp" alt="09-some-more-new-blocks"></figure>
+<hr>
+<p><strong>…blue!</strong></p>
+<p>Yes, that’ll do.</p>
+<p>Every existing white sticker box gets a nice blue sticker! Good thinking!</p>
+<p>You don’t have to worry about how the “red sticker set” does <i>not</i> include those <strong>three new boxes.</strong> You have them protected with your “blue sticker set”.</p>
+<figure class="image"><img src="https://forums.truenas.com/uploads/default/original/2X/d/d762505904446ddce650fc262bd1088b800aaddf.webp" alt="10-blue-snapshot-taken"></figure>
+<hr>
+<p><i>Let’s go back again to try something else instead.</i></p>
+<figure class="image"><img src="https://forums.truenas.com/images/emoji/twitter/clock1030.png?v=12" alt=":clock1030:"></figure>
+<p>Remember how you got to this point? Eleven boxes in total, eight of which have the protection of the “red sticker set”.</p>
+<p>Oh dear. Your truck is getting full. You better remove some boxes…</p>
+<figure class="image"><img src="https://forums.truenas.com/uploads/default/original/2X/9/9dc2c953885132cddca66b30347a015e644f48da.webp" alt="09-some-more-new-blocks"></figure>
+<hr>
+<p>Simple! You’ll just rip off the white stickers from two boxes that really aren’t so important upon reviewing your inventory. That should free up some room to…</p>
+<p><strong>Hey, wait a minute! That didn’t remove the boxes? That didn’t free up some extra room?</strong></p>
+<p>It’s those stupid red stickers! You <i>could</i> remove the entire “red sticker set”, but you don’t want to lose the protection on <i>all</i> your white sticker boxes.</p>
+<p>What to do? What to do? You want to preserve the current state of your white sticker boxes.</p>
+<p><strong>Oh, of course, there is a solution…</strong></p>
+<figure class="image"><img src="https://forums.truenas.com/uploads/default/original/2X/f/fbba087a12689acbebc3dca70d2f89a28ade0d5f.webp" alt="12-deleting-blocks-red-snap-protection"></figure>
+<hr>
+<p><strong>…blue sticker set to the rescue!</strong></p>
+<p>By tagging all existing white sticker boxes, you get to preserve this current set of white sticker boxes.</p>
+<p>This means that <i>if</i> you want to free up some space later, you can simply remove the entire red sticker set, while you get to keep a nice blue sticker set for future protection, since you totally like this <i>current</i> white sticker set.</p>
+<figure class="image"><img src="https://forums.truenas.com/uploads/default/original/2X/7/7b4236d8c52c889682c468f2aa719061d679f35e.webp" alt="13-blue-snap-taken"></figure>
+<hr>
+<p>In all your excitement, <strong>you forgot that the box in the bottom left corner is actually </strong><i><strong>not</strong></i><strong> important.</strong></p>
+<p>You rip off the white sticker!</p>
+<p>Of course, this box stays in the truck because it still has <strong>at least one sticker</strong> on it. <strong>A blue one.</strong> If only you hadn’t rushed things.</p>
+<figure class="image"><img src="https://forums.truenas.com/uploads/default/original/2X/d/d10b46fa3ac0a080f3c95adac1af9e79d44c50ca.webp" alt="14-deleting-blocks-blue-snap-protection"></figure>
+<hr>
+<p>You don’t have time to think. A friend needs you to add a new box to your truck.</p>
+<p>Now it’s at full capacity!</p>
+<p><strong>But your friend doesn’t stop there…</strong></p>
+<figure class="image"><img src="https://forums.truenas.com/uploads/default/original/2X/8/8e3f550c0d452e736e355918fb243700dcc99531.webp" alt="15-yet-more-blocks-capacity-getting-full"></figure>
+<hr>
+<p><strong>…he wants to protect his box!</strong> So he tags all white sticker boxes with a green sticker set!</p>
+<p>What is his deal? How is he even your friend?</p>
+<figure class="image"><img src="https://forums.truenas.com/uploads/default/original/2X/0/067f6dcb91fe229c2b13561aec60a012347c40e4.webp" alt="16-green-snap-taken"></figure>
+<hr>
+<p>You’ve had it. You feel your blood boiling. You go into a mad rage!</p>
+<p><strong>You want to remove </strong><i><strong>all</strong></i><strong> boxes from the truck,</strong> move to another city, and start over with an empty truck.</p>
+<p>You rip off all the white stickers. It’s time to say “bye bye” to all remaining boxes!</p>
+<p>What’s this? The truck remains full? Not a single box was removed?</p>
+<p>Oh, that’s right. Every box has <strong>at least one sticker</strong> on it.</p>
+<figure class="image"><img src="https://forums.truenas.com/uploads/default/original/2X/5/5cb38a1506d83d25cbdfb1c7bc06a1cc0fc7c625.webp" alt="17-rage-delete"></figure>
+<hr>
+<p>What if you were to rip off the <strong>red</strong> sticker set? How much room would free up?</p>
+<p><strong>Only </strong><i><strong>two?</strong></i></p>
+<figure class="image"><img src="https://forums.truenas.com/uploads/default/original/2X/6/61401629621518134f275504ae45735f00bac3fc.webp" alt="18-red-snap-destroyed"></figure>
+<hr>
+<p><i>Let’s go back again to try something else instead.</i></p>
+<figure class="image"><img src="https://forums.truenas.com/images/emoji/twitter/clock1030.png?v=12" alt=":clock1030:"></figure>
+<figure class="image"><img src="https://forums.truenas.com/uploads/default/original/2X/5/5cb38a1506d83d25cbdfb1c7bc06a1cc0fc7c625.webp" alt="17-rage-delete"></figure>
+<hr>
+<p>What if you were to rip off the <strong>blue</strong> sticker set? How much room would free up?</p>
+<p><strong>Only </strong><i><strong>one?</strong></i></p>
+<figure class="image"><img src="https://forums.truenas.com/uploads/default/original/2X/9/9d67d981df8e0bc28a1df20e269309003d2cf1f0.webp" alt="20-blue-snap-destroyed"></figure>
+<hr>
+<p><i>Let’s go back again to try something else instead.</i></p>
+<figure class="image"><img src="https://forums.truenas.com/images/emoji/twitter/clock1030.png?v=12" alt=":clock1030:"></figure>
+<figure class="image"><img src="https://forums.truenas.com/uploads/default/original/2X/5/5cb38a1506d83d25cbdfb1c7bc06a1cc0fc7c625.webp" alt="17-rage-delete"></figure>
+<hr>
+<p>What if you were to rip off the <strong>green</strong> sticker set? How much room would free up?</p>
+<p><strong>Only </strong><i><strong>one?</strong></i></p>
+<figure class="image"><img src="https://forums.truenas.com/uploads/default/original/2X/1/1d873087a1374cec824ccd90a609636770cd56b6.webp" alt="22-green-snap-destroyed"></figure>
+<hr>
+<p><i>Let’s go back again to try something else instead.</i></p>
+<figure class="image"><img src="https://forums.truenas.com/images/emoji/twitter/clock1030.png?v=12" alt=":clock1030:"></figure>
+<figure class="image"><img src="https://forums.truenas.com/uploads/default/original/2X/5/5cb38a1506d83d25cbdfb1c7bc06a1cc0fc7c625.webp" alt="17-rage-delete"></figure>
+<hr>
+<p>What if you were to rip off the <strong>red</strong> <i>and</i> <strong>green</strong> sticker sets? How much room would free up?</p>
+<p><strong>Only </strong><i><strong>three?</strong></i></p>
+<p>Well, I guess that makes sense?</p>
+<figure class="image"><img src="https://forums.truenas.com/uploads/default/original/2X/8/86bc626cbdbae1e39defbd6c20845bcb733ce623.webp" alt="24-red-and-green-snaps-destroyed"></figure>
+<hr>
+<p><i>Let’s go back again to try something else instead.</i></p>
+<figure class="image"><img src="https://forums.truenas.com/images/emoji/twitter/clock1030.png?v=12" alt=":clock1030:"></figure>
+<figure class="image"><img src="https://forums.truenas.com/uploads/default/original/2X/5/5cb38a1506d83d25cbdfb1c7bc06a1cc0fc7c625.webp" alt="17-rage-delete"></figure>
+<hr>
+<p>What if you were to rip off the <strong>red</strong>, <strong>blue</strong>, <i>and</i> <strong>green</strong> sticker sets? How much room would free up?</p>
+<p><strong>Let’s do the math.</strong></p>
+<p>Ripping off the <strong>red</strong> sticker set would supposedly free up <strong>two</strong> boxes.</p>
+<p>Ripping off the <strong>blue</strong> sticker set would supposedly free up <strong>one</strong> box.</p>
+<p>Ripping off the <strong>green</strong> sticker set would supposedly free up <strong>one</strong> box.</p>
+<p>2 + 1 + 1 = <strong>4</strong></p>
+<p>Therefor, ripping off the <strong>red</strong>, <strong>blue</strong>, <i>and</i> <strong>green</strong> sticker sets will obviously free up <strong>four</strong> boxes.</p>
+<p>Let’s try it now!</p>
+<p>What’s this?! IT FREED UP <i><strong>TWELVE</strong></i> BOXES?</p>
+<figure class="image"><img src="https://forums.truenas.com/uploads/default/original/2X/b/baa86b608dfca858c992fa04350fd89985d1aa26.webp" alt="26-all-snaps-destroyed"></figure>
+<hr>
+<p>The end.</p>

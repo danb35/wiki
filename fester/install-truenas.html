@@ -1,0 +1,37 @@
+<!--
+title: 5. Installing and Configuring TrueNAS
+description: 
+published: true
+date: 2024-11-13T22:32:59.011Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-04-07T13:34:32.098Z
+-->
+
+<p>This section of the Uncle Fester wiki covers the process of installing and configuring the basic TrueNAS operating system, including setting up an administrative user, configuring network ports, and indeed all other O/S level configurations that do <i><strong>NOT</strong></i> include storage or apps/VMs, and then stress testing all your hardware to confirmn that once you move your data onto the server it will provide a reliable 24/7 service.</p>
+<p>Configuration of storage, network sharing of that storage, applications and VMs will be covered in later sections.</p>
+<h2>Section Contents</h2>
+<ol>
+  <li>Creating a bootable TrueNAS Installer<ul>
+      <li>Download the TrueNAS ISO from <a href="https://www.truenas.com/download-truenas-core/">https://www.truenas.com/download-truenas-core/</a> for TrueNAS CORE, or <a href="https://www.truenas.com/download-truenas-scale/">https://www.truenas.com/download-truenas-scale/</a> for TrueNAS SCALE (recommended)</li>
+      <li>Write that ISO to a USB stick following <a href="/fester/write-image-to-usb">these instructions</a></li>
+    </ul>
+  </li>
+  <li>Check your BIOS settings<ul>
+      <li>See <a href="/fester/build-hardware/configure-bios">this page</a></li>
+    </ul>
+  </li>
+  <li>Installing TrueNAS itself<ul>
+      <li>Boot from the USB stick you created above and follow the prompts</li>
+      <li>Note that TrueNAS requires a dedicated boot device; don't install it on a drive you're intending to use for storage</li>
+    </ul>
+  </li>
+  <li>Setup an admin userid</li>
+  <li>Configure your network ports</li>
+  <li>Exploring the TrueNAS UI</li>
+  <li>Additional O/S configuration</li>
+  <li>Stress Testing your Hardware<ul>
+      <li>See <a href="/fester/build-hardware/validate-hardware">these instructions</a></li>
+    </ul>
+  </li>
+</ol>

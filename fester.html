@@ -1,0 +1,93 @@
+<!--
+title: Uncle Fester's Basic TrueNAS Configuration Guide
+description: A beginners guide to planning, installing and configuring TrueNAS
+published: true
+date: 2025-01-31T15:41:34.783Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-04-03T14:42:01.869Z
+-->
+
+<h1>Introduction</h1>
+<figure class="image image_resized image-style-align-right" style="width:19.36%;"><img src="/intro_fester.png"></figure>
+<p>Welcome to Uncle Fester's Basic TrueNAS Configuration Guide.</p>
+<p>This guide has been written primarily for complete beginners to TrueNAS, and we hope that it will not get too technical too quickly, and that you will be able to understand the concepts and follow the guidance (although some general computer knowledge is assumed).</p>
+<p>Therefore, depending on your level of knowledge and experience, you probably won’t need to read all the sections.</p>
+<p>That said, whilst we want this to be accessible by most (if not all) (non-Enterprise) TrueNAS users, we also want it to be <i><strong><u>THE</u></strong></i> place to come to find out how to build and manage a TrueNAS server. So we want it to be comprehensive, and detailed but yet easy to read and understand - and we are not sure whether these are possible together&nbsp;</p>
+<p>There is some Fester humour throughout the guide (or what passes for humour in Fester’s very strange world). It is there to try and keep the user of this guide going until they reach the end. This is a very boring document. The humour will not be to everyone’s taste. If you find it offensive just ignore it and move on; Uncle Fester means no harm (though I am not sure we can say for several other members of the Addams Family).</p>
+<h2>Aim and Scope of This Guide</h2>
+<figure class="image image_resized image-style-align-right" style="width:22.43%;"><img src="/intro-target.png"></figure>
+<p>This guide is for people who want or need to set up TrueNAS as quickly as possible with a minimum of fuss.</p>
+<p>The aim is to provide all the information you need in one place to decide what you need, and then to set up a basic TrueNAS server.</p>
+<p>It is not intended to teach or educate - but nevertheless you might find yourself a little bit “edicated” by it.</p>
+<p>However this guide is exactly that, a guide. It is not intended to be, and actually isn't any substitute for the detailed official documentation provided by ixSystems, or the Community Forums hosted by ixSystems and full of detailed answers provided by other community members in response to detailed questions asked by different community members.&nbsp;</p>
+<p>The official ixSystems documentation can be found at the following links:</p>
+<ul>
+  <li><a href="https://www.truenas.com/docs/scale/24.10/">TrueNAS SCALE 24.10 Electric Eel</a> (the currently recommended release)</li>
+  <li><a href="https://www.truenas.com/docs/scale/24.04/">TrueNAS SCALE 24.04 Dragonfish</a> (the previous release)</li>
+  <li><a href="https://www.truenas.com/docs/core/13.0/">TrueNAS CORE 13</a> (the current CORE release)</li>
+</ul>
+<p>The community knowledge bases can be found at:</p>
+<ul>
+  <li><a href="https://forums.truenas.com/">Current forums</a></li>
+  <li><a href="https://www.truenas.com/community/">Historical archive</a></li>
+</ul>
+<p><i><strong>The current update to cover TrueNAS SCALE is still work-in-progress, so please bear with us for any disruption to structure or links and whilst we develop more content.</strong></i></p>
+<h2>Contributions</h2>
+<figure class="image image_resized image-style-align-right" style="width:17.28%;"><img src="/intro-quick-quotes-quill.png"></figure>
+<p><strong>This guide is not an official ixSystems publication.</strong></p>
+<p>It was originally written for FreeNAS by a long time user going by the name Uncle Fester, and more recently others FreeNas/TrueNAS users have taken it on in order to preserve it, to keep it current with TrueNAS versions, and to enhance it further to be even more help to new users.&nbsp;</p>
+<p>From a style perspective, the guide has always tried to liven up what could otherwise be morbidly dull by including some humour inspired by the Family Addams TV programmes, and the current authors have tried their hardest to continue this, and this this guide continues to have all the consummate professionalism that you would naturally expect from a bunch of reprobates like us.&nbsp;</p>
+<p>More seriously, we are not qualified teachers, and we are haven't had any formal training from ixSystems. We are just a bunch of TrueNAS users who, just like you, were beginners at some point, and we have learned about TrueNAS both from this guide and from our own experiences (including by making mistakes). But we also know that we have all benefitted massively from being able to use FreeNAS/TrueNAS CORE/TrueNAS SCALE for free, and so want to give something back to the TrueNAS community, and help others successfully to implement TrueNAS with the least amount of hassle or pain and the fewest false starts and blind alleys, and thus help grow the TrueNAS community still further.</p>
+<p>This site is intended to be complementary to:</p>
+<ul>
+  <li><a href="https://www.truenas.com/docs/">The TrueNAS documentation</a></li>
+  <li><a href="https://forums.truenas.com/">The TrueNAS forums</a></li>
+  <li><a href="https://www.truenas.com/community/">The TrueNAS community archives</a></li>
+  <li><a href="https://openzfs.org/wiki/System_Administration">The Open ZFS documentation</a></li>
+</ul>
+<p>We do not want to repeat the detail that these other sites provide, but do want to distill down what they say to the practical minimum and make it easy to find what you need.&nbsp;</p>
+<p>Equally, we are also not the experts on every single part of TrueNAS or on every type of TrueNAS system - assuming that we are in fact experts on anything at all. From your own experiences you could easily be more knowledgeable in some areas than we are, so please (pretty please) help us improve this site still further by contributing yourself.&nbsp;</p>
+<p>It is our hope that others will contribute, augment, update and completely replace parts of this guide so it can be a useful resource to all TrueNAS <i>beginners</i>. To more easily enable this, the guide is highly sectionalised and released under a <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/">Creative Commons Attribution Non-Commercial No-Derivatives 4.0 International license</a> which means that you are free to use and share this information without charge so long as you don't charge for it&nbsp;and don't change it from what is published here. Despite what the license says, this does not mean that you cannot contribute and change this wiki - we absolutely want you to help and welcome any contributions - but rather that if you want to contribute you need to do so here (on the master version) rather than fork it and create a separate and different version.</p>
+<p>If you want to contribute to help those who follow on by adding your own experiences to this wiki (and we would love you to join the Adamms Family) then you will need to register a userid on this site. You can then edit or add Wiki pages as you see fit. If you make a contribution, then please add your name to the list of contributors below.</p>
+<p>If you don't have the time or inclination to contribute, that is still fine - there really is no obligation to contribute as an editor. But if you have plaudits or constructive criticisms or anecdotes based on your own experiences, then please feel free to use the Discussion / Comments box on each page to give feedback.</p>
+<h2>The Addams Family Contributors</h2>
+<figure class="image image_resized image-style-align-right" style="width:13.27%;"><img src="/intro-addams-family.png">
+  <figcaption>The Addams Family<br>(from 1991 film)&nbsp;</figcaption>
+</figure>
+<ul>
+  <li>Uncle Fester<a href="https://www.truenas.com/community/members/unclefester.56907/"><sup>Old forum</sup></a> Addams - an old-time FreeNas user, who wrote the first version of this guide. We have tried as much as we can to limit Uncle Fester's comments to those (or similar to those) in the original guide.</li>
+  <li>Dan<a href="https://forums.truenas.com/u/dan/"><sup>Forum</sup></a><sup>|</sup><a href="https://www.truenas.com/community/members/danb35.3713/"><sup>Old forum</sup></a> &nbsp;Addams- Took it on and created a DocuWiki version, and then this wiki.js version and updated it to cover TrueNAS CORE 13.</li>
+  <li>Protopia<a href="https://forums.truenas.com/u/protopia/"><sup>Forum</sup></a><sup>|</sup><a href="https://www.truenas.com/community/members/protopia.126402/"><sup>Old forum</sup></a> Addams - A brash newcomer and upstart, bringing a SCALE viewpoint to this guide.</li>
+  <li>…</li>
+</ul>
+<p>The above contributors would like to thank all the other characters from the Addams Family TV programmes who have graciously contributed their unique (and vaguely humorous) insights into TrueNAS in their own inimitable styles.</p>
+<h2>Disclaimer</h2>
+<figure class="image image_resized image-style-align-right" style="width:13.27%;"><img src="/intro-warning.png"></figure>
+<p>This guide has not been written by anyone from ixSystems. It has been written by ordinary users who were/are TrueNAS complete beginners to assist other complete beginners.</p>
+<p><i><strong>Proceed at your own risk.</strong></i> We will not be held responsible for anything that happens to your system, you, your hair, the real wood veneered floor, your prostate gland or the world in general. Neither Uncle Fester nor the other authors of this wiki <strong>take any responsibility for anything</strong> (just ask anyone who knows us - we are reprobates after all).</p>
+<h2>Contents</h2>
+<ol>
+  <li><a href="/fester/introduction">Introduction</a></li>
+  <li><a href="/fester/planning">Planning</a></li>
+  <li><a href="/fester/build-hardware">Building Your Server Hardware</a></li>
+  <li><a href="/fester/configure-network">Configuring your Network</a></li>
+  <li><a href="/fester/install-truenas">Installing and Configuring TrueNAS</a></li>
+  <li><a href="/fester/configure-nas">Configuring TrueNAS Storage Services</a></li>
+  <li><a href="/fester/configure-apps">Configuring Application Services</a></li>
+  <li><a href="/fester/data-migration">Migrating Your Data</a></li>
+  <li><a href="/fester/systems-maintenance">Managing Your Live TrueNAS Server&nbsp;</a></li>
+</ol>
+<p>&nbsp;</p>
+<h6><span class="text-big">Links</span></h6>
+<figure class="table" style="width:100%;">
+  <table>
+    <tbody>
+      <tr>
+        <td style="width:50%;">Previous - None</td>
+        <td style="text-align:center;"><a href="/fester/index">Index</a></td>
+        <td style="text-align:right;width:50%;">Next - <a href="/fester/introduction">1. Introduction</a></td>
+      </tr>
+    </tbody>
+  </table>
+</figure>

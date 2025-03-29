@@ -1,0 +1,40 @@
+<!--
+title: Installing TrueNAS Core
+description: If you have decided to install CORE rather than SCALE...
+published: true
+date: 2024-04-07T16:13:19.929Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-01-13T12:09:51.508Z
+-->
+
+<p>Start by powering down the server if it isn’t powered down already.</p>
+<p>Insert the bootable TrueNAS USB stick and switch on the server.</p>
+<p>If all goes well you will eventually be presented with the GNU GRUB screen.</p>
+<p>Hit the “Return/Enter” key or wait for the counter to reach zero (shown in a red circle in the screen shot) and the process will start automatically.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:34d8477015cfa24260c57dcbfa64eb18.png" alt=""></figure>
+<p>The TrueNAS console setup screen will appear.</p>
+<p>Navigate around it using the “←→↑↓” keys and to activate your choice hit the “Return/Enter” key.</p>
+<p>Chose option 1 “Install/Upgrade” (1), select “OK” (2) and press the “Return/Enter” key.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:7393f216bf8a8319de1c50cb5cd12c27.png" alt=""></figure>
+<p>Now select the storage device you want the TrueNAS OS installed on (in Fester’s case it’s the SSD drive). Do not chose any of the HDDs you intend to use for your data, the TrueNAS OS cannot reside on any of the data storage disks (in Fester’s server that is any of the WD40EFRX HDDs).</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:6b653857273174fad99ffe1fe035c636.png" alt=""></figure>
+<p>With the drive of your choice selected press the “Space Bar” key and an asterisk should appear next to the selected drive (1) now select “OK” (2) and press the “Return/Enter” key. If you want to install to two mirrored USB sticks, select them both and the installer will create the mirror.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:50c38192658e6c7b01d2eb7e7f1efd20.png" alt=""></figure>
+<p>If you see the following screen (it will only appear if TrueNAS has previously been installed on your boot device), select “Fresh Install” on the next screen and hit the “Return/Enter” key.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:4249a74337ca373d3d44d4f56c771118.png" alt=""></figure>
+<p>A warning screen will now appear, just select “Yes” and press the “Return/Enter” key.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:a44d7c5458761f04361e1a24b53c6ecd.png" alt=""></figure>
+<p>The next screen will ask you to create a login password for accessing TrueNAS. This is the final installation so a strong password (1) is recommended (you can change it later in the TrueNAS web GUI), just make sure you remember it.</p>
+<p>Now press the “Tab” key, this should take you to the “Confirm Password” section and re-enter your password (2).</p>
+<p>Press the “Tab” key again and this should take you to the “OK” section (3), press the “Return/Enter” key and the installation should begin.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:abff735128c7e2874969a55c86ef6b21.png" alt=""></figure>
+<p>When the installation is complete you should see a screen like this. Power off the server and remove the USB stick.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:34633604931934be57ae8647166d7337.png" alt=""></figure>
+<p>Now power up the server and the first screen you encounter will be the GNU GRUB screen, don’t press any keys just wait a few seconds and it will automatically continue booting up TrueNAS.</p>
+<p>When TrueNAS has finished booting you should see a screen like this with the IP address of the TrueNAS web GUI on display (shown in red in the screen shot).</p>
+<p>(There are 4 IP addresses on Fester’s screen because there are 4 NICs on the motherboard, and he has them all plugged in. This isn't ordinarily a good configuration–only plug in one NIC.)</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:c199f0688326360af94ea4a1ecec4386.png" alt=""></figure>
+<p>Make a note of the IP address/s for the TrueNAS web GUI, it will be needed soon.</p>
+<p>That’s TrueNAS installed; now we need to configure it.</p>
+<p>(By using IPMI or looking it up in your router’s attached devices table, you will always be able to find the TrueNAS web GUI even if it changes.)</p>

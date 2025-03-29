@@ -1,0 +1,94 @@
+<!--
+title: 2.3.1 Minimum / Other Hardware Guidelines
+description: What is the absolute minimum hardware TrueNAS will run on?
+published: true
+date: 2024-07-26T00:22:04.828Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-04-10T16:53:18.304Z
+-->
+
+<p>This page describes the absolute bare minimum hardware that TrueNAS will run on. This is almost certainly NOT the specification of the hardware you need to buy, but it does help to define what hardware you can't run it on&nbsp;</p>
+<p>The minimum hardware requirements for both TrueNAS CORE and SCALE are actually quite modest for 2024:</p>
+<ol>
+  <li><strong>Two-core, 64-bit, AMD or Intel CPU</strong>
+    <ul>
+      <li>TrueNAS does not run on 32-bit intel or ARM processors.</li>
+      <li>The amount of CPU power required for standard NAS storage functionality is relatively small, especially since there is no console GUI, and like many FreeBSD/Linux distributions, TrueNAS runs impressively fast on hardware that e.g. Windows would crawl on.</li>
+      <li>If you intend to do on-the-fly media transcoding (using Plex or Jellyfin for example) then you might need a significantly more powerful processor, but background media transcoding can still be acceptable on slower dual-core processors.</li>
+      <li>If you intend to run Virtual Machines then, again, you may need a more powerful processor.</li>
+    </ul>
+  </li>
+  <li><strong>At least 8 GB of RAM</strong>
+    <ul>
+      <li>For decent performance ZFS heavily relies on RAM to hold a cache of disk data (at a minimum the disks metadata), so the memory required to get decent cache hits is proportionate to the amount of data you are storing, and even for smaller NAS configurations, ixSystems recommends that you provide at least 16GB of RAM.</li>
+      <li>Because the integrity of your data is essential, and because the servers often run for months (if not years) without a restart, ixSystems recommends that you use ECC RAM.<sup>[1]</sup></li>
+      <li>The key metric for memory usage is the amount of RAM available for the ZFS cache after the system and apps have loaded, and the proportion of disk read requests that can be satisfied from cache. Users of small-ish TrueNAS servers have still reported cache hit rates of over 99.9% with only 8GB to 10GB of memory<sup>[1]</sup>.</li>
+      <li>On the <a href="https://forums.truenas.com/t/ram-size-for-dragonfish/3542">TrueNAS Forums</a> user <a href="https://forums.truenas.com/u/Captain_Morgan"><strong>@Captain_Morgan</strong></a> posted a set of guidelines for memory:<ul>
+          <li>8 GB of RAM for basic TrueNAS operations with up to eight drives</li>
+          <li>Add 1 GB for each drive added after eight to benefit most use cases.</li>
+          <li>Add extra RAM (in general) if more clients connect to the TrueNAS system.</li>
+          <li>If using iSCSI to back up VMs, plan to use at least 16 GB of RAM for good performance and 32 GB or more for optimal performance.</li>
+          <li>Add 2 GB of RAM for directory services for the Winbind internal cache.</li>
+          <li>Add more RAM for plugins and jails, as each has specific application RAM requirements. Unfortunately that RAM requirements are NOT well documented so calculating your memory requirements in advance during the planning stage can be difficult.</li>
+          <li>Add more RAM for virtual machines with a guest operating system and application RAM requirements.</li>
+          <li>Add the suggested 5 GB per TB of storage for deduplication that depends on an in-RAM deduplication table.</li>
+          <li>Add approximately 1 GB of RAM (conservative estimate) for every 50 GB of L2ARC in your pool. Attaching an L2ARC drive to a pool uses some RAM, too. ZFS needs metadata in ARC to know what data is in L2ARC.</li>
+        </ul>
+      </li>
+      <li>SUMMARY: A simplified rule of thumb for most home users (with ≤ 8 drives and using SMB and a few apps) is 8GB plus memory as required for your apps.</li>
+    </ul>
+  </li>
+  <li>A boot disk, at least 16 GB in size:<ul>
+      <li>SATA or NVMe SSDs are recommended.</li>
+      <li>Do not use USB Flash disks. TrueNAS writes a status file to the system drive every few minutes and a USB Flash Drive (which supports a limited number of writes) will fail pretty quickly.</li>
+      <li>ixSystems recommends using a SATA connected drive, however a USB connected SSD works well if you are strapped for SATA ports (and you may well be).</li>
+      <li>If the server is mission critical and you cannot survive without it for a while if your system drive crashes, you will want to provide a 2nd mirrored drive for redundancy, but this will, of course, use another SATA port.</li>
+      <li>ixSystems states that you should dedicate the whole of the boot drive(s) to the boot pool and shouldn't use this device for anything else like file storage, apps, or virtual machines, but with most SSD drives being substantially bigger than 16GB, and SATA ports for additional SSDs often being limited, users have successfully installed TrueNAS on a 16GB partition and used the remaining SSD space for other purposes (such as Apps).</li>
+    </ul>
+  </li>
+  <li>At least one disk for storage<ul>
+      <li>Almost all (and maybe absolutely all) users will have 2 or more drives configured with redundancy so they won't lose data if a single drive fails.</li>
+      <li>If you have a mixture of HDDs and SSDs these should be configured as separate pools.</li>
+      <li>If you have 2 drives of a type, configure them as a single mirrored vDev (virtual device) &amp; pool. If you have 3-8 drives of a type, configure them as a single RAIDZ vDev. If you have more than 8 drives, you probably want to configure them as multiple vDevs and pools. A vDev will use an identical amount of disk space on all the drives that it uses - so having all drives in a vDev of the same size allows for the easiest utilisation (though it is possible but more complex to use all the disk space if you have (say) a mixture of 2 disk sizes).</li>
+      <li>Apps and the data they create and use can reside on either HDD or SSD, but because apps run 24x7 and tend to have smaller amounts of data that are read and written more frequently than the network data, it often makes more sense to store Apps and their data on SSD.</li>
+      <li>You may read about creating L2APC or SLOG datasets on SSD, but unless you have an extremely large NAS and lots of memory you don't need an L2APC, and unless you do a lot of synchronous writes (and if you don't know what this means or whether you need it, then you almost certainly don't), you won't need an SLOG.</li>
+      <li>The number of SATA ports you will need for the boot SSD (and mirror) and separate Apps SSD (and mirror) and then general HDDs will be a critical factor when choosing your hardware (and be a significant contributor to your hardware costs).</li>
+      <li>Because of limited SATA ports, despite this being <strong>against the ixSystems recommendations</strong>, a number of users successfully limit the boot-pool usage of the boot SSD to 16GB, and use the remaining space for a separate Apps pool. (Despite this <strong>not</strong> being a configuration supported by ixSystems, users do report that they have had no issues running TrueNAS this way or upgrading it from version to version<sup>[1]</sup>.)</li>
+    </ul>
+  </li>
+  <li>At least one Ethernet port</li>
+</ol>
+<ul>
+  <li>Only hard-wired Ethernet is supported - Wi-Fi is <strong>not</strong> supported.</li>
+  <li>USB ethernet adapters are not supported</li>
+  <li>Intel adapters are strongly recommended</li>
+  <li>Ethernet speeds ideally need to be matched from the NAS port via Switches / Routers to end devices or Wifi Access Points. You may need to invest in significant upgrades to your LAN to maximise the network performance of your NAS data access and / or streaming.</li>
+</ul>
+<p><sup>[1]</sup> Protopia Addams has a 2nd hand commercial appliance TrueNAS SCALE system with a two core processor, 10GB of non-ECC RAM, a single boot USB&nbsp;SSD which is shared with an App pool, and 5x 4TB HDDs. This system has 6 installed apps that use a total of c.600GB of memory, though in the graph below this is not separated out from the base O/S and the TrueNAS Scale internal containers that take the 4.9GB of memory. Yet despite having onlu c. 4GB for the ZFS ARC cache, it still achieves a cache hit rate of &gt; 99.9% and without any noticeable performance delays and no reported data corruption. Whilst the Addams Family has a reputation for wanting to scare people, apparently not on this occasion!!&nbsp;</p>
+<figure class="image"><img src="/scale-memory-usage-cache-hits.png"></figure>
+<h2>Other hardware guidelines…</h2>
+<ol>
+  <li>You are about to build a server. &nbsp;It will running 24x365 for years on end, and months or even years without a restart, and you will come to rely on it operating without hiccups. It is therefore very worthwhile to use proper server hardware rather than cobbling something together from older technology that you happen to have spare.</li>
+  <li>Because it is using electricity 24x365 too, the electricity costs will be significant and power efficiency is important.</li>
+  <li>Desktop or gaming motherboards often include hardware (e.g. onboard sound card, powerful GPU, LED lighting, fancy fans, transparent cases) that will not provide any benefit but you will still pay for and will still use electrical power. Similarly, if they include a network card, it may not be good enough to keep up with the network load of a NAS.</li>
+  <li>If the additional cost is not too great, do look for a motherboard/CPU/system that supports ECC RAM. Contrary to some material that's out there, there's nothing about ZFS that makes ECC uniquely important, but your NAS will run 24x365 with months or years between restarts, and if you care about your data not being corrupted, then ECC RAM can contribute to the integrity of your data.</li>
+  <li>If you are purchasing a rack-mounted server for your NAS, consider a server with remote management support. &nbsp;Supermicro's IPMI, HPE's iLO, and Dell's iDRAC give you access to the console of your server over the network, so you don't need to plug in a keyboard and monitor to see what's going on if there's a problem. &nbsp;In some cases, you can even mount media over the network, which would allow you to (e.g.) install TrueNAS without flashing a boot device.</li>
+  <li>Realtek network interfaces are garbage. &nbsp;Whilst they may be OK for a desktop system, don't use them for a NAS. &nbsp;If you have to use a motherboard that includes one, buy a separate Intel NIC and use that instead.</li>
+  <li>If you are looking to expend the number of SATA ports beyond those provided as standard by your motherboard, only use decent Host Bus Adapter (HBA) PCI-E cards for this. Do NOT use NVME or M.2 adapters (or worse still USB adapters) or those which are not genuine HBA. Some SATA controller chips are better than others - some will overheat, some will multiplex access which screws performance and (if it swaps the I/O order sent by TrueNAS) can lead to data corruption. Some SATA boards do not pass through the serial number details of the SATA disks, and since these are required by TrueNAS these boards will simply not work.</li>
+  <li>Be careful about where you get your disks from - think very carefully before putting to critical data on 2nd-hand drives. You do not want disks which are near the end of their life, nor do you want disks which might have been mishandled in the past. (Protopia Addams sent the first batch of disks back to Amazon because they were shipped in a paper envelope without protective packaging and the delivery driver had lobbed them over the gate - no way was he going to trust these disks with his data, because even if the disks seemed OK to start with, and even though he was going to have redundancy, he did not want &gt; 1 of them failing within a short timeframe.) Think about sourcing your (identical) disks in two batches in order to minimise the risks of having disks from the same batch fail at similar times.</li>
+  <li>If this is a home or small business NAS, and you are only running a NAS and a few applications and not VMs or seriously heavy apps, consider using older server hardware. There really haven't been any significant advances in the last five years or so that would be relevant to a NAS, and the cost savings can be significant.</li>
+  <li>Consider whether you want to plan for future expansion or not. If you will need to expand your storage later, in many cases this means adding extra disks rather than replacing existing ones so you will need to plan for more SATA ports and more disk slots (and possibly extra memory). Alternatively you may want to plan on this NAS having a finite life, to be replaced with a bigger (and more modern) one when you need it.</li>
+</ol>
+<p>In general terms you should <strong><u>NOT</u></strong> plan to start with the minimum amount of disk space now and add more disks one by one as you need more space:&nbsp;</p>
+<ol>
+  <li>You can easily expand a pool by adding a new (similarly redundant) vDev to an existing pool - in other words for a mirror pool you can buy 2 new drives to add a new mirrored vDev and increase the size of the pool, or for a RAIDZx pool you can buy (say) 4+ new drives to add another RAIDZx vDev.</li>
+  <li>In newer versions of ZFS you can also add an additional drive to an existing RAIDZx vDev, but you may need to do additional work to rebalance the storage and I/Os across these drives e.g. by copying files which can be both quite technical and pretty time consuming.</li>
+  <li>You can also buy larger replacements for each and every drive in an existing mirror or RAIDZx vDev and swap them over one-by-one, waiting for the resilver to complete for each drive before replacing the next one. This can be VERY time consuming and can put high stress on your older drives during this process increasing the chances of failure.</li>
+</ol>
+<p>Consequently, when you first build your system&nbsp;we recommend that:</p>
+<ul>
+  <li>reserve as many pairs of slots as you think you will need now / in the future for mirrored vDevs (if you need them)</li>
+  <li>systems with ≤ 7 slots remaining - populate all these slots with RAIDZx from the start;</li>
+  <li>systems with ≥ 8 slots remaining - divide the slots into equal sized groups of 4-8 slots, and populate all slots in a group for as many of these groups as you need, leaving the remaining groups to be populated in the future.</li>
+</ul>

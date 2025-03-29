@@ -1,0 +1,91 @@
+<!--
+title: 92 Write an Image File to a USB Stick
+description: 
+published: true
+date: 2024-08-02T12:38:17.457Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-05-27T19:42:56.267Z
+-->
+
+<p>Many of the procedures in this guide require writing an image file (usually the file name ends in .img or .iso) to a USB stick, so that you can boot from that stick. Here's how you can do that.</p>
+<h2>Balena Etcher</h2>
+<p><a href="https://etcher.balena.io/">Balena Etcher</a> is a piece of free software for Windows, macOS, and Linux. &nbsp;You can download it from their website.</p>
+<p>Once you've downloaded Etcher, launch it.</p>
+<figure class="image"><img src="/etcher-1.png"></figure>
+<p>In the window, click on “Flash from file” (highlighted in blue above), then browse to the image file you want to flash.</p>
+<figure class="image"><img src="/etcher-2.png"></figure>
+<p>In the next window, click “Select target,” and then choose your USB device.</p>
+<figure class="image"><img src="/etcher-3.png"></figure>
+<p>In the last window, click on “Flash!” &nbsp;Etcher will write the image file to your USB stick, verify it was written correctly, and inform you that it's complete.</p>
+<h2>Windows</h2>
+<p>Download the program “<a href="https://sourceforge.net/projects/win32diskimager/">Win32DiskImager</a>” to your Windows machine.</p>
+<p>Now run the “Win32DiskImager” installer under an administrator’s account or right click on it and run as an administrator (have your administrator’s password ready).</p>
+<p>When the program is installed run it under an Administrator’s account or right click and run as Administrator.</p>
+<p>Now insert the USB stick you intend to use and wait for the computer to recognise it.</p>
+<p>Click the small folder icon (1) and navigate to the location of the image file and select it. Now select the USB device by clicking the drop down selector under “Device” (2) if it isn’t already selected.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:0f9faf9f16c3183f480b46f146ccff9c.png" alt=""></figure>
+<p>If you cannot see the image file and you know you are in the correct location then click on the drop down selector that determines the file type to be displayed (1) (this will likely be initially set to display only IMG files, if your image is in the form of an ISO file it won’t be shown) and chose the wild card “*.*” (2) this will display all files present.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:3f976f2a7f2c455880d4c42a5372ee59.png" alt=""></figure>
+<p>The image file should now appear.Now select it (1) and click “Open” (2).</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:e7c4f7a0b4a93fc7bcce5f72d66c64e2.png" alt=""></figure>
+<p>With the image file now loaded click on the “Write” button to begin making the bootable USB installer.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester:c937f835279cd35851b8c4a55f73eb43.png" alt=""></figure>
+<p>At this point a small window will pop up giving a “confirm write” warning message, click the “Yes” button to proceed.</p>
+<p>The image file will now be written to your USB stick.</p>
+<p>When the process completes successfully a small window will pop up with “Write Successful” displayed. Click the “OK” button.</p>
+<p>Close the application and eject the USB stick.</p>
+<h2>Mac OS X</h2>
+<p>If you don't want to use Etcher, the “old-school” way to flash a USB stick on a Mac is to use <code>dd</code>. &nbsp;First, insert your USB stick. &nbsp;You'll then need to identify it by running <code>diskutil list</code>:</p>
+<pre><code class="language-plaintext">╰─ diskutil list                                                                                                                 ─╯
+/dev/disk0 (internal, physical):
+   #:                       TYPE NAME                    SIZE       IDENTIFIER
+   0:      GUID_partition_scheme                        *2.0 TB     disk0
+   1:                        EFI EFI                     314.6 MB   disk0s1
+   2:                 Apple_APFS Container disk1         2.0 TB     disk0s2
+
+/dev/disk1 (synthesized):
+   #:                       TYPE NAME                    SIZE       IDENTIFIER
+   0:      APFS Container Scheme -                      +2.0 TB     disk1
+                                 Physical Store disk0s2
+   1:                APFS Volume Macintosh HD            10.3 GB    disk1s1
+   2:              APFS Snapshot com.apple.os.update-... 10.3 GB    disk1s1s1
+   3:                APFS Volume Macintosh HD - Data     1.9 TB     disk1s2
+   4:                APFS Volume Preboot                 2.2 GB     disk1s3
+   5:                APFS Volume Recovery                1.2 GB     disk1s4
+   6:                APFS Volume VM                      7.5 GB     disk1s5
+
+/dev/disk2 (external, physical):
+   #:                       TYPE NAME                    SIZE       IDENTIFIER
+   0:      GUID_partition_scheme                        *2.0 TB     disk2
+   1:                        EFI EFI                     209.7 MB   disk2s1
+   2:                 Apple_APFS Container disk3         2.0 TB     disk2s2
+
+/dev/disk3 (synthesized):
+   #:                       TYPE NAME                    SIZE       IDENTIFIER
+   0:      APFS Container Scheme -                      +2.0 TB     disk3
+                                 Physical Store disk2s2
+   1:                APFS Volume SanDisk                 749.6 KB   disk3s1
+
+/dev/disk4 (external, physical):
+   #:                       TYPE NAME                    SIZE       IDENTIFIER
+   0:     FDisk_partition_scheme                        *8.1 GB     disk4
+   1:                 DOS_FAT_32 DATAOCEAN               8.1 GB     disk4s1</code></pre>
+<p>In the output of this command, you'll need to identify your USB stick; you can usually do this by checking the size. &nbsp;In this example, I'm using a 8 GB USB stick, so that appears as <code>/dev/disk4</code>.</p>
+<p>Next, you'll need to unmount any volumes on that device. &nbsp;Do that by running <code>diskutil unmountDisk /dev/disk4</code>, replacing <code>disk4</code> with the device you determined above.</p>
+<p>Next, write the image to the device:</p>
+<pre><code class="language-plaintext">╰─ sudo dd status=progress if=TrueNAS-SCALE-24.04.2.iso of=/dev/rdisk4 bs=1m                                                     ─╯
+Password:
+  1621098496 bytes (1621 MB, 1546 MiB) transferred 100.008s, 16 MB/s
+1554+1 records in
+1554+1 records out
+1630404608 bytes transferred in 100.573273 secs (16211112 bytes/sec)</code></pre>
+<p>Note three things in this command:</p>
+<ul>
+  <li>The file name designated by <code>if=</code> should be updated to match the file you're actually flashing</li>
+  <li>The output device identified by <code>of=</code> needs to match the device you determined above</li>
+  <li>The output device needs a leading <code>r</code>--instead of <code>disk4</code>, it's <code>rdisk4</code>.</li>
+</ul>
+<p>Once that completes, you can eject the USB stick by running <code>diskutil eject /dev/disk4</code>.</p>
+<h2>Linux, FreeBSD, or other Unix-like OS</h2>
+<p>Since macOS is built on BSD, any other Unix variant will be similar, differing in (1) the lack of <code>diskutil</code> commands, and (2) the method you'll use to identify the USB stick. &nbsp;On Linux, <code>lsblk</code> will list block devices; on FreeBSD, <code>camcontrol devlist</code> will do the job. &nbsp;You won't likely need to unmount or eject the device, and you won't need to prefix the device name with <code>r</code>.</p>

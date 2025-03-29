@@ -1,0 +1,50 @@
+<!--
+title: Scrub Schedules
+description: 
+published: true
+date: 2024-04-07T16:55:02.979Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-01-13T13:18:56.437Z
+-->
+
+<h1>Scrub Schedules</h1>
+<p>Maintaining your FreeNAS server is very important. It can be the difference between knowing your server may be developing a problem which gives you some time to take remedial action, or getting up one morning and realising your servers bust and the data has been lost.</p>
+<p>Part of a good server maintenance routine is performing regular scrubs of the drives and periodically running SMART tests.</p>
+<p>There are a few things you need to know before starting.</p>
+<ul>
+  <li>Do not schedule scrubs and SMART tests to run at the same time. This can cause the scrub to never complete.</li>
+  <li>Only one SMART test at a time can be run on the same disk. We cannot have a scenario were the Long test and the Short test are running simultaneously on the same drive.</li>
+  <li>Scrubs and SMART tests are almost pointless on SSDs (Fester does not know why. I can see why surface scans and badblocks tests would be a waste of time, but not scrubs and some types of SMART tests. If anyone knows why let me know and I will try to include it in the guide.).</li>
+</ul>
+<p>When considering scrubs and SMART tests all manner of questions arise. What tests should be done? How often?</p>
+<p>It is also immediately clear that when scheduling scrubs and SMART tests we must put some thought into this so the two do not coincide with one another.</p>
+<p>This should help.</p>
+<h2>Scrub Schedule For The Boot Device</h2>
+<p>Click “System” in the left column, then “Boot Environments”.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-105319.png" alt=""></figure>
+<p>On the line marked “Automatic scrub interval (in days)” change the default value from 35 (this is too long) to 7.</p>
+<p>That’s it.</p>
+<h2>Scub Schedule For The Pool</h2>
+<p>Click “Tasks” in the left column, then “Scrub Tasks”.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-105511.png" alt=""></figure>
+<p>You'll see that a default scrub task has been created for your pool, set to run every 35 days at midnight on Saturday. Unless you have a very high resolution monitor (and a very large browser window), you'll need to scroll sideways <strong>on the scrub schedule itself</strong> to see the rest of this information. There's no obvious visual indication on the screen that this is necessary, but it is. It will look like this when scrolled to the right:</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-105936.png" alt=""></figure>
+<p>You have two choices here.</p>
+<p>You can edit the default scrub schedule by clicking on the three vertical dots to the far right, then “Edit” in the pop-up menu, and populating the settings within with new ones that will follow shortly.</p>
+<p>Or you can delete it by clicking on the three vertical dots to the far right, then “Delete” in the pop-up menu, and create a new one (Fester prefers to delete and start from scratch).</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-110448.png" alt=""></figure>
+<p>If you deleted the default scrub schedule then click the “Add” button.</p>
+<p>Whatever option you decided on before a window will pop up.</p>
+<p>Select the pool the schedule applies to from the “Pool” drop down selection menu (Fester used tank).</p>
+<p>Set the “Threshold days:” to <strong>10</strong> by typing it into the corresponding text box.</p>
+<p>Give the schedule a meaningful name, if desired in the “Description” text box.</p>
+<p>Fester wants to schedule these tests to run on the 1<sup>st</sup> and 15<sup>th</sup> of every month at 02:00am in the morning (the server should not be busy at that time). To do this, under “Schedule the Scrub Task”, select “Custom”.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-110935.png" alt=""></figure>
+<p>You'll see a scheduling window pop up. Under the heading of Minutes/Hours/Days, enter <strong>00</strong> for Minutes, <strong>02</strong> for Hours, and <strong>1,15</strong> for days.</p>
+<p>Notice that, on the calendar on the left, you'll see dates marked on which the scrub will run.</p>
+<p>Click the “Done” button.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-111902.png" alt=""></figure>
+<p>You'll be returned to the “Edit Scrub Task” screen, with your newly-defined custom schedule showing. Click “Save”.</p>
+<figure class="image"><img src="https://www.familybrown.org/dokuwiki/lib/exe/fetch.php?media=fester112:pasted:20190527-111735.png" alt=""></figure>
+<p>That’s the scrub schedule set.</p>

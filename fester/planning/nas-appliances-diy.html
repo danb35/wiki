@@ -1,0 +1,435 @@
+<!--
+title: 2.3.4 Building a DIY NAS appliance
+description: Build your own NAS appliance with off the shelf components
+published: true
+date: 2024-12-27T15:06:31.068Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-05-07T14:47:04.327Z
+-->
+
+<p>If you have the time and the technical skills, an alternative to buying a commercially&nbsp;pre-built NAS appliance is to build your own NAS appliance from off-the-shelf components.</p>
+<p>This can allow you to tailor the hardware to your own specific needs and can be a fun and interesting project, but it does increase the amount of time you need to spend planning and building your system and is not necessarily going to be cheaper than a commercial pre-built appliance (especially a 2nd user one).</p>
+<p>If you decide to go down this route then you will need to choose the following components, <i>ensuring that they are all technically compatible with one another</i>:</p>
+<ul>
+  <li><a href="#motherboard-memory">Motherboard + memory</a></li>
+  <li><a href="#possibly-hba-card">(Possibly) HBA card</a></li>
+  <li><a href="#disk-cables">Disk cables</a></li>
+  <li><a href="#case">Case</a></li>
+  <li><a href="#power-supply">Power supply</a></li>
+  <li><a href="#ssd-and-or-hdd-disks">SSD and / or HDD disks</a></li>
+  <li><a href="#costs">Co$ts</a></li>
+</ul>
+<p>There are (obviously??) a huge number of options for each of these components, and they are constantly being updated, so we cannot hope to cover all the options. Instead we will point you to the most well-used brands (because you will find it easier to buy compatible hardware if you stick to the major players) and try to give you the key pointers about how to select the best components for your own needs.</p>
+<p><a href="#more-help">If you need help with this, there are plenty of videos about it on Youtube.</a></p>
+<p><strong>If you have built your own DIY NAS Appliance, then please leave some comments in the discussion box below, or feel free to update this wiki yourself with your own experiences.&nbsp;</strong></p>
+<h2>Motherboard + memory</h2>
+<p>In our (opinionated) view, the motherboard is the starting point for your NAS - though perhaps it could equally be argued that the case should be the starting point as everything needs to fit within it.&nbsp;</p>
+<p>These days there are specialised motherboards specifically for NAS systems, designed with the following characteristics:</p>
+<ul>
+  <li>More storage support than a normal tower PC board</li>
+  <li>Modest CPU power (because it doesn't need to support gaming graphics) - often the processor is soldered onto the board rather than in a socket</li>
+  <li>Low electrical power consumption</li>
+  <li>Often passive cooling (i.e. heat sinks but no fans for low power consumption and noise)</li>
+</ul>
+<p>When selecting a motherboard, the most important factors to consider here are:</p>
+<ul>
+  <li><strong>Processor power - </strong>If your NAS is just for storage and &nbsp;a few small apps, you will not need the latest, greatest Intel i7 or AMD Ryzen processor - a 4-core workhorse might easily provide enough processing. If you want to do media transcoding or run VMs or heavy apps, then you may need something more powerful, but in that case you should also consider whether a DIY NAS Appliance is the best platform for your needs (cf. a tower unit or enterprise server).</li>
+  <li><strong>Processor included?</strong> - Be careful when comparing motherboards and especially their prices, because some motherboards come with a processor already onboard and some require you to purchase a separate processor (and heatsink / fan). Unless you have a specialist need for substantial processing power,</li>
+  <li><strong>GPU</strong> - Some apps support a GPU for e.g. media transcoding or AI - but likely for batch use so again the CPU integrated GPU may be sufficient - but if you need the latest &amp; greatest GPU then again you should consider whether a DIY NAS Appliance is the best platform for your needs (cf. a tower unit or enterprise server).</li>
+  <li><strong>Memory (RAM)</strong> - ECC is recommended for any application where you care about your data, but it is no more essential for TrueNAS (or ZFS) than for any other operating system or filesystem. &nbsp;Decide whether ECC memory is a must-have for you. Make sure that the motherboard will support enough memory--you really shouldn't even consider a motherboard with a maximum RAM capacity less than 32 GB, and should probably look for one that will take at least 64 GB. &nbsp;Even if you don't need this much RAM initially, it's a good idea to plan for expansion. Some motherboards come with some memory soldered on, and may or may not have the ability to add an additional memory card. Some use SODIMMs, some standard DIMMs.</li>
+  <li><strong>M.2 ports</strong> - the easiest way to provide boot drive(s) and SSDs without using SATA ports that you may want for your NAS storage.</li>
+  <li><strong>SATA ports</strong> - either on the motherboard or via an HBA card.</li>
+  <li><strong>PCIe slot(s)</strong> - if you want or need an HBA card, you will need a PCIe slot for it. PCIe slots have a physical size and a number of channels. The physical size needs to be at least as big as the HBA PCIe connector, and you should probably aim to have at least x4 channels.</li>
+  <li><strong>Ethernet</strong> - You will need at least 1 Ethernet port, possibly more, and (opinion) this should be at least Gigabit if not 2.5Gb or 10Gb. There is anecdotal evidence suggesting that you should not choose a motherboard that uses Realtek ethernet chips, but instead opt for Intel.</li>
+  <li><strong>Power consumption</strong> - your NAS will be running 24x7 so the electrical consumption should be an important cost factor. Whilst spinning hard drives will likely use the most power, the motherboard consumption can still be important. You can get NAS motherboards that use as low as 6W of power!!</li>
+  <li><strong>Form factor</strong> - Your motherboard will need to fit with your chosen case, and if the compatible power supply is internal, then the case will also need to support the PSU.</li>
+  <li><strong>Remote Management (IPMI)</strong> - You're going to be running your server headless (without a keyboard or monitor attached), so it can be helpful to have access to its display over your network. &nbsp;A proper IPMI implementation will also give you access to system power monitoring, power control, memory and other error logs, and other features. &nbsp;IPMI will limit your motherboard options to those designed for servers, and it isn't essential, but it's a helpful feature to have.</li>
+</ul>
+<figure class="image image_resized image-style-align-right" style="width:42.72%;"><img src="https://m.media-amazon.com/images/I/7136RQ7ImGL._AC_SL1000_.jpg"></figure>
+<p>As a single example, here is a single motherboard available on both <a href="https://www.amazon.com/dp/B0CRB225KX">Amazon.com - $129</a> and <a href="https://aliexpress.com/item/1005006341666438.html">AliExpress.com - $134</a>:</p>
+<ul>
+  <li>Manufacturer: Szbox</li>
+  <li>Form factor: Mini-ITX (170x170mm)</li>
+  <li>Processor: Included, Intel N5905 4-core 15W 2.9GHz</li>
+  <li>Cooling: Included, Active</li>
+  <li>Chipset: N100</li>
+  <li>Memory: 1xDDR4 SODIMM 2933MHz up to 16GB</li>
+  <li>SSD slots: 1x M.2, 1x mSata</li>
+  <li>SATA ports: <strong><u>12x</u></strong> SATA3 (be careful - there are very similar boards with fewer SATA slots)</li>
+  <li>PCIe: None</li>
+  <li>Ethernet: 2x Realtek 1Gb + Audio port</li>
+  <li>USB: External: 2xUSB2, 2xUSB3, Internal: 4xUSB2</li>
+  <li>TPM: Optional (check specifications carefully)</li>
+  <li>Display ports: VGA, HDMI</li>
+  <li>Power: ATX</li>
+</ul>
+<p>Some other boards you might want to consider include:<br>&nbsp;</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td style="width:100px;">&nbsp;</td>
+        <td>MB</td>
+        <td>Form</td>
+        <td>Processor</td>
+        <td>Memory<br>(up to)</td>
+        <td>SSD<br>Slots</td>
+        <td>SATA<br>ports</td>
+        <td>PCIe</td>
+        <td>Ethernet</td>
+        <td>Inc.<br>CPU?</td>
+        <td>$</td>
+      </tr>
+      <tr>
+        <td style="width:100px;">
+          <figure class="image"><img src="https://www.asrockrack.com/photo/E3C256D4I-2T-1(L).jpg"></figure>
+        </td>
+        <td><a href="https://www.asrockrack.com/general/productdetail.asp?Model=E3C256D4I-2T">ASRock E3C256D4I-2T</a></td>
+        <td>Mini-<br>ITX</td>
+        <td>
+          <p>Xeon E-2300</p>
+          <p>Intel Pentium<br>10Gen</p>
+        </td>
+        <td>DDR4 ECC</td>
+        <td>1x M.2</td>
+        <td>8 on-board +<br>8 via 2x Oculink</td>
+        <td>1&nbsp;</td>
+        <td>2x 10Gb</td>
+        <td>No</td>
+        <td>c. $550</td>
+      </tr>
+      <tr>
+        <td style="width:100px;">
+          <figure class="image"><img src="https://www.supermicro.com/files_SYS/images/Motherboard/X13SAQ.jpg"></figure>
+        </td>
+        <td><a href="https://www.supermicro.com/en/products/motherboard/x13saq">SuperMicro X13SAQ</a></td>
+        <td>Micro-<br>ATX</td>
+        <td>Intel Core<br>12/13Gen</td>
+        <td>128GB DDR5<br>Non-ECC</td>
+        <td>1x M.2</td>
+        <td>8</td>
+        <td>Various</td>
+        <td>2x 2.5Gb</td>
+        <td>No</td>
+        <td>c. $425</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<h2>(Possibly) HBA card</h2>
+<p>If your mother board doesn't have enough SATA ports for your needs, but it does have a suitable PCIe slot (x4, x8) then you can use a good quality HBA card to expand the number of SATA ports.</p>
+<p>The general consensus is that:</p>
+<ul>
+  <li>LSI-based HBAs are the recommended boards</li>
+  <li>Other decent, properly architected HBAs should also be OK - please add brand names here if you know of any.</li>
+  <li>Other forms of SATA port expanders (such as SATA ports on an M.2 card) are definitely not recommended - they may lead to data corruption and / or performance issues.</li>
+</ul>
+<p>Most HBA cards come with multi-port connectors which need fan-out cables to convert them to SATA ports.</p>
+<figure class="image image_resized" style="width:23.51%;"><img src="/planning/planning-lsi-sata-cable.png"></figure>
+<figure class="image image_resized image-style-align-right" style="width:48.14%;"><img src="/planning/planning-lsi-amazon-aliexpress.png"></figure>
+<p>As a single example, here are two similar LSI-based 16x port HBAs available on <a href="https://www.amazon.com/dp/B0CQ2YW19H">Amazon.com - $26</a> and <a href="https://aliexpress.com/item/1005005029151516.html">AliExpress.com - $19</a>:</p>
+<ul>
+  <li>2x 4x multi-port connectors</li>
+  <li>8x SATA ports with suitable cables</li>
+  <li>PCIe:&nbsp;physical x8, channels x8</li>
+</ul>
+<p>There are many many LSI-based HBA cards on the market - you will need to research and select one suitable for your needs.</p>
+<p>LSI cards can run in several different modes depending upon the firmware that is flashed. For TrueNAS'' ZFS based mirroring or RaidZx you want to buy (or flash yourself) an HBA that is in IT mode (AHCI) mode (rather than some sort of hardware RAID mode).</p>
+<h2>Disk cables</h2>
+<p>For motherboard you will need standard SATA cables.</p>
+<p>For HBA you will need the fan-out cables as shown above.</p>
+<p>Sata cables with clips (as shown in the fan-out example) give a positive latch for the cable and prevent them coming loose due to vibrations over time.</p>
+<p>Sata cables can have straight or right-angle connectors. Strait are usually best unless you have space constraints on the MB or storage enclosure. If you are buying right-angle connectors, make sure you buy the correct orientation for the change in direction.</p>
+<h2>Case</h2>
+<p>There are some excellent NAS cases on the market from market-leading brands like <a href="https://www.jonsbo.com/en/">Jonsbo</a>, Audheid and z. There are probably other brands out there or you can even 3D print your own. &nbsp;</p>
+<h3><a href="https://www.jonsbo.com/en/">Jonsbo</a></h3>
+<p>Jonsbo primarily make computer cases, specialising in gaming tower PCs and NAS cases (and gaming accessories such as liquid-cooling, LED fans etc.) The N-series of cases are specifically designed as NAS enclosures.<br>&nbsp;&nbsp;</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td style="text-align:center;width:10%;"><span class="text-small">&nbsp;</span></td>
+        <td style="text-align:center;"><span class="text-small"><strong>Model</strong></span></td>
+        <td style="text-align:center;"><span class="text-small"><strong>Overall Size</strong></span><br><span class="text-small"><strong>(WxDxHmm)</strong></span></td>
+        <td style="text-align:center;"><span class="text-small"><strong>Bays</strong></span></td>
+        <td style="text-align:center;"><span class="text-small"><strong>M'board</strong></span><br><span class="text-small"><strong>Form</strong></span></td>
+        <td style="text-align:center;"><span class="text-small"><strong>CPU Cooler</strong></span><br><span class="text-small"><strong>Max Height</strong></span></td>
+        <td style="text-align:center;"><span class="text-small"><strong>PCI</strong></span></td>
+        <td style="text-align:center;"><span class="text-small"><strong>PSU</strong></span></td>
+        <td style="text-align:center;"><span class="text-small"><strong>Cooling</strong></span></td>
+        <td style="text-align:center;"><span class="text-small"><strong>Weight</strong></span></td>
+        <td style="text-align:center;"><span class="text-small"><strong>Colours</strong></span></td>
+        <td style="text-align:center;"><span class="text-small"><strong>Cost</strong></span></td>
+      </tr>
+      <tr>
+        <td style="text-align:center;width:10%;">
+          <figure class="image"><img src="https://www.jonsbo.com/Upfiles/Prod_X/202171278705.jpg"></figure>
+        </td>
+        <td><a href="https://www.jonsbo.com/en/products/N1.html"><span class="text-small">Jonsbo N1</span></a></td>
+        <td style="text-align:right;"><span class="text-small">170x354x217</span></td>
+        <td><span class="text-small">3.5": 5</span><br><span class="text-small">2.5": 1</span></td>
+        <td style="text-align:center;"><span class="text-small">ITX</span></td>
+        <td style="text-align:center;"><span class="text-small">≤70mm</span></td>
+        <td style="text-align:center;"><span class="text-small">1</span></td>
+        <td style="text-align:center;"><span class="text-small">SFX ≤150mm</span></td>
+        <td style="text-align:center;"><span class="text-small">1x 140mm</span><br><span class="text-small">(supplied)</span></td>
+        <td style="text-align:center;"><span class="text-small">3.8kg</span></td>
+        <td style="text-align:center;"><span class="text-small">Grey</span></td>
+        <td><a href="https://aliexpress.com/item/1005004270398411.html"><span class="text-small">$127</span></a></td>
+      </tr>
+      <tr>
+        <td style="text-align:center;width:10%;">
+          <figure class="image"><img src="https://www.jonsbo.com/Upfiles/Prod_X/2022111738252.jpg"></figure>
+        </td>
+        <td><a href="https://www.jonsbo.com/en/products/N2Black.html"><span class="text-small">Jonsbo N2</span></a></td>
+        <td style="text-align:right;"><span class="text-small">222.5x222.5x224</span></td>
+        <td><span class="text-small">3.5": 5</span><br><span class="text-small">2.5": 1</span></td>
+        <td style="text-align:center;"><span class="text-small">ITX</span></td>
+        <td style="text-align:center;"><span class="text-small">≤65mm</span></td>
+        <td style="text-align:center;"><span class="text-small">1</span></td>
+        <td style="text-align:center;"><span class="text-small">SFX ≤150mm</span></td>
+        <td style="text-align:center;"><span class="text-small">1x120mm</span><br><span class="text-small">(supplied)</span></td>
+        <td style="text-align:center;"><span class="text-small">2.9kg</span></td>
+        <td style="text-align:center;"><span class="text-small">Black</span><br><span class="text-small">White</span></td>
+        <td><a href="https://aliexpress.com/item/1005005029501612.html"><span class="text-small">$100</span></a></td>
+      </tr>
+      <tr>
+        <td style="text-align:center;width:10%;">
+          <figure class="image"><img src="https://m.media-amazon.com/images/I/71njUwcdw7L._AC_SL1500_.jpg"></figure>
+        </td>
+        <td><a href="https://www.jonsbo.com/en/products/N3.html"><span class="text-small">Jonsbo N3</span></a></td>
+        <td style="text-align:right;"><span class="text-small">233x262x298</span></td>
+        <td><span class="text-small">3.5": 8</span><br><span class="text-small">2.5": 1</span></td>
+        <td style="text-align:center;"><span class="text-small">ITX</span></td>
+        <td style="text-align:center;"><span class="text-small">≤130mm</span></td>
+        <td style="text-align:center;"><span class="text-small">2</span></td>
+        <td style="text-align:center;"><span class="text-small">SFX ≤105mm</span></td>
+        <td style="text-align:center;"><span class="text-small">2x100mm</span><br><span class="text-small">2x80mm</span></td>
+        <td style="text-align:center;"><span class="text-small">3.9kg</span></td>
+        <td style="text-align:center;"><span class="text-small">Black</span></td>
+        <td><a href="https://www.amazon.com/dp/B0CMVBMVHT"><span class="text-small">$170</span></a></td>
+      </tr>
+      <tr>
+        <td style="text-align:center;width:10%;">
+          <figure class="image"><img src="https://www.jonsbo.com/Upfiles/Prod_X/202432612000.jpg"></figure>
+        </td>
+        <td><a href="https://www.jonsbo.com/en/products/N4Black.html"><span class="text-small">Jonsbo N4</span></a></td>
+        <td style="text-align:right;"><span class="text-small">286x300x228</span></td>
+        <td><span class="text-small">3.5": 6</span><br><span class="text-small">2.5": 2</span></td>
+        <td style="text-align:center;"><span class="text-small">ITX&nbsp;</span><br><span class="text-small">M-ATX</span></td>
+        <td style="text-align:center;"><span class="text-small">≤70mm</span></td>
+        <td style="text-align:center;"><span class="text-small">4</span></td>
+        <td style="text-align:center;"><span class="text-small">SFX ≤125mm</span></td>
+        <td style="text-align:center;"><span class="text-small">1x120mm</span><br><span class="text-small">(supplied)</span></td>
+        <td style="text-align:center;"><span class="text-small">3.75kg</span></td>
+        <td style="text-align:center;"><span class="text-small">Black</span><br><span class="text-small">White</span></td>
+        <td><a href="https://aliexpress.com/item/1005006754277358.html"><span class="text-small">$101</span></a></td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>&nbsp;</p>
+<h3>Audheid</h3>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td style="text-align:center;width:10%;"><span class="text-small">&nbsp;</span></td>
+        <td style="text-align:center;"><span class="text-small"><strong>Model</strong></span></td>
+        <td style="text-align:center;"><span class="text-small"><strong>Overall Size</strong></span><br><span class="text-small"><strong>(WxDxHmm)</strong></span></td>
+        <td style="text-align:center;"><span class="text-small"><strong>Bays</strong></span></td>
+        <td style="text-align:center;"><span class="text-small"><strong>M'board</strong></span><br><span class="text-small"><strong>Form</strong></span></td>
+        <td style="text-align:center;"><span class="text-small"><strong>CPU Cooler</strong></span><br><span class="text-small"><strong>Max Height</strong></span></td>
+        <td style="text-align:center;"><span class="text-small"><strong>PCI</strong></span></td>
+        <td style="text-align:center;"><span class="text-small"><strong>PSU</strong></span></td>
+        <td style="text-align:center;"><span class="text-small"><strong>Cooling</strong></span></td>
+        <td style="text-align:center;"><span class="text-small"><strong>Weight</strong></span></td>
+        <td style="text-align:center;"><span class="text-small"><strong>Colours</strong></span></td>
+        <td style="text-align:center;"><span class="text-small"><strong>Cost</strong></span></td>
+      </tr>
+      <tr>
+        <td style="text-align:center;width:10%;">
+          <figure class="image"><img src="https://images-na.ssl-images-amazon.com/images/I/71C0toGPPqL._AC_UL232_SR232,232_.jpg" alt="NAS Case 4-Bay K3 Chassis, AUDHEID New Network Storage Server, Compatible Flex PSU Mini-ITX, 4 x 2.5/3.5&quot; Tray, Network Attac"></figure>
+        </td>
+        <td><span class="text-small">Adu-NAS4</span></td>
+        <td style="text-align:right;"><span class="text-small">265x190x180</span></td>
+        <td><span class="text-small">4</span></td>
+        <td style="text-align:center;"><span class="text-small">Mini-ITX</span></td>
+        <td style="text-align:center;"><span class="text-small">?</span></td>
+        <td style="text-align:center;"><span class="text-small">?</span></td>
+        <td style="text-align:center;"><span class="text-small">Flex</span></td>
+        <td style="text-align:center;"><span class="text-small">1x120mm</span><br><span class="text-small">(supplied)</span></td>
+        <td style="text-align:center;"><span class="text-small">3.5kg</span></td>
+        <td style="text-align:center;"><span class="text-small">Black</span></td>
+        <td><a href="https://www.amazon.com/dp/B096FD8WVS"><span class="text-small">$80</span></a></td>
+      </tr>
+      <tr>
+        <td style="text-align:center;width:10%;">
+          <figure class="image"><img src="https://images-na.ssl-images-amazon.com/images/I/61rWkulXyEL._AC_UL232_SR232,232_.jpg" alt="AUDHEID K7 8 Bay NAS Case, Computer Enclosures Compatible Micro-ATX Mini-ITX Motherboard, 3 x Fans, 8 x 2.5/3.5&quot; Tray, Networ"></figure>
+        </td>
+        <td><span class="text-small">Adu-NAS8</span></td>
+        <td style="text-align:right;"><span class="text-small">310x305x221</span></td>
+        <td><span class="text-small">8</span></td>
+        <td style="text-align:center;"><span class="text-small">Mini-ITX</span><br><span class="text-small">Micro-ATX</span></td>
+        <td style="text-align:center;"><span class="text-small">?</span></td>
+        <td style="text-align:center;"><span class="text-small">?</span></td>
+        <td style="text-align:center;"><span class="text-small">Flex 1U</span></td>
+        <td style="text-align:center;"><span class="text-small">2x90mm</span><br><span class="text-small">1x60mm</span><br><span class="text-small">(supplied)</span></td>
+        <td style="text-align:center;"><span class="text-small">6.5kg</span></td>
+        <td style="text-align:center;"><span class="text-small">Black</span></td>
+        <td><a href="https://www.amazon.com/dp/B09QKMQ1B1"><span class="text-small">$190</span></a></td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<h3>Other Commercial</h3>
+<p>Here are some other examples of NAS cases:</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td style="width:50px;">&nbsp;</td>
+        <td>Product</td>
+        <td>Drive bays</td>
+        <td>Cost</td>
+      </tr>
+      <tr>
+        <td style="width:50px;">
+          <figure class="image"><img src="https://ae01.alicdn.com/kf/H0bdf7757c88f4219bc94353e0f381ddc9/Armazenamento-Dom-stico-Hot-Plug-Chassis-6Bays-NAS-Case-para-Servidor-Sata-Backplane-Suporte-Mini-itx.jpg"></figure>
+        </td>
+        <td><a href="https://aliexpress.com/item/4001153617264.html">NAS6</a></td>
+        <td>6</td>
+        <td>$92</td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<h3>3d Printed</h3>
+<p>An alternative choice of case is to 3d print it.&nbsp;</p>
+<h4>Modular Attached Storage Stack (MASS) by <a href="https://www.printables.com/@haydnbao">Haydn Bao</a></h4>
+<figure class="image image_resized image-style-align-right" style="width:35.03%;"><img src="/planning/planning-haydnbao-case.png"></figure>
+<p>This comes in two designs: a <a href="https://www.printables.com/model/590711-mass-stackable-nas-itx-enclosure">free version for up to 10x3.5" drives</a> or a <a href="https://www.printables.com/model/714333">Pro version for up to 12x3.5" drives which costs $28</a>.</p>
+<p>If you want to 3d-print this design for yourselves you will need a 3D printer and experience of printing using PETG filament, approximately $30 worth of filament, and the time and effort of printing all the parts. (PETG is recommended rather than PLA because it is better able to handle the maximum drive / MB temperatures.)</p>
+<p>Because this is modular and stackable, you can easily start with either 5x or 6x 3.5" drive bays and then double this at a later date. (The free and Pro designs are slightly different sizes, so you can <strong>not</strong> upgrade from free to Pro at a later date.)</p>
+<h4><a href="https://www.printables.com/model/837218-nas-case-6-bay-3-ssd">NAS CASE 6-bay (+3 SSD)</a><sup>[</sup><a href="https://www.youtube.com/watch?v=Ce4ZY1JmNKg"><sup>Youtube</sup></a><sup>]</sup> by <a href="https://www.printables.com/@makerunit_735717">MakerUnit</a></h4>
+<figure class="image image_resized image-style-align-right" style="width:29.7%;"><img src="/planning/planning-makerunit-case.png"></figure>
+<p>The design for this case costs $12 and also needs to be printed in PETG.&nbsp;</p>
+<ul>
+  <li>6 slide-in Latching Quick-Swap Hard Drive bays (3.5" HDDs up to 1 inch thick)</li>
+  <li>3 Additional 2.5" SSDs (System drive + dual cache SSD)</li>
+  <li>Full height single-slot PCIe card support (SATA card, Slim video card, Network card etc.)</li>
+  <li>Magnetic front-panel for super quick front access to the drives and cables.</li>
+  <li>Mini ITX Motherboard</li>
+  <li>SFX or SFX-L power supply</li>
+  <li>3.5" to 2.5" drive adapters available for main bay.</li>
+</ul>
+<h3>Tower case</h3>
+<p>Finally you can always use a standard Tower case as a base - and suitable full sized tower, with an integrated rack for 3.5" disks and some sort of converter of the 5.25" optical drive area into a second 3.25" rack can certainly act as a NAS base. You won't get caddy-style drive bays, but you will have a great choice of new and 2nd user units and a lot of flexibility.</p>
+<h2>Power supply</h2>
+<p>Your motherboard and your disks will need to be powered by a PSU, and you are likely to need a PC PSU with relatively modest motherboard power supply (because you will not need to power a heavy GPU card) but it will need to power and provide power connectors for multiple disks.</p>
+<p>If you want your NAS to be relatively quiet, you should also keep an eye on the noise levels and for noise and power consumption reasons, find a PSU which has temperature-variable fan speeds. &nbsp;</p>
+<h2>SSD and / or HDD disks</h2>
+<p>Since you are building a brand new system for your disks to sit in, our recommendation will be to buy new, NAS-specific disks (like Seagate Ironwold or Ironwolf Pro) to populate it with rather than consumer disks which are not designed to run 24x7 or in close proximity to one another.&nbsp;</p>
+<p>Check carefully the type of technology in the disk - and avoid SMC technology disks because their write performance characteristics will be very poor and they will be prone to earlier failure.&nbsp;</p>
+<p>A cheap way of getting disks is to buy standalone external disks in a USB case, and “shuck” them (which means take out the disk and throwing the case away - <strong>beware doing this</strong> as these can be whatever disks happen to be cheap and available and are likely to be SMC technology.</p>
+<h2>Costs</h2>
+<p>Here is a sample cost using the above example components:</p>
+<figure class="table">
+  <table>
+    <tbody>
+      <tr>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;">&nbsp;</td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;"><strong>Item</strong></td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;"><strong>Cost $</strong></td>
+        <td>&nbsp;</td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;text-align:center;"><strong>2-Sep-2024&nbsp;</strong></td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;text-align:center;"><strong>Item</strong></td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;text-align:center;"><strong>Cost $</strong></td>
+      </tr>
+      <tr>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;">Case</td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;">Jonsbo N4</td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;text-align:right;">$101</td>
+        <td>&nbsp;</td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;">Case</td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;">Jonsbo N4</td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;text-align:right;">$101</td>
+      </tr>
+      <tr>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;">Motherboard</td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;">Szbox N5095</td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;text-align:right;">$129</td>
+        <td>&nbsp;</td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;">Motherboard</td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;">Szbox N5095</td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;text-align:right;">$129</td>
+      </tr>
+      <tr>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;">Processor</td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;">Included</td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;text-align:right;">-</td>
+        <td>&nbsp;</td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;">Processor</td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;"><a href="https://www.amazon.es/-/pt/gp/product/B09MDH6B1">Intel Core i5 12G</a></td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;text-align:right;">€142</td>
+      </tr>
+      <tr>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;">Memory</td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;"><a href="https://www.amazon.com/dp/B08C511GQH">DDR4 16GB SODIMM</a><br><a href="https://www.amazon.com/dp/B08C511GQH">Crucial 3200MHz</a></td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;text-align:right;">$35</td>
+        <td>&nbsp;</td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;">Memory</td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;"><a href="https://www.amazon.com/dp/B08C511GQH">DDR4 16GB SODIMM</a><br><a href="https://www.amazon.com/dp/B08C511GQH">Crucial 3200MHz</a></td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;text-align:right;">$35</td>
+      </tr>
+      <tr>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;">Sata cables</td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;"><a href="https://www.amazon.com/dp/B01IBA4510">8x</a></td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;text-align:right;">$20</td>
+        <td>&nbsp;</td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;">Sata cables</td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;"><a href="https://www.amazon.com/dp/B01IBA4510">8x</a></td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;text-align:right;">$20</td>
+      </tr>
+      <tr>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;">Power Supply</td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;"><a href="https://aliexpress.com/item/1005005904487759.html">500W</a></td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;text-align:right;">$39</td>
+        <td>&nbsp;</td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;">Power Supply</td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;"><a href="https://aliexpress.com/item/1005005904487759.html">500W</a></td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;text-align:right;">$39</td>
+      </tr>
+      <tr>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;">SSDs</td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;"><a href="https://www.amazon.com/dp/B09YM2236W">M.2 NVME 128GB</a><br><a href="https://amazon.com/dp/B0B1WWYJ18">mSATA 128GB</a><br><a href="https://www.amazon.com/dp/B0BS9WKNXV">2x2.5" SATA 256GB</a></td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;text-align:right;">$16<br>$20<br>$40</td>
+        <td>&nbsp;</td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;">SSDs</td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;"><a href="https://www.amazon.com/dp/B09YM2236W">M.2 NVME 128GB</a><br><a href="https://amazon.com/dp/B0B1WWYJ18">mSATA 128GB</a><br><a href="https://www.amazon.com/dp/B0BS9WKNXV">2x2.5" SATA 256GB</a></td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;text-align:right;">$16<br>$20<br>$40</td>
+      </tr>
+      <tr>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;">HDDs</td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;text-align:center;" colspan="2">6xHDD Excluded</td>
+        <td>&nbsp;</td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;">HDDs</td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;text-align:center;" colspan="2">8xHDD Excluded</td>
+      </tr>
+      <tr>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;"><strong>Total</strong></td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;text-align:right;" colspan="2"><strong>$400</strong></td>
+        <td>&nbsp;</td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;"><strong>Total</strong></td>
+        <td style="border-bottom:2px solid;border-left:2px solid;border-right:2px solid;border-top:2px solid;text-align:right;" colspan="2"><strong>$400</strong></td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<h2>More help</h2>
+<p>There are many many Youtube videos about building your own NAS appliance - and indeed a few channels dedicated &nbsp;to covering the selection or build of small NAS systems. Here are a few examples:</p>
+<ul>
+  <li><a href="https://www.youtube.com/@nascompares">Youtube channel - NAS Compares</a></li>
+  <li><a href="https://www.youtube.com/results?search_query=nas+build">Youtube search - NAS Build</a></li>
+</ul>

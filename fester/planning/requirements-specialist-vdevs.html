@@ -1,0 +1,138 @@
+<!--
+title: 2.2.5 ZFS Specialist vDevs
+description: Speed up your disk access - but only in the right circumstances with the right hardware
+published: true
+date: 2024-12-06T22:07:25.179Z
+tags: 
+editor: ckeditor
+dateCreated: 2024-07-31T22:49:08.251Z
+-->
+
+<p>On the previous wiki page we have discussed the various types of redundant vDevs - Mirrors or RAIDZ1/2/3.</p>
+<p>This page discusses some other, special, types of vDev that ZFS provides for improving performance in specific circumstances:</p>
+<ul>
+  <li>Level-2 Adaptive Replacement Cache (L2ARC) - as opposed to standard Adaptive Replacement Cache (ARC) that comes as standard in normal RAM</li>
+  <li>Synchronous Log (SLOG)</li>
+  <li>Special (allocation) vDev (for metadata and small files)</li>
+  <li>Deduplication</li>
+</ul>
+<p>To save you some time and effort in reading and digesting the remainder of this page, here are some general rules of thumb as to why most people <span class="text-big"><i><strong><u>don't</u></strong></i></span> need specialist vDevs at all:</p>
+<ul>
+  <li>These specialist vDevs are designed to enhance performance for high intensity I/O environments. Unless you have one of these special performance needs, these vDevs will not improve your perceived NAS speeds, may actually reduce performance instead and will certainly add complexity to your pool (increasing the number of links in the chain that can break, and make recovery potentially more complex when things do go wrong), and will cost you money for no real benefit.</li>
+  <li>For general home / very small business usage (PC files, media streaming) normal HDD performance with a sufficient standard ARC will give great performance using RAIDZx without using any of these specialist vDev types.&nbsp;</li>
+  <li>If you think that performance is impacted by low ARC hit rates, adding more memory may be both the cheapest and most effective way to improve performance. In many cases, you will be limited more by LAN bandwidth than by your NAS disk performance.</li>
+  <li>If you think access to data on HDDs will be too slow, consider putting the data on SSD rather than using a specialist vDev to speed things up.</li>
+  <li>Each of these specialist vDevs is designed to ease a specific I/O bottleneck that appears with a specific type of workload (or use case). Don't even think of implementing them just because you can, but rather only if you know you have the specific issue that they are designed to fix, and only if you have the right type of hardware to make the implementation effective.</li>
+  <li>There is no point in using any of these specialist device types to speed up a pool which is using the same technology. SATA SSDs are a few orders of magnitude faster than HDDs, and NVMe devices a few orders of magnitude faster than SSDs, and Optane devices even faster - so if you want these special devices to have a significant impact, then aim for NVMe, though SATA SSDs can still provide performance improvements for HDD pools in the right situations.</li>
+</ul>
+<p><strong>In the vast majority of cases, none of these special disks are either needed or a good idea, and those use cases that need them are usually pretty specialised.</strong> However it is possible that you do have one of these use cases, in which case one or more of these may be of use to you.</p>
+<p>If you really feel that you need any of these specialist devices, you should really be considering the use of NVMe disks (which are substantially faster than SATA SSDs), in which case you may need motherboards with multiple native NVMe slots (i.e. each of which has a direct connection to a dedicated CPU PCIe lane). If you decide to use e.g. PCIe cards with multiple NVMe slots on them, then do make sure that the card supports sufficient PCIe lanes to support the performance needs of those NVMe slots and that both the motherboard and PCIe card support bifurcation and that multiple M.2 cards are not supported by a multiplexing chipset.&nbsp;</p>
+<h2>L2ARC</h2>
+<p>As previously stated, ZFS comes with an Adaptive Replacement Cache (ARC) as standard which uses all the otherwise unused memory in your system as a cache for both metadata (data about where your actual files are stored) and the most recently read actual data so that if it is requested again then the request can be satisfied from memory rather than having to go to disk, which is several orders of magnitude faster/slower.&nbsp;</p>
+<p>The most important data to be held in ARC is the metadata because this relatively small amount of data is needed to locate where the actual data is stored on disk and it is therefore used relatively frequently. Holding actual data in ARC is less important in most home/small business servers, partly because once the first network request has been sent, ZFS keeps pre-fetching the rest of the file and storing it in cache in anticipation that the remainder of the file will be requested next - and thus all subsequent requests end up being satisfied from ARC.&nbsp;</p>
+<p>The consequence is that even relatively moderate amounts of ARC can still often provide very high hit ratios in a typical home / small business environment - the authors very modest 5GB ARC delivers c. 99.5% hit rate.</p>
+<figure class="image"><img src="/scale-memory-usage-cache-hits.png"></figure>
+<p>If your ARC hit ratio is not as high as you would like, then adding more memory to your system can easily be the cheapest and most effective way to improve your overall I/O performance.</p>
+<p>Because it is held in RAM, standard ARC is <strong>not</strong> persistent - in other words it does NOT survive a reboot or power off and needs to be repopulated from original disks every time these happen.</p>
+<p>A Level 2 Adaptive Replacement Cache (L2ARC) is an SSD (NVMe or SATA) which stores copies of the most frequently accessed metadata and data blocks so that they can be used to populate the ARC faster then reading from slower HDD (or SSD) disks, and L2ARC is persistent across reboots and power downs.</p>
+<p>The downside of an L2ARC is that it reduces the amount of memory available for standard ARC because the L2ARC index needs to be held in memory.<br><strong>Don't consider an L2ARC unless your server has at least <u>60GB</u> and preferably 120GB of free memory after O/S, services, apps and VMs are loaded.</strong></p>
+<p>So, for some specific workloads which have occasional but repeating access to the same data, then an L2ARC can potentially be quite effective. Potential examples:</p>
+<ul>
+  <li>VMs - which used the same blocks from disk every time they boot</li>
+  <li>…</li>
+</ul>
+<h3>Checklist</h3>
+<p>There is <strong>no point</strong> in adding an L2ARC unless:</p>
+<ul>
+  <li>Your cache hit ratios as shown in your storage reports show that you have a significant proportion of I/Os which are not satisfied from cache.&nbsp;<br><br>Unless you have a large amount of storage, a significant proportion of which is frequently and randomly read, you will be surprised just much is satisfied from the cache and how little from Hard Disk - it doesn't take a lot of activity to populate the cache with the metadata, and sequential reads of large files (e.g. for streaming audio or video) will be pre-loaded and satisfied from cache.</li>
+  <li>Consider first adding normal memory as a means of improving your cache hit ratio.</li>
+  <li>You have a noticeable read performance issue, traceable directly to having to wait for data from HDD, and not due to other causes such as network bandwidth.</li>
+  <li>You have at least 64GB of memory - you need to store the metadata of the L2ARC in main memory, and performance will likely go down if you have &lt; 64GB because of this.</li>
+  <li>You cannot simply put the data itself onto SSD (due to size constraints)</li>
+  <li>L2ARCs are not essential to the integrity of a pool - so they do not need to be resilient i.e. mirrored and your pool will continue operating (with reduced performance) if the L2ARC vDev fails, and if you add one it can be easily removed at a later date if you find it is not needed.</li>
+  <li>L2ARCs can be configured to store e.g. only metadata blocks and not data blocks - and so a relatively small L2ARC (with a small impact on ARC size) can still provide some of the performance benefits of a Metadata special vDev without the same resiliency requirements.</li>
+</ul>
+<h2>SLOG</h2>
+<p>As you might expect if you understand the full name, a Synchronous Log (SLOG) can provide performance benefits for response time critical or I/O intensive <strong>synchronous</strong> writes.</p>
+<p>In an asynchronous write, ZFS holds the data in memory, sends a success response to the client immediately, and writes this data to disk every 5seconds in an atomic transaction group (which preserves ZFS consistency even if the system crashes part way through this bulk write). So many application writes are combined into a single, larger, more efficient write every few seconds.</p>
+<p>In a synchronous write, ZFS writes the data to disk (in a special area called a Zero-Intent-Log or ZIL), and only when this is complete does it send a success response to the client, and then as with asynchronous writes, data is written to disk in transaction groups every five seconds. So for synchronous writes, every application write results in an actual &nbsp;ZIL write to disk, plus the same larger bulk write as asynchronous writes every few seconds.&nbsp;</p>
+<p>Because of this asynchronous writes are 10x to 100x faster and less resource intensive as synchronous writes.&nbsp;</p>
+<p>There are many situations where writes are sent as a synchronous write as default but this commitment is not necessary. In these situations it is possible to configure e.g. the Zvol or Dataset as being asynchronous and / or the NFS share as asynchronous and / or the client mount of that share as asynchronous.</p>
+<p>SMB access from Windows is also <strong>always</strong> asynchronous.</p>
+<p>The ZIL is never normally read - it is read only at system start-up to ensure that any bulk writes that haven't happened are caught up.</p>
+<p>Normally the ZIL is on the same disks as the data. With an SLOG, the ZIL is on a separate SLOG device, normally substantially faster than an HDD. This provides two benefits:</p>
+<ol>
+  <li>The time required to write to the ZIL will be substantially less than to HDD, and thus the success response is sent to the client far quicker.</li>
+  <li>One of the two I/Os for each write is to the faster SLOG device, and only half the number of writes are made to the data devices - so the peak capacity of client writes is going to be higher.An SLOG will do absolutely nothing for async writes.</li>
+</ol>
+<h3>Checklist</h3>
+<p>An SLOG will not benefit:</p>
+<ul>
+  <li>SMB writes from Windows machines</li>
+  <li>Any clients which can be explicitly marked as asynchronous</li>
+  <li>App writes to datasets marked as asynchronous</li>
+  <li>VM / iSCSI writes to Zvols marked as asynchronous</li>
+  <li>Low volume synchronous writes where response time is not critical&nbsp;</li>
+</ul>
+<p>An SLOG will potentially benefit:</p>
+<ul>
+  <li>Medium- to high-volume writes (e.g. bulk file copies/moves) using e.g. NFS or SMB from Macs</li>
+  <li>App writes to datasets which are not marked as Asynchronous</li>
+  <li>VM / iSCSI writes to Zvols which are not marked as Asynchronous</li>
+  <li>Relatively high-volume synchronous writes which are response-time critical</li>
+</ul>
+<p>In practice, there is <strong>no point</strong> in adding a SLOG unless:</p>
+<ul>
+  <li>You have a noticeable write performance issue, traceable directly to having to wait for data to be written to HDD, and not due to other causes such as network bandwidth.</li>
+  <li>You are definitely doing synchronous writes and do not want to turn these off for data integrity reasons</li>
+  <li>You cannot simply put the data itself onto SDD (NVMe or SATA) due to large data size</li>
+  <li>If you are going to add an SLOG disk, then it must be SSD (SATA or NVMe).</li>
+  <li>If it is important to ensure synchronicity, then although an SLOG will only hold the last few seconds of writes, it is nonetheless essential to the integrity of a pool. Consequently an SLOG should be mirrored.</li>
+</ul>
+<p>Additionally:</p>
+<ul>
+  <li>Because SLOGs only hold ZIL data temporarily, they can be relatively small.</li>
+  <li>If you add an SLOG, it can be easily removed at a later date if you find it is not needed.</li>
+</ul>
+<h2>Special (Allocation) vDev</h2>
+<p>ZFS normally stores the metadata for your storage area - which describes which files are where - as part of the storage area itself. However you can use a Special vDev, or more accurately a Special Allocation vDev, to store this metadata for HDD storage areas separately on a faster SSD (NVMe or possibly SATA)&nbsp;storage medium, and this will speed up how quickly TrueNAS can locate where on the HDD your data is stored.</p>
+<p>This type of vDev works by diverting requests to allocate a new metadata block so that they are satisfied from this SSD vDev rather than from the main data vDev(s). If you set the dataset to do so, it can also divert requests to allocate blocks for a small file (≤ a defined size) to the SSD vDev as well.&nbsp;</p>
+<p>This is <strong><u>very</u></strong> different to a L2ARC which holds <strong><u>a copy</u></strong> of the metadata or file blocks. A Special (Allocation) vDev holds <strong>the primary and ONLY copy</strong> of the pool's metadata, and if this vDev is lost (e.g. because it is non-resilient and the only device it is held on fails) then the entirety of the pool's data will be irrevocably lost too.</p>
+<p><strong>For this reason it is </strong><i><strong><u>essential</u></strong></i><strong> that a Special (Metadata) vDev is 2x (or even 3x) mirrored </strong>- and the simple starting point is to use the same redundancy as the data vDev(s).</p>
+<h3>Checklist</h3>
+<p>In practice, there is <strong>no point</strong> in adding metadata SSDs unless:</p>
+<ul>
+  <li>You have a noticeable storage performance issue, traceable directly to having to wait for metadata to be read from HDD, and not due to other causes such as network bandwidth.</li>
+  <li>You cannot resolve this performance problem using either more main memory for cache.</li>
+  <li>You cannot simply put the data itself onto SDD (due to size constraints)</li>
+  <li>You understand the risks of full data loss if the metadata is lost.</li>
+  <li>Your hardware can support the resources needed for them i.e. dual NVMe slots.</li>
+</ul>
+<p>Additionally:</p>
+<ul>
+  <li>If you are going to add metadata disks, then they must be SSD (SATA or NVMe) and they <strong>must be mirrored</strong>.</li>
+  <li>User <a href="https://forums.truenas.com/u/Constantin"><strong>@Constantin</strong></a> has undertaken some specific benchmarking of SvDevs, and suggests (<a href="https://forums.truenas.com/t/special-vdev-svdev-planning-sizing-and-considerations/5086">in a somewhat technical article here</a>) that they will be beneficial for&nbsp;rSyncs but also as an alternative to L2ARC or SSD help data for small files.</li>
+  <li>Once a Special (Metadata) vDev is added to a pool it cannot be removed without moving all the data off, destroying and rebuilding the pool and moving the data back again.</li>
+</ul>
+<h2>Deduplication</h2>
+<p>Deduplication is done by finding ZFS blocks which have the same exact contents, and then adjusting the metadata for the files that use these identical blocks to point to the same single block, allowing the other block(s) to be returned to the free space list.</p>
+<p>However, this then means that a great deal more care has to be taken rewriting these files in order to ensure that a change to a block in one file does not end up inadvertently impacting the matching blocks in other files.</p>
+<p>Additionally, once you have added deduplication special devices to a pool, they cannot later be removed from the pool.</p>
+<p>Deduplication is a <span class="text-big"><i><mark class="pen-red"><strong><u>VERY</u></strong></mark></i></span> intensive operation, requiring significant memory, fast SSDs and quite a lot of CPU. Consequently, ZFS Deduplication is a highly specialised solution to what is typically a large enterprise requirement.</p>
+<p>Uncle Fester therefore recommends that you avoid deduplication like the plague - and he can remember full well just how bad the plague was when it killed half his family in the 17C (and he sneers at Covid as being a pale immitation!!).</p>
+<h2>Summary</h2>
+<p>If you are thinking about adding any type of special vDev, then think about it again because in most typical home / small business environments they are not only unnecessary but possibly add to the risk and complexity of the solution and thus add to the complexity of recovering your pools when things go wrong.</p>
+<p>But if you genuinely believe that they would be beneficial to your own use case, the before you go ahead please do seek advice in the <a href="https://forums.truenas.com/">TrueNAS forums</a> on both 1) whether they are indeed necessary or a good idea; and 2) the best way to configure them.</p>
+<p>&nbsp;</p>
+<h6><span class="text-big">Links</span></h6>
+<figure class="table" style="width:100%;">
+  <table>
+    <tbody>
+      <tr>
+        <td style="width:50%;">Prev - <a href="/fester/planning/requirements-redundancy">2.2.4 Redundant disks</a></td>
+        <td style="text-align:center;"><a href="/fester/index">Index</a></td>
+        <td style="text-align:right;width:50%;">Next - <a href="/fester/planning/choose-hardware">2.3 Choosing your Server Hardware</a></td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
