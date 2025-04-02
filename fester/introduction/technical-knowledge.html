@@ -2,7 +2,7 @@
 title: 1.4 What technical knowledge do you need? 
 description: Just how much does TrueNAS help you avoid needing technical knowledge?
 published: true
-date: 2025-04-02T16:44:37.726Z
+date: 2025-04-02T17:38:35.122Z
 tags: 
 editor: ckeditor
 dateCreated: 2025-04-02T16:42:55.931Z
@@ -19,6 +19,8 @@ dateCreated: 2025-04-02T16:42:55.931Z
 <p>This is a fairly opinionated list (and contributors should feel free to modify this list according to their own views):</p>
 <ul>
   <li>Basic understanding of ZFS:<ul>
+      <li>Pools, datasets and zVolumes</li>
+      <li>vDevs</li>
       <li>Mirrors vs. RAIDZ1/2/3</li>
       <li>Scrubs</li>
       <li>Snapshots (and Checkpoints)</li>
@@ -42,6 +44,48 @@ dateCreated: 2025-04-02T16:42:55.931Z
     </ul>
   </li>
 </ul>
+<h2>Basic ZFS Concepts</h2>
+<h3>Pools, Datasets and zVolumes</h3>
+<ul>
+  <li>Pools: The basic unit of ZFS storage. When you install TrueNAS you get a <code>boot-pool</code>which contains TrueNAS and which you should <strong>not</strong> write files to yourself. To store your files, apps and virtualised operating systems you will need one or more storage pools you create - each pool is a self-contained storage group.</li>
+  <li>Datasets: Each pool has a root dataset with the same name as the pool - and these are normally mounted as subpaths of <code>/mnt</code>. Datasets can contain other datasets, zVolumes or normal directories and files. From a Linux perspective, each dataset is separately mounted - so copying or moving data between datasets will involve a physical copy of the files.</li>
+  <li>zVolumes are emulated block devices or virtual disks used for virtualisation or iSCSI access. TrueNAS has no knowledge of what is stored inside, and so <strong>cannot</strong> e.g. predict what data will be needed next and pre-fetch it. Moreover, whilst ZFS can protect the integrity of the overall pool against e.g. sudden power loss, without knowledge of how the zVolume is used, it cannot do anything to help preserve the integrity of the virtualised file system it contains - and this means that you need to tell ZFS to commit each and every write to disk immediately (so called synchronous writes) and this can have a very significant performance impact on HDD writes. So if you are going to use virtualisation and zVolumes, you need to design the storage for these differently than from the storage for normal files (much more on this later).</li>
+</ul>
+<h3>vDevs</h3>
+<p>A pool is made up of one or more virtual-devices or vDevs.</p>
+<p>A vDev is formed from one or more physical disks (HDDs, SSDs, NVMe etc.) or disk partitions - and (in almost all circumstances) these should typically all be the same type and size of disk.</p>
+<p>The primary type of vDev is the <i>Data vDev</i> - and every pool must have at least one of these.&nbsp;</p>
+<p>There are various secondary types of vDev - SLOG, L2ARC, Dedup, Special Allocation - each of which is designed to solve a specific performance issue which occur with specific use cases (more on these later in this wiki). When designing your pools, you should assume that you <i><strong>do not</strong></i> need any of these unless you have a specific use case which will need them - do <i><strong>not</strong></i> just add these to your design because you think that they must be useful, because if you don't have a use case they will at best cost you money to do absolutely nothing or at worse have a negative impact on performance rather than a positive one.</p>
+<p>You can also have spare drives which are unused, ready to be switched in to replace drives which fail - these are not vDevs but they are configured in a similar way.</p>
+<p>Data, Slog, Dedup and Special Allocation vDevs are critical to the operation of the pool, and if you lose complete access to any one of these vDevs, your pool (and all the data in it) are most likely going to be gone forever (which is why you still need backups). The more vDevs you have, the more links in the chain that can experience problems - and thus the greater the need for each of the vDevs to have some redundancy in order to survive individual hardware issues. With the exception of single drive, single vDev pools, unless you really know what you are doing and you are prepared to accept fully&nbsp;the risks associated, you should always plan for redundant vDevs, and you should NOT under any circumstances stripe data across multiple single drive vDevs. (L2ARC Cache vDevs can be single drive as they can be lost without any impact to the data integrity of the pool.)</p>
+<h3>Mirrors vs. RAIDZ</h3>
+<p>There are two basic ways to make a vDev redundant: Mirrors and RAIDZ:</p>
+<ul>
+  <li>Mirrors: 2 or more identical copies of an entire disk. You can add or remove drives from a mirror at will. (From a technical perspective for adding and removing mirrors, a single drive vDev is considered a non-redundant mirror. For pools that are all mirror vDevs, you can also remove entire vDevs at a later date.) &nbsp;</li>
+  <li>RAIDZ: a RAIDZ vDev consists of 2 or more data disks, and 1-3 parity disks (a simplified explanation useful for conceptual understanding and for planning - in actual use data is not physically stored stored in this way). In recent versions of TrueNAS SCALE you can add drives to an existing RAIDZ vDev through “RAIDZ Expansion” - however you <strong>cannot remove drives</strong> from a RAIDZ vDev. Furthermore, once you have chosen the parity level and formed your pool, you cannot later increase or decrease it - so plan carefully, think ahead if you ever plan to expand your RAIDZ vDev, and if in doubt go for two or more parity drives. A simple rule of thumb is to have 2 or more parity drives if you have a 4 or more data drives in the vDev or if you have 3 or more data drives of 8TB or greater.&nbsp;</li>
+</ul>
+<p><strong>Important:</strong> Redundancy provides more safety than simply recovering from the entire loss of a drive. In ZFS, each record has a checksum associated with it, and when ZFS detects a corrupted block because the checksum doesn't match, the redundant copies can be used to recover the record or file that is corrupted. This is another reason <strong>not</strong> to use non-redundant vDevs.</p>
+<h3>Scrubs</h3>
+<p>A ZFS scrub reads every block of data in a pool, and checks that the data matches the checksum. If not, ZFS attempts to correct the data using the vDev redundancy.</p>
+<p>You should run a scrub every 1-3 months at a minimum.</p>
+<h3>Snapshots (and Checkpoints)</h3>
+<p>A <i>Snapshot</i> is a way of freezing the contents of a dataset or zVolume so that you can go back to the contents at a later date. For datasets you can go back and find any individual file that may have been changed; for zVolumes you can only roll-back the entire zVolume.</p>
+<p>A <i>Checkpoint</i> is a specialised type of Snapshot that allows for greater recovery if there are integrity problems with the pool. &nbsp;&nbsp;</p>
+<h3>Replication</h3>
+<p>ZFS <i>Replication</i> is a way of copying a snapshot from a dataset in one pool to a different pool on the same or different server.&nbsp;</p>
+<p>The key point about ZFS Replication is that it is incremental and therefore extremely efficient - ZFS knows what snapshot is at the destination dataset, and can match it to the same snapshot at the source and then only send any changes that have happened since.</p>
+<h3>Asynchronous vs. synchronous writes</h3>
+<h3>When to use - or more often <strong>not to use</strong> - the various specialised performance enhancement “vDevs” that ZFS has</h3>
+<h3>What you should and shouldn't do (for fear of making things worse) if things do go wrong</h3>
+<h3>Resilvering</h3>
+<h3>RAIDZ expansion</h3>
+<h3>Basic understanding of SMART disk diagnostics</h3>
+<h2>Basic understanding of TCP/IP networking:</h2>
+<h3>Initial setup</h3>
+<h3>For networking to containerised / virtualised applications</h3>
+<h2>Basic IT management concepts:</h2>
+<h3>How safe is your data with ZFS?</h3>
+<h3>What constitutes a backup? Redundancy, snapshots, checkpoints, ZFS replication</h3>
 <p>&nbsp;</p>
 <h6><span class="text-big">Links</span></h6>
 <figure class="table">
