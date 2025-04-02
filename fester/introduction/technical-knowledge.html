@@ -2,7 +2,7 @@
 title: 1.4 What technical knowledge do you need? 
 description: Just how much does TrueNAS help you avoid needing technical knowledge?
 published: true
-date: 2025-04-02T17:39:23.479Z
+date: 2025-04-02T20:38:15.485Z
 tags: 
 editor: ckeditor
 dateCreated: 2025-04-02T16:42:55.931Z
@@ -70,22 +70,57 @@ dateCreated: 2025-04-02T16:42:55.931Z
 <p>You should run a scrub every 1-3 months at a minimum.</p>
 <h3>Snapshots (and Checkpoints)</h3>
 <p>A <i>Snapshot</i> is a way of freezing the contents of a dataset or zVolume so that you can go back to the contents at a later date. For datasets you can go back and find any individual file that may have been changed; for zVolumes you can only roll-back the entire zVolume.</p>
-<p>A <i>Checkpoint</i> is a specialised type of Snapshot that allows for greater recovery if there are integrity problems with the pool. &nbsp;&nbsp;</p>
+<p>A <i>Checkpoint</i> is a specialised type of Snapshot that allows for greater recovery if there are integrity problems with the pool. It is not intended to be used as a replacement for regular Snapshots, but can be a useful tool for boot-pool during upgrades or for other pools when you are undertaking a major change.</p>
 <h3>Replication</h3>
 <p>ZFS <i>Replication</i> is a way of copying a snapshot from a dataset in one pool to a different pool on the same or different server.&nbsp;</p>
 <p>The key point about ZFS Replication is that it is incremental and therefore extremely efficient - ZFS knows what snapshot is at the destination dataset, and can match it to the same snapshot at the source and then only send any changes that have happened since.</p>
 <h3>Asynchronous vs. synchronous writes</h3>
+<p>Normal <i>Asynchronous</i> writes are queued up for (normally) 5 seconds before being written to disk as a Transaction Group (TXG) with full pool integrity (i.e. either all writes succeed or all writes fail).&nbsp;</p>
+<p>However whilst this maintains the integrity of the ZFS pool, it does not guarantee the integrity of the internal structure of virtual disks nor does it guarantee that business-critical database transactions have been written to disk.</p>
+<p>If you need these integrities to be guaranteed as well, then you need to turn on synchronous writes. For these, in addition to queuing the writes for 5 seconds as above, it immediately writes a second copy of the data to the Zero Intent Log (ZIL) which can be used when TrueNAS starts to catch up on any delayed writes that might otherwise be lost, thus maintaining both virtual disk and database integrity.&nbsp;</p>
+<p>Unfortunately using synchronous writes has a very detrimental impact on performance, especially if you are writing the ZIL to HDD, and so you should either place the data itself on SSD (so that the ZIL is there also) or implement a special (mirrored) SLOG vDev to divert the ZIL writes from HDD to SSD. (Note: The Linux <code>fsync</code> issued at the end of writing a file to flush data to disk also creates a ZIL write even for normal asynchronous writes, however unless you are frequently writing small sequential files the performance impact of this is usually limited.)&nbsp;</p>
 <h3>Specialised performance enhancement vDev types</h3>
+<p>The following vDev types are specialised secondary vDevs that can be used to address specific performance issues with specific use cases:</p>
+<ul>
+  <li>SLOG - as described above diverts ZIL writes from the data vDev to a separate device dedicated to ZIL writes - and to be effective this needs to be significantly faster technology than the data vDev - so SSD when data is on HDD, or NVMe / Optane when the data is on normal SSD.</li>
+  <li>L2ARC - ZFS already caches data read from disk in normal memory (which is why you need to have more memory for ZFS systems than non-ZFS), and if you want to cache more data then the best solution is often to add more memory. However there are occasions where this is not possible or proves to be ineffective and for these situations a secondary cache L2ARC can be beneficial.</li>
+  <li>Dedup - until Fangtooth introduces a rewritten Dedup algorithm and this has been proven to be bug free and effective, the easiest rule of thumb for Deduplication is simply “don't do it”!!! It is designed for <i><strong>VERY</strong></i> specific use cases, and needs significant additional hardware to be even half effective. If you have a genuine deduplication issue, then either wait for the rewritten version or use a deduplication script that uses Block Cloning instead.</li>
+  <li>Special Allocation - of all the special types of vDev, this is perhaps the most useful and most used, but you do have to be careful about how you implement it. Because this vDev is essential to your pool, it must be a redundant vDev, usually mirrored, recommended to have the same redundancy as the data vDev i.e. a 3-way mirror for a RAIDZ2 data vDev. This will generally always be used to store the metadata blocks (which typically can make up 30%-50% of all reads - but which are of course preferentially cached in main memory ARC), but on a dataset-by-dataset basis you can also tell ZFS to use it for small files. Thus it can effectively create a 2-tier pool where metadata and small active files are stored on e.g. NVMe whilst large usually inactive files are stored on HDD</li>
+</ul>
 <h3>What to do if things do go wrong</h3>
+<p>Even in the most correctly configured systems, occasionally things do go wrong and your pool either becomes degraded but stays online or ZFS takes it offline completely because the integrity has become suspect and in order to avoid any further corruption. ZFS expects your hardware to behave in a certain way, and if any part of your system is mis-configured, then these sorts of issues become more likely.</p>
+<p>If your pool becomes degraded, and you are technically knowledgeable about ZFS, then many recovery actions can be undertaken safely through the UI.</p>
+<p>However if your pool has gone offline or you are not 100% confident about how to recover it to fully working order, then your first action should be to seek help from experts on the TrueNAS forums - to put things bluntly, if you try to resolve issues when you are guessing about what to do, you could make the corruption worse and turn a potentially recoverable pool into a completely irrecoverable one where your data becomes permanently inaccessible. &nbsp;&nbsp;</p>
 <h3>Resilvering</h3>
+<p>Resilvering is the process of restoring full redundancy when your system has lost one or more drives and become partially or fully degraded (but is still online).&nbsp;</p>
 <h3>RAIDZ expansion</h3>
-<h3>Basic understanding of SMART disk diagnostics</h3>
-<h2>Basic understanding of TCP/IP networking:</h2>
+<p>If you have a RAIDZ vDev, from ElectricEel onwards you can now add drives to the data part of the data vDev (retaining the same parity level) to increase your useable storage space.</p>
+<h2>Basic understanding of SMART disk diagnostics</h2>
+<p>SMART is a technology whereby each disk can tell the operating system about its internal operating status. TrueNAS can automatically run regular SMART tests on your system, and you are recommended to run SMART Short Tests at least weekly and SMART Long Tests at least monthly.</p>
+<p>@JoeSchmuck's Multi-Report script can be used to check on the status of your SMART tests, Scrubs and SMART attributes and inform you if any of your disks are starting to experience early signs of failure.</p>
+<h2>Basic understanding of TCP/IP networking</h2>
 <h3>Initial setup</h3>
+<p>To access your NAS from your LAN, you will need to configure the server's network cards correctly, and you will need to have a basic understanding of TCP/IP network addressing to achieve this. (Teaching this is not within the scope of this Wiki - however there are lots of resources on the Internet for this.)</p>
 <h3>For networking to containerised / virtualised applications</h3>
+<p>When you implement applications or containers or virtualised operating systems, these will typically also need network addresses and / or ports and a slightly greater understanding of TCP/IP networking will be needed to ensure that this is done correctly.</p>
 <h2>Basic IT management concepts:</h2>
 <h3>How safe is your data with ZFS?</h3>
+<p>ZFS is designed to write data to pools in Transaction Groups (TXGs) in such a way that a TXG is either fully written to disk or effectively not written at all. Thus ZFS pools maintain integrity even after sudden power loss or O/S crash, and do not need e.g. a Windows <code>chkdsk</code> or Linux <code>fsck</code> to be run to restore integrity. However…</p>
+<ul>
+  <li>The integrity of underlying virtual file systems or database transactions is not guaranteed unless you do synchronous writes</li>
+  <li>Despite integrity supposedly guaranteed, there are anecdotal examples of pools failing to load after a reboot, particularly when a resilver or RAIDZ expansion has been interrupted. That said, to put this in context, ZFS is still far safer for your data integrity than many other file systems - but it is NOT infallible. You should NOT rely on the pool retaining integrity to safeguard your irreplaceable data - make sure that you do backups and that you have checked that they are working.</li>
+  <li>If you lose more disks than your redundancy level, you will lose your pool - and e.g. a disk controller issue (such as overheating) can cause this.</li>
+  <li>The integrity only works if data is written to disk in the exact sequence specified by ZFS, and you must avoid at all costs disk controllers (especially hardware RAID controllers) that may resequence writes to reduce seek times.</li>
+</ul>
 <h3>What constitutes a backup? Redundancy, snapshots, checkpoints, ZFS replication</h3>
+<p>The definition of a backup is one where you can recover your important and irreplaceable data regardless of what happens to your primary copy (e.g. a fire guts your entire home) - which means off-site. Anything else is only <i>at-best</i> a partial backup, if indeed it is a backup at all.</p>
+<ul>
+  <li>Snapshots - same pool, lose the pool you lose all snapshots</li>
+  <li>Replication within the same server - have a Power Supply fire or a power supply surge and you may lose all the drives in your server at once</li>
+  <li>Replication to a server elsewhere in your building - definitely getting close to a genuine backup - but a site-wide fire could cause both primary and backup servers to be lost</li>
+  <li>Off-site replication to the cloud or to a buddy's server across town - this is a genuine backup.</li>
+</ul>
+<p>This is NOT to say that e.g. Snapshots don't have their benefits - they are very fast and low cost, and they can assist with recovering data that has been accidentally deleted or e.g. encrypted by ransomware, but whilst they may address some risks, they do not address many others.</p>
 <p>&nbsp;</p>
 <h6><span class="text-big">Links</span></h6>
 <figure class="table">
