@@ -2,7 +2,7 @@
 title: 1.3 Which version of TrueNAS?
 description: TrueNAS CORE or TrueNAS SCALE?
 published: true
-date: 2025-04-02T16:13:35.644Z
+date: 2025-04-02T16:48:55.901Z
 tags: 
 editor: ckeditor
 dateCreated: 2024-04-07T10:33:12.742Z
@@ -26,7 +26,7 @@ dateCreated: 2024-04-07T10:33:12.742Z
 <p>However, when it comes to running other software i.e. applications or virtualised operating systems under TrueNAS, CORE and SCALE differ significantly. CORE's applications functionality is primarily Jails (which are containerised FreeBSD images that share the same kernel and process scheduling with the base operating system. By comparison, SCALES applications support has been a bit of a moveable feast - up until Dragonfish it was Kubernetes based, however ElectricEel switched to a simpler Docker-based solution. The latest Fangtooth adds Linux Containers (LXCs, which are pretty like Jails) to the mix - so although there is no easy migration path from CORE Jails to SCALE LXCs (and certainly zero automated migration), Fangtooth will at least provide the infrastructure for reimplementing Jails as LXCs.</p>
 <p>So, in SCALE your choices are now (or soon):</p>
 <ul>
-  <li>Docker containers (cut-down virtualised Linux, flexible allocation of memory and mapping of datasets)&nbsp;</li>
+  <li>Docker containers (cut-down virtualised Linux, flexible allocation of memory and mapping of datasets)</li>
   <li>Fully virtualised operating systems (completely virtualised, fixed allocation of memory, only virtual disks or network access to datasets)</li>
   <li>(in Fangtooth) Linux Containers (more flexible virtualised Linux, flexible allocation of memory and mapping of datasets).</li>
 </ul>
@@ -99,7 +99,7 @@ dateCreated: 2024-04-07T10:33:12.742Z
 <ul>
   <li><a href="https://unraid.net/">unRAID</a> - Supports BTRFS, another file system similar to but different from ZFS. Supports mixed sized disks. &nbsp;Paid software only; there's no free version of unRAID. &nbsp;Loses points for using a .net TLD when they aren't an ISP.</li>
   <li><a href="https://www.openmediavault.org/">Open Media Vault</a> - Free, Linux-based NAS software. &nbsp;Can be made to support ZFS, but it doesn't appear to be well-integrated.</li>
-  <li><a href="https://hexos.com/">Hex OS</a> - actually built on top of TrueNAS SCALE, this (as yet unreleased software) is intended to provide a simplified UI for both set-up and ongoing management in home / small business environments (however the authors of this Wiki do have some concerns that the functionality allowing reduced technical knowledge needed for set-up will NOT be matched by functionality reducing the technical knowledge needed if/when things go wrong). &nbsp;</li>
+  <li><a href="https://hexos.com/">Hex OS</a> - actually built on top of TrueNAS SCALE, this (as yet unreleased software) is intended to provide a simplified UI for both set-up and ongoing management in home / small business environments (however the authors of this Wiki do have some concerns that the functionality allowing reduced technical knowledge needed for set-up will NOT be matched by functionality reducing the technical knowledge needed if/when things go wrong).</li>
   <li><a href="https://xigmanas.com/">XigmaNAS</a> - Continues the original FreeNAS code base, FreeBSD-based.</li>
 </ul>
 <p>&nbsp;</p>
@@ -110,7 +110,7 @@ dateCreated: 2024-04-07T10:33:12.742Z
       <tr>
         <td style="width:50%;">Previous - <a href="/fester/introduction/so-you-want-a-nas">1.2 </a><a href="https://wiki.familybrown.org/fester/introduction/what-did-truenas-ever-do-for-you">What did TrueNAS ever do for you?</a></td>
         <td style="text-align:center;"><a href="/fester/index">Index</a></td>
-        <td style="text-align:right;width:50%;">Next - <a href="/fester/introduction/structure">1.4 The Structure of this Wiki</a></td>
+        <td style="text-align:right;width:50%;">Next - <a href="https://wiki.familybrown.org/fester/introduction/technical-knowledge">1.4 What technical knowledge do you need?</a></td>
       </tr>
     </tbody>
   </table>
