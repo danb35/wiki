@@ -2,7 +2,7 @@
 title: Let's Encrypt Certificate for TrueNAS CORE
 description: Using TrueNAS CORE's built-in capacity to obtain a certificate from Let's Encrypt
 published: true
-date: 2025-03-29T16:26:29.410Z
+date: 2025-04-04T14:43:30.413Z
 tags: 
 editor: markdown
 dateCreated: 2025-03-29T16:26:29.410Z
@@ -10,7 +10,7 @@ dateCreated: 2025-03-29T16:26:29.410Z
 
 # Let's Encrypt Certificate for TrueNAS CORE
 ## Introduction
-TrueNAS SCORE include the ability obtain a trusted TLS certificate from Let's Encrypt and keep it up to date automatically.  If you meet the requirements below, this is probably the easiest way to keep an up-to-date, trusted certificate for your NAS.
+TrueNAS CORE includes the ability obtain a trusted TLS certificate from Let's Encrypt and keep it up to date automatically.  If you meet the requirements below, this is probably the easiest way to keep an up-to-date, trusted certificate for your NAS.
 ## Prerequisites
 * You must own or control a real Internet domain, which will incur a small cost--they start around US$10 per year from registrars like [namecheap.com](https://www.namecheap.com/) or [Cloudflare](https://www.cloudflare.com/).
 * DNS for this domain must be hosted by [Route53](https://aws.amazon.com/route53/).
