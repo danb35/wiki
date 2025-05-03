@@ -2,7 +2,7 @@
 title: Jellyfin Media Server on TrueNAS CE
 description: Installation and basic configuration of Jellyfin Media Server on TrueNAS Community Edition
 published: true
-date: 2025-05-03T17:34:49.821Z
+date: 2025-05-03T18:52:16.314Z
 tags: 
 editor: markdown
 dateCreated: 2025-05-03T17:34:49.821Z
@@ -46,7 +46,7 @@ Then, next to **Additional Storage,** click Add.  Set the Type to Host Path, set
 Then scroll to the bottom and click **Install.**  Wait a few moments for the application to deploy.
 
 ## Configuration
-Once Plex deploys, click the Web UI button to open it.^[If you've enabled the HTTP->HTTPS redirect for your TrueNAS web GUI, this won't work.  Instead, browse to `http://TRUENAS_IP:8096`.]  You'll be greeted by the Jellyfin welcome page.
+Once Jellyfin deploys, click the Web UI button to open it.^[If you've enabled the HTTP->HTTPS redirect for your TrueNAS web GUI, this won't work.  Instead, browse to `http://TRUENAS_IP:8096`.]  You'll be greeted by the Jellyfin welcome page.
 
 Chose your language, and enter a username and password for the admin account.  At the next screen, click **Add Media Library.**
 ![jellyfin-add-library.png](/apps/media/jellyfin/jellyfin-add-library.png)
