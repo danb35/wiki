@@ -2,7 +2,7 @@
 title: Jellyfin Media Server on TrueNAS CE
 description: Installation and basic configuration of Jellyfin Media Server on TrueNAS Community Edition
 published: true
-date: 2025-05-03T18:52:16.314Z
+date: 2025-05-03T19:12:05.317Z
 tags: 
 editor: markdown
 dateCreated: 2025-05-03T17:34:49.821Z
@@ -37,8 +37,6 @@ On a desktop client computer, connect to your NAS via SMB.  Log in as the user y
 ## Install Jellyfin
 In the TrueNAS Web UI, browse to Apps -> Discover Apps and find Jellyfin.  Click **Install**.
 
-Under Network Configuration, check the box for Host Network.
-
 Under Storage Configuration, set **Jellyfin Config Storage** to a type of Host Path, and select the `jellyfin-data` dataset.
 ![jellyfin-config-jellydata.png](/apps/media/jellyfin/jellyfin-config-jellydata.png)
 Then, next to **Additional Storage,** click Add.  Set the Type to Host Path, set Mount Path to `/mnt/media`, and browse to your media dataset under Host Path.
@@ -46,7 +44,7 @@ Then, next to **Additional Storage,** click Add.  Set the Type to Host Path, set
 Then scroll to the bottom and click **Install.**  Wait a few moments for the application to deploy.
 
 ## Configuration
-Once Jellyfin deploys, click the Web UI button to open it.^[If you've enabled the HTTP->HTTPS redirect for your TrueNAS web GUI, this won't work.  Instead, browse to `http://TRUENAS_IP:8096`.]  You'll be greeted by the Jellyfin welcome page.
+Once Jellyfin deploys, click the Web UI button to open it.^[If you've enabled the HTTP->HTTPS redirect for your TrueNAS web GUI, this won't work.  Instead, browse to `http://TRUENAS_IP:30013`.]  You'll be greeted by the Jellyfin welcome page.
 
 Chose your language, and enter a username and password for the admin account.  At the next screen, click **Add Media Library.**
 ![jellyfin-add-library.png](/apps/media/jellyfin/jellyfin-add-library.png)
