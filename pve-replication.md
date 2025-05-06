@@ -2,7 +2,7 @@
 title: Replicate Proxmox ZFS Pool to TrueNAS
 description: Replicate contents of the Proxmox root ZFS pool to a TrueNAS SCALE system
 published: true
-date: 2024-01-11T12:02:43.061Z
+date: 2025-05-06T22:42:41.322Z
 tags: 
 editor: markdown
 dateCreated: 2024-01-05T14:35:57.828Z
@@ -58,7 +58,7 @@ Still in the TrueNAS web UI, go to **Data Protection**, and under Replication Ta
 
 * Source Location: On a Different System
 * SSH Connection: The connection you set up previously
-* Skip Source for a moment, and under "Include snapshots with the name," set it to "Snapshot Name Regular Expression."  For the regular expression, enter `.*`.  This will replicate all snapshots on the Proxmox host.
+* Skip Source for a moment, and under "Include snapshots with the name," set it to "Matching naming schema."  In the field for "Matching naming schema," enter `%Y-%m-%d_%H.%M.%S--5d`.  This will replicate all snapshots matching the naming format used by zfSnap (if you've used the settings above), and properly delete old snapshots when they're removed from the source system.
 * Now return to Source, expand the folder, and check the box next to `rpool`.
 * Check the box for Recursive.
 * To the right, under Destination, navigate to the dataset you created above.
