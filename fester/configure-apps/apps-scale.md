@@ -2,8 +2,8 @@
 title: 7.1 Apps on TrueNAS SCALE
 description: Current status and recommendations
 published: true
-date: 2024-07-18T20:23:53.686Z
-tags: 
+date: 2025-05-08T13:11:17.441Z
+tags: apps
 editor: markdown
 dateCreated: 2024-06-01T15:35:57.319Z
 ---
