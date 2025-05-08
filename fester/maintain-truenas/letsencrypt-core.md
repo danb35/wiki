@@ -2,8 +2,8 @@
 title: Let's Encrypt Certificate for TrueNAS CORE
 description: Using TrueNAS CORE's built-in capacity to obtain a certificate from Let's Encrypt
 published: true
-date: 2025-04-04T14:43:30.413Z
-tags: 
+date: 2025-05-08T13:06:54.808Z
+tags: letsencrypt
 editor: markdown
 dateCreated: 2025-03-29T16:26:29.410Z
 ---
@@ -15,7 +15,7 @@ TrueNAS CORE includes the ability obtain a trusted TLS certificate from Let's En
 * You must own or control a real Internet domain, which will incur a small cost--they start around US$10 per year from registrars like [namecheap.com](https://www.namecheap.com/) or [Cloudflare](https://www.cloudflare.com/).
 * DNS for this domain must be hosted by [Route53](https://aws.amazon.com/route53/).
 
-If you own a domain but host your DNS with a different provider, and are unable or unwilling to change to one of these, you may instead want to consider using `acme.sh` or some other client to obtain a certificate, and deploying that certificate to your NAS following [this guide](/fester/maintain-truenas/script-cert-core).
+If you own a domain but host your DNS with a different provider, and are unable or unwilling to change to Route53, you may instead want to consider using `acme.sh` or some other client to obtain a certificate, and deploying that certificate to your NAS following [this guide](/fester/maintain-truenas/script-cert-core).
 ## Instructions
 ### Create an ACME DNS-Authenticator
 In the TrueNAS Web UI, browse to System -> ACME DNS.
