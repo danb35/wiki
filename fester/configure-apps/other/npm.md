@@ -2,8 +2,8 @@
 title: Nginx Proxy Manager
 description: Installing and Configuring Nginx Proxy Manager in TrueNAS SCALE Electric Eel (24.10)
 published: true
-date: 2024-12-30T23:07:28.881Z
-tags: 
+date: 2025-05-08T13:08:39.953Z
+tags: letsencrypt, apps
 editor: markdown
 dateCreated: 2024-11-10T12:29:03.837Z
 ---
