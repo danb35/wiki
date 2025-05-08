@@ -2,8 +2,8 @@
 title: Jellyfin Media Server on TrueNAS CE
 description: Installation and basic configuration of Jellyfin Media Server on TrueNAS Community Edition
 published: true
-date: 2025-05-03T19:12:05.317Z
-tags: 
+date: 2025-05-08T13:10:08.236Z
+tags: apps, media
 editor: markdown
 dateCreated: 2025-05-03T17:34:49.821Z
 ---
