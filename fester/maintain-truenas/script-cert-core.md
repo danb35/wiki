@@ -2,8 +2,8 @@
 title: Scripted Certificate Import for CORE
 description: Automating TLS certificate deployment to TrueNAS CORE
 published: true
-date: 2025-03-28T22:08:59.162Z
-tags: 
+date: 2025-05-08T13:07:21.346Z
+tags: letsencrypt
 editor: markdown
 dateCreated: 2025-03-28T22:08:57.074Z
 ---
