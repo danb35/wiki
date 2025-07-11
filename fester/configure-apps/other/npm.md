@@ -1,8 +1,8 @@
 ---
 title: Nginx Proxy Manager
-description: Installing and Configuring Nginx Proxy Manager in TrueNAS SCALE Electric Eel (24.10)
+description: Installing and Configuring Nginx Proxy Manager in TrueNAS SCALE Electric Eel (24.10) or later
 published: true
-date: 2025-05-08T13:08:39.953Z
+date: 2025-07-11T12:30:35.871Z
 tags: letsencrypt, apps
 editor: markdown
 dateCreated: 2024-11-10T12:29:03.837Z
@@ -24,7 +24,7 @@ Nginx Proxy Manager (NPM) provides a web interface to configure the popular web 
 	* This is required because the certificate you're going to generate will cover **names,** not IP addresses.  Browsing by IP (even if it were possible) would give you certificate errors.
   * This is also required because NPM will use the requested hostname to determine the proxy target.  Browsing to the IP address will just give you the default NPM welcome page, not the app you're looking for.
   * As a distinctly suboptimal alternative, you can put entries pointing to your LAN devices in public DNS.
-* You're running TrueNAS SCALE Electric Eel (24.10).  This version completely changed how apps work, so this guide will not be applicable to any earlier version of TrueNAS.
+* You're running TrueNAS SCALE Electric Eel (24.10) or later.  This version completely changed how apps work, so this guide will not be applicable to any earlier version of TrueNAS.
 * This guide will be using the point-and-click apps ecosystem in TrueNAS SCALE.  There are many other ways to configure NPM, including custom Compose apps, that are outside the scope of this guide.
 ## Preparation
 NPM will need to listen on ports 80 and 443 of your system, and by default the TrueNAS web interface already does that.  You'll therefore need to change this.  In the TrueNAS web interface, go to System (1) -> General Settings (2), then click Settings in the GUI section (3).
@@ -33,7 +33,7 @@ NPM will need to listen on ports 80 and 443 of your system, and by default the T
 Change HTTP port to 81 (1), and HTTPS port to 444 (2), then click Save.
 ![npm-guisettings2.png](/npm-guisettings2.png)
 
-Confirm the restart of the web GUI.
+You can substitute other ports if desired.  Confirm the restart of the web GUI.
 
 At this point you'll probably need to log back into the web interface.  Browse to `http://ip_of_truenas:81` and do so.
 ## Install NPM
