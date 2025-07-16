@@ -2,7 +2,7 @@
 title: Scripted Certificate Import for SCALE
 description: Automating TLS certificate deployment to TrueNAS SCALE
 published: true
-date: 2025-05-08T13:07:44.440Z
+date: 2025-07-16T13:56:41.419Z
 tags: letsencrypt
 editor: markdown
 dateCreated: 2025-03-28T22:12:10.570Z
@@ -68,5 +68,9 @@ The `verify_ssl = false` setting will cause the script to ignore any certificate
 The `delete_old_certs` setting will cause the script to delete any certificates in your TrueNAS system whose name begins with `letsencrypt`, other than the one you're currently importing.  It's recommended to set this to `true` to avoid the list of certificates in the UI being too cluttered.
 ### Deploy the certificate
 Now that the deploy script is installed and configured, tell acme.sh to run that script when a new certificate is obtained.  To do that, run `/mnt/tank/scripts/acmesh/acme.sh --install-cert -d truenas.yourdomain --reloadcmd /mnt/tank/scripts/deploy-truenas/deploy_truenas.py`.  This will deploy the certificate to your NAS.  The cron job set up above will run `acme.sh` daily and renew the certificate when it's within 30 days of expiration.  When it renews the certificate, it will run the deploy script to import it into your TrueNAS system.
+## Alternatives
+This script doesn't depend on `acme.sh`, or even on Let's Encrypt.  It can deploy a certificate from any Certificate Authority, obtained by any means (including any other ACME client).  If you'd prefer an ACME client that's a single binary, rather than a large collection of scripts, consider [lego](https://go-acme.github.io/lego/)--as a Go binary, you can run it from just about anywhere to get the certificate.
+
+Similarly, this script has a number of dependencies, and installing it on a system other than your NAS may be cumbersome or otherwise undesirable.  If you'd prefer a single, standalone binary to handle the deployment, [tnascert-deploy](https://github.com/jrushford/tnascert-deploy) has that covered.
 ## Conclusion
 This guide has demonstrated use of the deploy script in connection with `acme.sh`.  However, it can be used with any certificate, however obtained, and from whatever certificate authority.
