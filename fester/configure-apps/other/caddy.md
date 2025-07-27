@@ -2,7 +2,7 @@
 title: Caddy
 description: Building, installing, and configuring Caddy as a reverse proxy/ingress controller
 published: true
-date: 2025-07-27T14:55:07.613Z
+date: 2025-07-27T14:55:48.784Z
 tags: 
 editor: markdown
 dateCreated: 2025-07-27T14:17:50.348Z
@@ -16,7 +16,7 @@ This guide will describe the use of [Caddy](https://caddyserver.com/) as a rever
 * You must own or control an actual public domain.  That domain doesn't need to be accessible from the public Internet, but it must have public-facing DNS records.  This guide will use `example.com` as a placeholder for this domain.
 * You **do not** need to open or forward any ports on your router, or otherwise make anything on your LAN accessible to the Internet.  You can if you choose, but that is outside the scope of this guide.
 * To follow this guide exactly, you must host your domain's DNS at Cloudflare.  Cloudflare provides free DNS hosting, among many other services (not all of which are free).
-	* Your DNS provider matters because we're going to be obtaining certificates from Let's Encrypt, and that requires they validate your control over your domain.  In order to do that without exposing your apps to the public, NPM will need to be able to make updates to your DNS records.
+	* Your DNS provider matters because we're going to be obtaining certificates from Let's Encrypt, and that requires they validate your control over your domain.  In order to do that without exposing your apps to the public, Caddy will need to be able to make updates to your DNS records.
 	* Caddy supports many other DNS hosts, and you should be able to adapt this guide to them, but this guide will be using Cloudflare.
 * You've generated an [API Token](https://developers.cloudflare.com/fundamentals/api/get-started/create-token/) from Cloudflare that you'll use to allow NPM to make these changes.
   * This token must have permissions of `Zone:Zone:Read` and `Zone:DNS:Edit`.
