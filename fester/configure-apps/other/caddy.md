@@ -2,7 +2,7 @@
 title: Caddy
 description: Building, installing, and configuring Caddy as a reverse proxy/ingress controller
 published: true
-date: 2025-07-27T14:57:16.255Z
+date: 2025-07-27T14:57:49.682Z
 tags: 
 editor: markdown
 dateCreated: 2025-07-27T14:17:50.348Z
@@ -73,7 +73,7 @@ networks:
     external: true
 
 ```
-The paths above assume a dataset layout as described in the Dockge guide linked above, and that the pool is named `software`; adjust them to your requirements.
+The paths above assume a dataset layout as described in the Dockge guide linked above, and that the pool is named `software`; adjust them to your requirements.  Of course, you should also replace `example.com` with your domain name.
 
 In the `.env` field below, paste in:
 ```bash
