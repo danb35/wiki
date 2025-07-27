@@ -2,14 +2,14 @@
 title: Caddy
 description: Building, installing, and configuring Caddy as a reverse proxy/ingress controller
 published: true
-date: 2025-07-27T14:17:50.348Z
+date: 2025-07-27T14:19:59.540Z
 tags: 
 editor: markdown
 dateCreated: 2025-07-27T14:17:50.348Z
 ---
 
 # Introduction
-Software installed using Docker, particularly using the default Compose files, will often place its web interface on a non-standard port, and rarely enables TLS/HTTPS.  Both of these can be addressed using a reverse proxy, allowing you to (for example) browse to `https://radarr.yourdomain` rather than `http://TRUENAS_IP:8686`.  Popular software for this purpose include Nginx Proxy Manager and [Traefik](https://traefik.io/).  The former provides a web interface for configuration, while the latter can be automatically configured in a variety of ways, including by Docker labels.
+Software installed using Docker, particularly using the default Compose files, will often place its web interface on a non-standard port, and rarely enables TLS/HTTPS.  Both of these can be addressed using a reverse proxy, allowing you to (for example) browse to `https://radarr.yourdomain` rather than `http://TRUENAS_IP:8686`.  Popular software for this purpose include [Nginx Proxy Manager](/fester/configure-apps/other/npm) and [Traefik](https://traefik.io/).  The former provides a web interface for configuration, while the latter can be automatically configured in a variety of ways, including by Docker labels.
 
 This guide will describe the use of [Caddy](https://caddyserver.com/) as a reverse proxy/ingress controller for your TrueNAS System, including automatic configuration using Docker labels.
 # Prerequisites
@@ -26,7 +26,7 @@ This guide will describe the use of [Caddy](https://caddyserver.com/) as a rever
   * This is also required because Caddy will use the requested hostname to determine the proxy target.  Browsing to the IP address will just give you the default Caddy welcome page, not the app you're looking for.
   * As a distinctly suboptimal alternative, you can put entries pointing to your LAN devices in public DNS.
 * You're running TrueNAS SCALE Electric Eel (24.10) or later.  This version completely changed how apps work, so this guide will not be applicable to any earlier version of TrueNAS.
-* You've installed Dockge, as this guide will be using Dockge to install Caddy.
+* You've installed [Dockge](/fester/configure-apps/other/dockge), as this guide will be using Dockge to install Caddy.
 
 # Installation
 Browse to Dockge, click **+ Compose**, and paste in thw following YAML:
