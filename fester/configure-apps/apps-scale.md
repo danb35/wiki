@@ -2,7 +2,7 @@
 title: 7.1 Apps on TrueNAS Community Edition (SCALE)
 description: Current status and recommendations
 published: true
-date: 2025-05-19T15:30:47.879Z
+date: 2025-07-27T13:13:58.002Z
 tags: apps
 editor: markdown
 dateCreated: 2024-06-01T15:35:57.319Z
@@ -39,7 +39,9 @@ TrueNAS will also let you enter a Compose file through its GUI.  This allows for
 ### Docker at the CLI
 The normal Docker CLI tools are now part of TrueNAS, so you don't need to use a GUI at all if you'd rather do it caveman-style.  `docker compose up -d` works the same way as on a regular Linux system.
 ### Dockge/Portainer
-Probably the most common way for users to run custom Docker apps is to use [Dockge](https://dockge.kuma.pet/) or [Portainer](https://www.portainer.io/).  Both are available as TrueNAS apps, and provide a featureful GUI to manage your Docker applications.  You'd install Dockge or Portainer using the TrueNAS app, and then use that to install and manage your other Docker applications
+Probably the most common way for users to run custom Docker apps is to use [Dockge](https://dockge.kuma.pet/) or [Portainer](https://www.portainer.io/).  Both are available as TrueNAS apps, and provide a featureful GUI to manage your Docker applications.  You'd install Dockge or Portainer using the TrueNAS app, and then use that to install and manage your other Docker applications.
+
+See [this guide](/fester/configure-apps/other/dockge) for instructions to install and use Dockge.
 ## Install in a LXC
 Beginning in TrueNAS 25.04, TrueNAS provides experimental support for Linux Containers.  These in many cases provide a lightweight alternative to virtual machines, though only for Linux-based operating systems.  These are considered an advanced feature and may not be documented here.
 ## Install in a VM
