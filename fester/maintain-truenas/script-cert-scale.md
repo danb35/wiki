@@ -2,7 +2,7 @@
 title: Scripted Certificate Import for SCALE
 description: Automating TLS certificate deployment to TrueNAS SCALE
 published: true
-date: 2025-07-27T23:09:22.756Z
+date: 2025-07-29T14:47:16.241Z
 tags: letsencrypt
 editor: markdown
 dateCreated: 2025-03-28T22:12:10.570Z
@@ -52,7 +52,7 @@ wget https://github.com/danb35/deploy-freenas/raw/refs/heads/master/deploy_truen
 chmod +x deploy_truenas.py
 ```
 
-Create a file called `deploy_config` in the same directory using your favorite text editor.  Its contents should look like this:
+Create a file called `deploy_config` in the same directory using your favorite text editor: `nano deploy_config`.  Its contents should look like this:
 ```python
 [deploy]
 api_key = YourReallySecureAPIKey
@@ -63,11 +63,12 @@ protocol = wss
 verify_ssl = false
 delete_old_certs = true
 ```
-The `api_key` in this file requires a TrueNAS API key, which you'll create in the TrueNAS web UI.
-
-The `verify_ssl = false` setting will cause the script to ignore any certificate errors, such as an expired or invalid certificate.  Once you've imported a trusted certificate, it's recommended to set this to `true`.
-
-The `delete_old_certs` setting will cause the script to delete any certificates in your TrueNAS system whose name begins with `letsencrypt`, other than the one you're currently importing.  It's recommended to set this to `true` to avoid the list of certificates in the UI being too cluttered.
+The settings here should be self-explanatory:
+* The `api_key` in this file requires a TrueNAS API key, which you'll create in the TrueNAS web UI.
+* The paths are the paths to the private key (`privkey_path`) and full chain (`fullchain_path`), both of which would have been given to you by `acme.sh`.
+* `connect_host` is the FQDN of your TrueNAS system
+* The `verify_ssl = false` setting will cause the script to ignore any certificate errors, such as an expired or invalid certificate.  Once you've imported a trusted certificate, it's recommended to set this to `true`.
+* The `delete_old_certs` setting will cause the script to delete any certificates in your TrueNAS system whose name begins with `letsencrypt`, other than the one you're currently importing.  It's recommended to set this to `true` to avoid the list of certificates in the UI being too cluttered.
 ### Deploy the certificate
 Now that the deploy script is installed and configured, tell acme.sh to run that script when a new certificate is obtained.  To do that, run `/mnt/tank/scripts/acmesh/acme.sh --install-cert -d truenas.yourdomain --reloadcmd /mnt/tank/scripts/deploy-truenas/deploy_truenas.py`.  This will deploy the certificate to your NAS.  The cron job set up above will run `acme.sh` daily and renew the certificate when it's within 30 days of expiration.  When it renews the certificate, it will run the deploy script to import it into your TrueNAS system.
 ## Alternatives
