@@ -2,7 +2,7 @@
 title: Caddy
 description: Building, installing, and configuring Caddy as a reverse proxy/ingress controller
 published: true
-date: 2025-07-27T14:57:49.682Z
+date: 2025-07-29T18:48:25.022Z
 tags: 
 editor: markdown
 dateCreated: 2025-07-27T14:17:50.348Z
@@ -28,6 +28,16 @@ This guide will describe the use of [Caddy](https://caddyserver.com/) as a rever
 * You're running TrueNAS SCALE Electric Eel (24.10) or later.  This version completely changed how apps work, so this guide will not be applicable to any earlier version of TrueNAS.
 * You've installed [Dockge](/fester/configure-apps/other/dockge), as this guide will be using Dockge to install Caddy.
 
+# Preparation
+Caddy will need to listen on ports 80 and 443 of your system, and by default the TrueNAS web interface already does that. You'll therefore need to change this. In the TrueNAS web interface, go to System (1) -> General Settings (2), then click Settings in the GUI section (3).
+![npm-guisettings1.png](/npm-guisettings1.png)
+
+Change HTTP port to 81 (1), and HTTPS port to 444 (2), then click Save.
+![npm-guisettings2.png](/npm-guisettings2.png)
+
+You can substitute other ports if desired.  Confirm the restart of the web GUI.
+
+At this point you'll probably need to log back into the web interface.  Browse to `http://ip_of_truenas:81` and do so.
 # Installation
 Browse to Dockge, click **+ Compose**, and paste in thw following YAML:
 ```yaml
