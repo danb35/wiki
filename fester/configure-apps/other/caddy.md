@@ -2,7 +2,7 @@
 title: Caddy
 description: Building, installing, and configuring Caddy as a reverse proxy/ingress controller
 published: true
-date: 2025-07-30T16:24:41.096Z
+date: 2025-07-30T16:33:10.541Z
 tags: 
 editor: markdown
 dateCreated: 2025-07-27T14:17:50.348Z
@@ -140,9 +140,9 @@ services:
       - /mnt/software/docker/data/jellyfin/cache:/cache
     restart: unless-stopped
     environment:
-      - JELLYFIN_PublishedServerUrl=https://jelly.example.com
+      - JELLYFIN_PublishedServerUrl=https://jelly.lan.example.com
     labels:
-      - caddy=jelly.example.com
+      - caddy=jelly.lan.example.com
       - caddy.reverse_proxy="{{upstreams 8096}}"
     networks:
 	  - proxy
@@ -155,11 +155,11 @@ Note the changes:
 * You've added two `caddy` labels, one specifying the FQDN to proxy, the other specifying the port to proxy to.
 * You've put this container on the `proxy` network, which you created above; Caddy will communicate with all the services you're proxying via this network.
 
-Finally, update your local DNS records to point the hostname of `jellyfin.example.com` to the correct IP address.
+Finally, update your local DNS records to point the hostname of `jelly.lan.example.com` to the correct IP address.
 ### Test
 Browse to the host you just created.  You should see the page for that app, and your browser should indicate that HTTPS is enabled with a trusted certificate.
 ### Your NAS
-We changed the listening ports for your TrueNAS installation to 81 and 444 above.  To restore the ability to reach your NAS on the standard ports, you can add it as another host in NPM, as described above.  You'd direct the host to port 81 and use a name like `nas.example.com`.
+We changed the listening ports for your TrueNAS installation to 81 and 444 above.  To restore the ability to reach your NAS on the standard ports, you can add it as another host in NPM, as described above.  You'd direct the host to port 81 and use a name like `nas.lan.example.com`.
 ## Conclusion
 This guide has described installation and configuration of Caddy to allow TLS termination for the apps on your TrueNAS server.  Consult the [Caddy documentation](https://caddyserver.com/docs/) for more details on its configuration.
 ## References
