@@ -2,7 +2,7 @@
 title: Caddy
 description: Building, installing, and configuring Caddy as a reverse proxy/ingress controller
 published: true
-date: 2025-07-30T16:33:10.541Z
+date: 2025-07-30T16:34:42.654Z
 tags: 
 editor: markdown
 dateCreated: 2025-07-27T14:17:50.348Z
@@ -62,7 +62,7 @@ services:
       - caddy_0.acme_dns.api_token="{env.CLOUDFLARE_API_TOKEN}"
       - caddy_1=(encode)
       - caddy_1.encode=zstd gzip
-      - caddy_2="*.example.com"
+      - caddy_2="*.lan.example.com"
       - caddy_2.root="* /usr/share/caddy"
       - caddy_2.file_server
     build:
