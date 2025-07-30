@@ -2,17 +2,18 @@
 title: Caddy
 description: Building, installing, and configuring Caddy as a reverse proxy/ingress controller
 published: true
-date: 2025-07-30T16:19:16.898Z
+date: 2025-07-30T16:24:41.096Z
 tags: 
 editor: markdown
 dateCreated: 2025-07-27T14:17:50.348Z
 ---
 
-# Introduction
+# Caddy
+## Introduction
 Software installed using Docker, particularly using the default Compose files, will often place its web interface on a non-standard port, and rarely enables TLS/HTTPS.  Both of these can be addressed using a reverse proxy, allowing you to (for example) browse to `https://radarr.yourdomain` rather than `http://TRUENAS_IP:8686`.  Popular software for this purpose includes [Nginx Proxy Manager](/fester/configure-apps/other/npm) and [Traefik](https://traefik.io/).  The former provides a web interface for configuration, while the latter can be automatically configured in a variety of ways, including by Docker labels.
 
 This guide will describe the use of [Caddy](https://caddyserver.com/) as a reverse proxy/ingress controller for your TrueNAS System, including automatic configuration using Docker labels.
-# Prerequisites
+## Prerequisites
 * You must own or control an actual public domain.  That domain doesn't need to be accessible from the public Internet, but it must have public-facing DNS records.  This guide will use `example.com` as a placeholder for this domain.
 * You **do not** need to open or forward any ports on your router, or otherwise make anything on your LAN accessible to the Internet.  You can if you choose, but that is outside the scope of this guide.
 * To follow this guide exactly, you must host your domain's DNS at Cloudflare.  Cloudflare provides free DNS hosting, among many other services (not all of which are free).
@@ -28,7 +29,7 @@ This guide will describe the use of [Caddy](https://caddyserver.com/) as a rever
 * You're running TrueNAS SCALE Electric Eel (24.10) or later.  This version completely changed how apps work, so this guide will not be applicable to any earlier version of TrueNAS.
 * You've installed [Dockge](/fester/configure-apps/other/dockge), as this guide will be using Dockge to install Caddy.
 
-# Preparation
+## Preparation
 Caddy will need to listen on ports 80 and 443 of your system, and by default the TrueNAS web interface already does that. You'll therefore need to change this. In the TrueNAS web interface, go to System (1) -> General Settings (2), then click Settings in the GUI section (3).
 ![npm-guisettings1.png](/npm-guisettings1.png)
 
@@ -38,7 +39,7 @@ Change HTTP port to 81 (1), and HTTPS port to 444 (2), then click Save.
 You can substitute other ports if desired.  Confirm the restart of the web GUI.
 
 At this point you'll probably need to log back into the web interface.  Browse to `http://ip_of_truenas:81` and do so.
-# Installation
+## Installation
 Browse to Dockge, click **+ Compose**, and paste in thw following YAML:
 ```yaml
 services:
@@ -106,11 +107,11 @@ CMD ["caddy", "docker-proxy"]
 ```
 Save this file.  You'll also need to create a Docker network; run `docker network create proxy` (or `sudo docker network create proxy` if that fails).
 
-## Alteration for different DNS providers
+### Alteration for different DNS providers
 The Dockerfile above builds Caddy with the Cloudflare DNS plugin as well as the caddy-docker-proxy plugin--the former is required to validate domain control using Cloudflare's DNS, while the latter allows you to configure Caddy using Docker labels.  If you're using a different DNS provider, find its plugin at the [caddy-dns repository](https://github.com/caddy-dns) and edit the Dockerfile accordingly.  You'll also need to adjust the Compose file above to reflect your DNS provider and its credentials, and also the .env file to reflect those credentials.
-# Deploy
+## Deploy
 Return to Dockge and click the **Deploy** button for this stack.  This will likely take a few minutes, as your system will need to build the Caddy binary to include the plugins you've specified.  Once it finishes, you should see the log output indicating (among other things) that Caddy has obtained a certificate for `*.example.com`.
-# Usage
+## Usage
 Now that you have Caddy running, how do you use it?  In the simplest case, add two Docker labels, and remove any port mapping.  Given this example:
 ```yaml
 services:
@@ -161,7 +162,7 @@ Browse to the host you just created.  You should see the page for that app, and 
 We changed the listening ports for your TrueNAS installation to 81 and 444 above.  To restore the ability to reach your NAS on the standard ports, you can add it as another host in NPM, as described above.  You'd direct the host to port 81 and use a name like `nas.example.com`.
 ## Conclusion
 This guide has described installation and configuration of Caddy to allow TLS termination for the apps on your TrueNAS server.  Consult the [Caddy documentation](https://caddyserver.com/docs/) for more details on its configuration.
-# References
+## References
 * This guide follows, with slight alterations (most significantly, the use of Dockge), the method described at https://forums.truenas.com/t/electric-eel-how-i-am-using-dockerfile-env-files-compose-files/15252
 * [Caddy Documentation](https://caddyserver.com/docs/)
 * [Caddy Docker Proxy](https://github.com/lucaslorentz/caddy-docker-proxy)
