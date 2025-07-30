@@ -2,7 +2,7 @@
 title: Caddy
 description: Building, installing, and configuring Caddy as a reverse proxy/ingress controller
 published: true
-date: 2025-07-30T16:34:42.654Z
+date: 2025-07-30T16:36:21.993Z
 tags: 
 editor: markdown
 dateCreated: 2025-07-27T14:17:50.348Z
@@ -110,7 +110,7 @@ Save this file.  You'll also need to create a Docker network; run `docker networ
 ### Alteration for different DNS providers
 The Dockerfile above builds Caddy with the Cloudflare DNS plugin as well as the caddy-docker-proxy plugin--the former is required to validate domain control using Cloudflare's DNS, while the latter allows you to configure Caddy using Docker labels.  If you're using a different DNS provider, find its plugin at the [caddy-dns repository](https://github.com/caddy-dns) and edit the Dockerfile accordingly.  You'll also need to adjust the Compose file above to reflect your DNS provider and its credentials, and also the .env file to reflect those credentials.
 ## Deploy
-Return to Dockge and click the **Deploy** button for this stack.  This will likely take a few minutes, as your system will need to build the Caddy binary to include the plugins you've specified.  Once it finishes, you should see the log output indicating (among other things) that Caddy has obtained a certificate for `*.example.com`.
+Return to Dockge and click the **Deploy** button for this stack.  This will likely take a few minutes, as your system will need to build the Caddy binary to include the plugins you've specified.  Once it finishes, you should see the log output indicating (among other things) that Caddy has obtained a certificate for `*.lan.example.com`.
 ## Usage
 Now that you have Caddy running, how do you use it?  In the simplest case, add two Docker labels, and remove any port mapping.  Given this example:
 ```yaml
