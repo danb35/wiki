@@ -2,7 +2,7 @@
 title: Caddy
 description: Building, installing, and configuring Caddy as a reverse proxy/ingress controller
 published: true
-date: 2025-07-30T16:58:02.726Z
+date: 2025-08-03T21:39:41.225Z
 tags: 
 editor: markdown
 dateCreated: 2025-07-27T14:17:50.348Z
@@ -40,7 +40,7 @@ You can substitute other ports if desired.  Confirm the restart of the web GUI.
 
 At this point you'll probably need to log back into the web interface.  Browse to `http://ip_of_truenas:81` and do so.
 ## Installation
-Browse to Dockge, click **+ Compose**, and paste in thw following YAML:
+Browse to Dockge, click **+ Compose**, and paste in the following YAML:
 ```yaml
 services:
   caddy:
