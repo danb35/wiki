@@ -2,7 +2,7 @@
 title: TLS Certificates on TrueNAS
 description: How to create and/or deploy them
 published: true
-date: 2025-03-29T17:17:24.908Z
+date: 2025-03-29T17:17:26.803Z
 tags: 
 editor: markdown
 dateCreated: 2025-03-28T22:30:07.661Z

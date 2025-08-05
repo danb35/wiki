@@ -2,7 +2,7 @@
 title: Scripted Certificate Import for SCALE
 description: Automating TLS certificate deployment to TrueNAS SCALE
 published: true
-date: 2025-07-29T14:47:16.241Z
+date: 2025-07-29T14:47:19.417Z
 tags: letsencrypt
 editor: markdown
 dateCreated: 2025-03-28T22:12:10.570Z

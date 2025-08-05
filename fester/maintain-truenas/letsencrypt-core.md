@@ -2,7 +2,7 @@
 title: Let's Encrypt Certificate for TrueNAS CORE
 description: Using TrueNAS CORE's built-in capacity to obtain a certificate from Let's Encrypt
 published: true
-date: 2025-05-08T13:06:54.808Z
+date: 2025-05-08T13:06:56.792Z
 tags: letsencrypt
 editor: markdown
 dateCreated: 2025-03-29T16:26:29.410Z

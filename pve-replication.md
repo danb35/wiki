@@ -2,7 +2,7 @@
 title: Replicate Proxmox ZFS Pool to TrueNAS
 description: Replicate contents of the Proxmox root ZFS pool to a TrueNAS SCALE system
 published: true
-date: 2025-05-06T22:42:41.322Z
+date: 2025-05-06T22:42:43.420Z
 tags: 
 editor: markdown
 dateCreated: 2024-01-05T14:35:57.828Z

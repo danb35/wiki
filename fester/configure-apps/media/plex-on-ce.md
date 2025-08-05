@@ -2,7 +2,7 @@
 title: Plex Media Server on TrueNAS CE
 description: Installation and basic configuration of Plex Media Server on TrueNAS Community Edition
 published: true
-date: 2025-05-08T13:10:32.688Z
+date: 2025-05-08T13:10:34.688Z
 tags: apps, media
 editor: markdown
 dateCreated: 2025-05-03T15:32:11.299Z

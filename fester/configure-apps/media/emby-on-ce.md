@@ -2,7 +2,7 @@
 title: Emby Server on TrueNAS CE
 description: Installation and basic configuration of Emby Server on TrueNAS Community Edition
 published: true
-date: 2025-05-08T13:09:41.640Z
+date: 2025-05-08T13:09:43.527Z
 tags: apps, media
 editor: markdown
 dateCreated: 2025-05-03T18:51:22.647Z

@@ -2,7 +2,7 @@
 title: 1.4 What technical knowledge do you need? 
 description: Just how much does TrueNAS help you avoid needing technical knowledge?
 published: true
-date: 2025-04-02T20:38:15.485Z
+date: 2025-06-20T04:04:23.753Z
 tags: 
 editor: ckeditor
 dateCreated: 2025-04-02T16:42:55.931Z
@@ -61,8 +61,8 @@ dateCreated: 2025-04-02T16:42:55.931Z
 <h3>Mirrors vs. RAIDZ</h3>
 <p>There are two basic ways to make a vDev redundant: Mirrors and RAIDZ:</p>
 <ul>
-  <li>Mirrors: 2 or more identical copies of an entire disk. You can add or remove drives from a mirror at will. (From a technical perspective for adding and removing mirrors, a single drive vDev is considered a non-redundant mirror. For pools that are all mirror vDevs, you can also remove entire vDevs at a later date.) &nbsp;</li>
-  <li>RAIDZ: a RAIDZ vDev consists of 2 or more data disks, and 1-3 parity disks (a simplified explanation useful for conceptual understanding and for planning - in actual use data is not physically stored stored in this way). In recent versions of TrueNAS SCALE you can add drives to an existing RAIDZ vDev through “RAIDZ Expansion” - however you <strong>cannot remove drives</strong> from a RAIDZ vDev. Furthermore, once you have chosen the parity level and formed your pool, you cannot later increase or decrease it - so plan carefully, think ahead if you ever plan to expand your RAIDZ vDev, and if in doubt go for two or more parity drives. A simple rule of thumb is to have 2 or more parity drives if you have a 4 or more data drives in the vDev or if you have 3 or more data drives of 8TB or greater.&nbsp;</li>
+  <li>Mirrors: 2 or more identical copies of an entire disk. You can add or remove drives from a mirror at will. (From a technical perspective for adding and removing mirrors, a single drive vDev is considered a non-redundant mirror. For pools that are all mirror vDevs, you can also remove entire vDevs at a later date.)</li>
+  <li>RAIDZ: a RAIDZ vDev consists of 2 or more data disks, and 1-3 parity disks (a simplified explanation useful for conceptual understanding and for planning - in actual use data is not physically stored stored in this way). In recent versions of TrueNAS SCALE you can add drives to an existing RAIDZ vDev through “RAIDZ Expansion” - however you <strong>cannot remove drives</strong> from a RAIDZ vDev. Furthermore, once you have chosen the parity level and formed your pool, you cannot later increase or decrease it - so plan carefully, think ahead if you ever plan to expand your RAIDZ vDev, and if in doubt go for two or more parity drives. A simple rule of thumb is to have 2 or more parity drives if you have a 4 or more data drives in the vDev or if you have 3 or more data drives of 8TB or greater.</li>
 </ul>
 <p><strong>Important:</strong> Redundancy provides more safety than simply recovering from the entire loss of a drive. In ZFS, each record has a checksum associated with it, and when ZFS detects a corrupted block because the checksum doesn't match, the redundant copies can be used to recover the record or file that is corrupted. This is another reason <strong>not</strong> to use non-redundant vDevs.</p>
 <h3>Scrubs</h3>
@@ -129,7 +129,7 @@ dateCreated: 2025-04-02T16:42:55.931Z
       <tr>
         <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;width:510.016px;">Previous - <a href="/fester/introduction/which-truenas">1.3 Which version of TrueNAS?</a></td>
         <td style="background-color:rgb(23, 23, 23);border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;text-align:center;"><a href="https://wiki.familybrown.org/fester/index">Index</a></td>
-        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;text-align:right;width:508.375px;">Next - <a href="https://wiki.familybrown.org/e/en/fester/introduction/structure">1.5 The Structure of this Wiki</a></td>
+        <td style="border-bottom:1px solid rgb(97, 97, 97);border-left:1px solid rgb(97, 97, 97);border-right:1px solid rgb(97, 97, 97);border-top:1px solid rgb(97, 97, 97);padding:0.5rem 0.75rem;text-align:right;width:508.375px;">Next - <a href="https://wiki.familybrown.org/fester/introduction/structure">1.5 The Structure of this Wiki</a></td>
       </tr>
     </tbody>
   </table>

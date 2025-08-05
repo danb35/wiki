@@ -2,7 +2,7 @@
 title: Let's Encrypt Certificate for TrueNAS SCALE
 description: Using TrueNAS SCALE's built-in capacity to obtain a certificate from Let's Encrypt
 published: true
-date: 2025-05-08T13:06:10.470Z
+date: 2025-05-08T13:06:12.506Z
 tags: letsencrypt
 editor: markdown
 dateCreated: 2025-03-29T16:02:11.177Z

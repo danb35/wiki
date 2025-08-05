@@ -2,7 +2,7 @@
 title: Self-signed Certificate for TrueNAS CORE
 description: How to create a self-signed certificate in TrueNAS CORE
 published: true
-date: 2025-03-29T14:17:14.958Z
+date: 2025-03-29T14:17:17.555Z
 tags: 
 editor: markdown
 dateCreated: 2025-03-29T14:17:14.958Z

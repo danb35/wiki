@@ -2,7 +2,7 @@
 title: 2.2.4 Redundant disks
 description: Safeguard your data against loss through disk failure
 published: true
-date: 2024-12-27T19:03:23.553Z
+date: 2025-06-21T21:04:28.147Z
 tags: 
 editor: ckeditor
 dateCreated: 2024-08-01T22:58:08.947Z
@@ -118,7 +118,7 @@ dateCreated: 2024-08-01T22:58:08.947Z
 <p><mark class="pen-red"><strong><sup>[1]</sup></strong></mark> SMR drive typically have a “persistent cache” area of the drive which is CMR of c. 70GB-100GB, where writes are staged, and later when the drive is idle they are written out asynchronously to the correct areas - but if you are doing bulk random writes, allowing no time for this background de-caching, then the cache fills up and everything slows to a crawl whilst previous writes are de-cached in order to make space for new writes to be cached. If you want a detailed explanation, <a href="https://youtu.be/rC0UDtCiYgI?t=632">here is a Youtube video which explains in detail</a>.&nbsp;</p>
 <p><mark class="pen-red"><strong><sup>[2]</sup></strong></mark> <a href="https://www.youtube.com/watch?v=8hdJTwaTl8I">Here is another Youtube video</a> which shows a test of SMR drives in ZFS arrays showing just how disastrous they will be (and damning Western Digital for introducing SMR drives into their WD Red line of NAS drives without properly disclosing that they did this).&nbsp;</p>
 <h2><i>Uncle Fester's Simple Rules of Thumb for Pool Design</i></h2>
-<figure class="image image-style-align-right image_resized" style="width:24.02%;"><img src="/planning/planning_thing_rules_of_thumb.jpg"></figure>
+<figure class="image image_resized image-style-align-right" style="width:24.02%;"><img src="/planning/planning_thing_rules_of_thumb.jpg"></figure>
 <p>Obviously all Rules of Thumb are generalisations, and there are always unusual requirements which are exceptions to such rules, but in most cases (and especially those that this Wiki is aimed at), the following are generally true:</p>
 <ul>
   <li>Active data, especially zVolumes and iSCSI and databases all do random i/o and should be synchronous writes on mirrored drives, ideally SSDs or (if data is too large) on HDDs with SSD SLOG.</li>
@@ -127,7 +127,7 @@ dateCreated: 2024-08-01T22:58:08.947Z
 </ul>
 <p>&nbsp;</p>
 <h6><span class="text-big">Links</span></h6>
-<figure class="table" style="width:1083px;">
+<figure class="table" style="width:100%;">
   <table style="background-color:rgb(33, 33, 33);border-bottom:1px solid rgb(117, 117, 117);border-left:1px solid rgb(117, 117, 117);border-right:1px solid rgb(117, 117, 117);border-top:1px solid rgb(117, 117, 117);">
     <tbody>
       <tr>

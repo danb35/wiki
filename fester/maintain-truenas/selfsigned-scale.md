@@ -2,7 +2,7 @@
 title: Self-signed Certificate for TrueNAS SCALE
 description: How to create a self-signed TLS certificate in TrueNAS SCALE/Community Edition
 published: true
-date: 2025-03-29T14:49:21.465Z
+date: 2025-03-29T14:49:23.312Z
 tags: 
 editor: markdown
 dateCreated: 2025-03-29T14:49:21.465Z
