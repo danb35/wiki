@@ -2,7 +2,7 @@
 title: Caddy
 description: Building, installing, and configuring Caddy as a reverse proxy/ingress controller
 published: true
-date: 2026-01-25T12:01:17.592Z
+date: 2026-01-25T13:10:16.066Z
 tags: 
 editor: markdown
 dateCreated: 2025-07-27T14:17:50.348Z
@@ -183,3 +183,4 @@ This guide has described installation and configuration of Caddy to allow TLS te
 * This guide follows, with slight alterations (most significantly, the use of Dockge), the method described at https://forums.truenas.com/t/electric-eel-how-i-am-using-dockerfile-env-files-compose-files/15252
 * [Caddy Documentation](https://caddyserver.com/docs/)
 * [Caddy Docker Proxy](https://github.com/lucaslorentz/caddy-docker-proxy)
+* [Caddy Forum](https://caddy.community/t/shortlived-certificates-from-lets-encrypt/33399/)
