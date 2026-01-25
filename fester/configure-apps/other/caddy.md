@@ -2,7 +2,7 @@
 title: Caddy
 description: Building, installing, and configuring Caddy as a reverse proxy/ingress controller
 published: true
-date: 2025-08-03T21:39:44.118Z
+date: 2026-01-25T11:51:51.327Z
 tags: 
 editor: markdown
 dateCreated: 2025-07-27T14:17:50.348Z
@@ -86,6 +86,16 @@ networks:
 
 ```
 The paths above assume a dataset layout as described in the Dockge guide linked above, and that the pool is named `software`; adjust them to your requirements.  Of course, you should also replace `example.com` with your domain name.
+
+If you'd like to take advantage of Let's Encrypt's recently-available [shortlived certificates](https://letsencrypt.org/2026/01/15/6day-and-ip-general-availability), adjust the `caddy_2` labels above to read as follows:
+```
+      - caddy_2="*.lan.example.com"
+      - caddy_2.root="* /usr/share/caddy"
+      - caddy_2.file_server
+      - caddy_2.tls.issuer=acme
+      - caddy_2.tls.issuer.profile=shortlived
+```
+You may specify a different [certificate profile](https://letsencrypt.org/docs/profiles/) here if you prefer.
 
 In the `.env` field below, paste in:
 ```bash
