@@ -2,7 +2,7 @@
 title: 7.1 Apps on TrueNAS Community Edition (SCALE)
 description: Current status and recommendations
 published: true
-date: 2026-06-14T11:13:03.614Z
+date: 2026-06-14T11:18:09.181Z
 tags: apps
 editor: markdown
 dateCreated: 2024-06-01T15:35:57.319Z
@@ -25,7 +25,7 @@ TrueNAS is an increasingly locked-down environment, and users ordinarily should 
 
 Note that in current releases of TrueNAS, the `/home` directory has code execution disabled.  As a result, any user-installed software must reside elsewhere.
 ## Use the built-in Apps functionality
-This is the "easy button."  If the software you want to use is available as an app (just under 200 as of this writing in May 2025), you can point, click, perhaps fill in a few fields in a form, and install it.
+This is the "easy button."  If the software you want to use is available as an app (just under 400 as of this writing in June 2026), you can point, click, perhaps fill in a few fields in a form, and install it.
 
 With this ease, however, comes a loss of flexibility.  Many decisions have been made for the user, perhaps not as the user would not prefer them to have been made, for the sake of ease of installation and use.
 
