@@ -2,7 +2,7 @@
 title: 7.1 Apps on TrueNAS Community Edition (SCALE)
 description: Current status and recommendations
 published: true
-date: 2025-08-22T19:21:11.934Z
+date: 2026-06-14T11:13:03.614Z
 tags: apps
 editor: markdown
 dateCreated: 2024-06-01T15:35:57.319Z
@@ -30,6 +30,8 @@ This is the "easy button."  If the software you want to use is available as an a
 With this ease, however, comes a loss of flexibility.  Many decisions have been made for the user, perhaps not as the user would not prefer them to have been made, for the sake of ease of installation and use.
 
 Moreover, this system depends on iXSystems' ongoing maintenance.  Historically, this has been uneven at best.  TrueNAS is on its fourth apps/plugins ecosystem; iXSystems having discarded three prior systems after deciding they were too much work to maintain.  In this author's opinion, iXSystems cannot be relied on to maintain and support this catalog.
+
+In fairness to iXSystems, though, it should be noted that the current, Docker-based apps system was first released in October 2024.  As of this writing in June 2026, the list of available apps continues to grow (383 at last count), and they appear to be actively maintained.  While this author remains skeptical that this will continue to be the case in the long term, the present situation is better than had been expected.
 ## Custom Docker Compose apps
 Users who need software that isn't in the apps catalog, need options that aren't available in those apps, don't trust iXSystems to continue to maintain the apps catalog, or just otherwise feel like it, can run software using Docker.  This requires some knowledge on the user's part--while a great deal of software publishes Docker images and Compose files, these will often need modification and/or customization to match the configuration and requirements of the user's environment.  Such customization will generally be beyond the scope of this guide or the TrueNAS documentation.  There are in turn several ways to do this.
 ### "Custom app" through the TrueNAS GUI
