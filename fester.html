@@ -2,7 +2,7 @@
 title: Uncle Fester's Basic TrueNAS Configuration Guide
 description: A beginners guide to planning, installing and configuring TrueNAS
 published: true
-date: 2026-06-13T12:31:07.062Z
+date: 2026-06-14T11:52:50.110Z
 tags: 
 editor: ckeditor
 dateCreated: 2024-04-03T14:42:01.869Z
@@ -27,7 +27,7 @@ dateCreated: 2024-04-03T14:42:01.869Z
   <li><a href="https://www.truenas.com/docs/scale/25.04/">TrueNAS Community Edition 25.04 Fangtooth</a> (legacy/previous release)</li>
   <li><a href="https://www.truenas.com/docs/core/13.3/">TrueNAS CORE 13.3</a> (current CORE release, but note that CORE is all but unsupported at this time)</li>
 </ul>
-<p>If you are new to TrueNAS, and thinking about your first TrueNAS server, then the first big decision you will need to make is which version to use. In simple terms, you should almost certainly use SCALE rather than Core (which is obsolescent at best), and you should almost certainly use ElectricEel (because it's applications infrastructure is different from previous releases) - however if you are starting afresh and looking to run Linux virtual machines you should consider Fangtooth Linux Containers rather than full virtualisation because it will be significantly more efficient. There is a lot more history and detail on the various TrueNAS versions and detailed guidance about the differences in the Introduction page <a href="/fester/introduction/which-truenas"><i>1.3 Which version of TrueNAS?</i></a>.</p>
+<p>If you are new to TrueNAS, and thinking about your first TrueNAS server, then the first big decision you will need to make is which version to use. In simple terms, you should use the current “General use” release of Community Edition/SCALE, which at this rating is 25.10. &nbsp;There is a lot more history and detail on the various TrueNAS versions and detailed guidance about the differences in the Introduction page <a href="/fester/introduction/which-truenas"><i>1.3 Which version of TrueNAS?</i></a>.</p>
 <p>The community knowledge bases can be found at:</p>
 <ul>
   <li><a href="https://forums.truenas.com/">Current forums</a></li>
@@ -63,9 +63,11 @@ dateCreated: 2024-04-03T14:42:01.869Z
   <li>…</li>
 </ul>
 <p>The above contributors would like to thank all the other characters from the Addams Family TV programmes who have graciously contributed their unique (and vaguely humorous) insights into TrueNAS in their own inimitable styles.</p>
+<h2>A word about names</h2>
+<p>iXSystems, Inc., are the company behind TrueNAS, providing almost all the development and maintenance resources (though some code contributions from community members have been made), the primary forum, and many support resources. &nbsp;They've recently decided to go by the name of “TrueNAS,” presumably so as to better identify the company with its chief product. &nbsp;In this author's view, this results in identification that is too close, and may well lead to confusion; therefore, this guide will continue to refer to iXSystems the company when appropriate, to distinguish it from TrueNAS, its chief product.</p>
 <h2>Disclaimer</h2>
 <figure class="image image_resized image-style-align-right" style="width:13.27%;"><img src="/intro-warning.png"></figure>
-<p>This guide has not been written by anyone from ixSystems. It has been written by ordinary users who were/are TrueNAS complete beginners to assist other complete beginners.</p>
+<p>This guide has not been written by anyone from ixSystems (though we welcome contributions/edits from iXSystems employees, just as we do from any other users). It has been written by ordinary users who were/are TrueNAS complete beginners to assist other complete beginners.</p>
 <p><i><strong>Proceed at your own risk.</strong></i> We will not be held responsible for anything that happens to your system, you, your hair, the real wood veneered floor, your prostate gland or the world in general. Neither Uncle Fester nor the other authors of this wiki <strong>take any responsibility for anything</strong> (just ask anyone who knows us - we are reprobates after all).</p>
 <h2>Contents</h2>
 <ol>
