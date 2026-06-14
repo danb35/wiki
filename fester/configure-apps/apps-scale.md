@@ -2,7 +2,7 @@
 title: 7.1 Apps on TrueNAS Community Edition (SCALE)
 description: Current status and recommendations
 published: true
-date: 2025-07-27T13:14:00.311Z
+date: 2025-08-22T19:21:11.934Z
 tags: apps
 editor: markdown
 dateCreated: 2024-06-01T15:35:57.319Z
@@ -27,7 +27,7 @@ Note that in current releases of TrueNAS, the `/home` directory has code executi
 ## Use the built-in Apps functionality
 This is the "easy button."  If the software you want to use is available as an app (just under 200 as of this writing in May 2025), you can point, click, perhaps fill in a few fields in a form, and install it.
 
-With this ease, however, comes a loss of flexibility.  Many decisions have been made for the user, perhaps as the user would not prefer them to have been made, for the sake of ease of installation and use.
+With this ease, however, comes a loss of flexibility.  Many decisions have been made for the user, perhaps not as the user would not prefer them to have been made, for the sake of ease of installation and use.
 
 Moreover, this system depends on iXSystems' ongoing maintenance.  Historically, this has been uneven at best.  TrueNAS is on its fourth apps/plugins ecosystem; iXSystems having discarded three prior systems after deciding they were too much work to maintain.  In this author's opinion, iXSystems cannot be relied on to maintain and support this catalog.
 ## Custom Docker Compose apps

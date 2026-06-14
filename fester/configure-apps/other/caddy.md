@@ -2,7 +2,7 @@
 title: Caddy
 description: Building, installing, and configuring Caddy as a reverse proxy/ingress controller
 published: true
-date: 2026-01-25T13:10:16.066Z
+date: 2026-01-25T13:10:18.484Z
 tags: 
 editor: markdown
 dateCreated: 2025-07-27T14:17:50.348Z
