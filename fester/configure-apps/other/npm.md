@@ -2,7 +2,7 @@
 title: Nginx Proxy Manager
 description: Installing and Configuring Nginx Proxy Manager in TrueNAS SCALE Electric Eel (24.10) or later
 published: true
-date: 2025-07-11T12:30:37.844Z
+date: 2026-07-09T19:43:45.309Z
 tags: letsencrypt, apps
 editor: markdown
 dateCreated: 2024-11-10T12:29:03.837Z
@@ -45,13 +45,13 @@ Then click Install.  Let the application deploy, which may take a few moments.
 ### DNS preparation
 Create a **local** DNS record pointing `npm.lan.example.com` to the IP address of your NAS.
 ### Log in
-To access the NPM UI, browse to `http://ip_of_truenas:30020`.  Log in with an email address of `admin@example.com` and a password of `changeme`.  You'll be prompted to change these once you log in.
+To access the NPM UI, browse to `http://ip_of_truenas:30020`.  You'll be prompted to create an administrator's user and password.
 ### Create a certificate
 For this step, you'll need your domain name and the API token.  It's recommended that you reserve a subdomain for your LAN resources, e.g., if your domain is `example.com`, you'd use `lan.example.com` for your local domain.
 
-In the NPM UI, go to **SSL Certificates,** and click **Add SSL Certificate.**  For domain names, enter both `lan.example.com` and `*.lan.example.com`.  Enter your email address--Let's Encrypt will use this to notify you if your certificate is about to expire.  Turn on **Use a DNS Challenge.**
+In the NPM UI, go to **SSL Certificates,** and click **Add SSL Certificate,** and from the menu that follows, **Let's Encrypt via DNS.**  For domain names, enter both `lan.example.com` and `*.lan.example.com`.  Enter your email address--Let's Encrypt will use this to notify you if your certificate is about to expire.
 
-The form will change at this point.  Choose **Cloudflare** as your DNS provider.  When you do, **Credentials File Content** will change to look like this:
+From the **DNS Provider** drop-down, choose **Cloudflare.**  When you do, **Credentials File Content** will change to look like this:
 ```text
 # Cloudflare API token
 dns_cloudflare_api_token=0123456789abcdef0123456789abcdef01234567
@@ -61,7 +61,7 @@ Paste in your API token after the `=` (replacing `0123456789...`), leaving every
 The form should look like this:
 ![npm-addcert.png](/npm-addcert.png)
 
-Then click to accept the Let's Encrypt Terms of Service, and click Save.  Creation of the certificate will take a few moments, and you'll be returned to the SSL Certificates page.
+Then click Save.  Creation of the certificate will take a few moments, and you'll be returned to the SSL Certificates page.
 ### Create a host
 Now that you've created a wildcard certificate, let's create a proxy host for one of your apps.  Still in the NPM UI, go to Hosts -> Proxy Hosts and click on **Add Proxy Host.**
 
