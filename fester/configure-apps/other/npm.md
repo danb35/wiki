@@ -2,7 +2,7 @@
 title: Nginx Proxy Manager
 description: Installing and Configuring Nginx Proxy Manager in TrueNAS SCALE Electric Eel (24.10) or later
 published: true
-date: 2026-07-09T19:46:58.038Z
+date: 2026-07-09T20:20:38.021Z
 tags: letsencrypt, apps
 editor: markdown
 dateCreated: 2024-11-10T12:29:03.837Z
@@ -27,6 +27,7 @@ Nginx Proxy Manager (NPM) provides a web interface to configure the popular web 
 * You're running TrueNAS SCALE Electric Eel (24.10) or later.  This version completely changed how apps work, so this guide will not be applicable to any earlier version of TrueNAS.
 * This guide will be using the point-and-click apps ecosystem in TrueNAS SCALE.  There are many other ways to configure NPM, including custom Compose apps, that are outside the scope of this guide.
 ## Preparation
+### GUI Settings
 NPM will need to listen on ports 80 and 443 of your system, and by default the TrueNAS web interface already does that.  You'll therefore need to change this.  In the TrueNAS web interface, go to System (1) -> General Settings (2), then click Settings in the GUI section (3).
 ![npm-guisettings1.png](/npm-guisettings1.png)
 
@@ -36,11 +37,21 @@ Change HTTP port to 81 (1), and HTTPS port to 444 (2), then click Save.
 You can substitute other ports if desired.  Confirm the restart of the web GUI.
 
 At this point you'll probably need to log back into the web interface.  Browse to `http://ip_of_truenas:81` and do so.
+### Docker Network
+You'll need to create a Docker network where your apps will live, so they can sit behind NPM.  As of this writing in July 2026, this must be done at the shell of your NAS.  Log in as your administrator and run `sudo docker network create proxy`.
 ## Install NPM
 In the TrueNAS web interface, browse to Apps, then click Discover Apps.  Find `Nginx Proxy Manager` and click Install.  Set the HTTP port to 80, and the HTTPS port to 443.  You can also change the WebUI Port if desired, but the remainder of this guide assumes you've left it at the default.
 ![npm-network.png](/npm-network.png)
 
+Below, next to Networks, click **Add.**  In the **Name** field, type `proxy`, then next to Containers, click **Add.**  Under the **Container Name** dropdown, choose `npm`.  Leave the other fields at their defaults.  The result should look like this:
+![npm-network2.png](/npm-network2.png)
+
 Then click Install.  Let the application deploy, which may take a few moments.
+
+## Install another app
+This guide will use Sonarr as an example, but will highlight only the network-related settings.  Go back to **Discover Apps,** find **Sonarr,** and click **Install.**  Set its options as desired until you reach the **Network Configuration** section.  Set the **Port Bind Mode** for the WebUI port to `None`.  Then add the `sonarr` container to the `proxy` network, much like you did with NPM above.  The result will look like this:
+![npm-network3.png](/npm-network3.png)
+
 ## Configure NPM
 ### DNS preparation
 Create a **local** DNS record pointing `npm.lan.example.com` to the IP address of your NAS.
@@ -65,7 +76,7 @@ Then click **Save**.  Creation of the certificate will take a few moments, and y
 ### Create a host
 Now that you've created a wildcard certificate, let's create a proxy host for one of your apps.  Still in the NPM UI, go to Hosts -> Proxy Hosts and click on **Add Proxy Host.**
 
-On the Details tab, start by entering the FQDN you'll be using (e.g., if you're setting up a proxy for Sonarr, you might use `sonarr.lan.example.com`).  You'll leave scheme set to http, and for IP you'll enter the IP of your NAS.  In Port, you'll enter the port for that app (30027 by default for Sonarr).  Turn on websockets support and Block Common Exploits.
+On the Details tab, start by entering the FQDN you'll be using (e.g., if you're setting up a proxy for Sonarr, you might use `sonarr.lan.example.com`).  You'll leave scheme set to http, and for **Forward Hostname/IP** you'll enter `sonarr`.  In Port, you'll enter the port for that app (30113 by default for Sonarr--it will be the port that's set in the app configuration).  Turn on websockets support and Block Common Exploits.
 ![npm-host1.png](/npm-host1.png)
 
 Then go to the SSL tab.  Under SSL Certificate, select the certificate you created above.  Click on Force SSL and Enable HTTP/2 support.  HSTS is not recommended at this time.[^1]
@@ -87,4 +98,4 @@ This guide has created a single wildcard certificate, in the expectation that an
 ## Conclusion
 This guide has described installation and configuration of Nginx Proxy Manager to allow TLS termination for the apps on your TrueNAS server.  Consult the [Nginx Proxy Manager documentation](https://nginxproxymanager.com/guide/) for more details on its configuration.
 
-Many guides configure your network in such a way that the underlying apps are not directly accessible via their ports (i.e., for the app above, via port 30027).  This guide **does not** implement such a configuration due to limitations in the apps ecosystem.  As a result, you or other users on your network will be able to directly access the apps, without TLS, and without going through your proxy, unless you take other measures to restrict this.  Those measures are outside the scope of this guide.
+Following this guide will result in your applications only being available through NPM.  You'll therefore be able to force SSL, use external authentication, and any other access controls you're able to implement through NPM.
