@@ -2,7 +2,7 @@
 title: Nginx Proxy Manager
 description: Installing and Configuring Nginx Proxy Manager in TrueNAS SCALE Electric Eel (24.10) or later
 published: true
-date: 2026-07-09T19:43:45.309Z
+date: 2026-07-09T19:46:58.038Z
 tags: letsencrypt, apps
 editor: markdown
 dateCreated: 2024-11-10T12:29:03.837Z
@@ -61,7 +61,7 @@ Paste in your API token after the `=` (replacing `0123456789...`), leaving every
 The form should look like this:
 ![npm-addcert.png](/npm-addcert.png)
 
-Then click Save.  Creation of the certificate will take a few moments, and you'll be returned to the SSL Certificates page.
+Then click **Save**.  Creation of the certificate will take a few moments, and you'll be returned to the SSL Certificates page.
 ### Create a host
 Now that you've created a wildcard certificate, let's create a proxy host for one of your apps.  Still in the NPM UI, go to Hosts -> Proxy Hosts and click on **Add Proxy Host.**
 
