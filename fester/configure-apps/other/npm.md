@@ -2,7 +2,7 @@
 title: Nginx Proxy Manager
 description: Installing and Configuring Nginx Proxy Manager in TrueNAS SCALE Electric Eel (24.10) or later
 published: true
-date: 2026-07-09T20:20:38.021Z
+date: 2026-07-09T20:21:39.444Z
 tags: letsencrypt, apps
 editor: markdown
 dateCreated: 2024-11-10T12:29:03.837Z
@@ -49,7 +49,7 @@ Below, next to Networks, click **Add.**  In the **Name** field, type `proxy`, th
 Then click Install.  Let the application deploy, which may take a few moments.
 
 ## Install another app
-This guide will use Sonarr as an example, but will highlight only the network-related settings.  Go back to **Discover Apps,** find **Sonarr,** and click **Install.**  Set its options as desired until you reach the **Network Configuration** section.  Set the **Port Bind Mode** for the WebUI port to `None`.  Then add the `sonarr` container to the `proxy` network, much like you did with NPM above.  The result will look like this:
+This guide will use Sonarr as an example, but will highlight only the network-related settings.  Go back to **Discover Apps,** find **Sonarr,** and click **Install.**  Set its options as desired until you reach the **Network Configuration** section.  Set the **Port Bind Mode** for the WebUI port to `None`.  Make a note of the port number; you'll use it below.  Then add the `sonarr` container to the `proxy` network, much like you did with NPM above.  The result will look like this:
 ![npm-network3.png](/npm-network3.png)
 
 ## Configure NPM
