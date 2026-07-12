@@ -2,7 +2,7 @@
 title: VM Templates on Proxmox VE
 description: Simplify Creating VMs by Using Templates
 published: true
-date: 2026-07-12T19:34:45.005Z
+date: 2026-07-12T19:35:22.600Z
 tags: 
 editor: markdown
 dateCreated: 2024-09-22T18:27:24.851Z
@@ -13,7 +13,7 @@ Other than virtualization itself, VM templates are one of the greatest reasons t
 
 I prepared the following instructions mainly for my own reference, so I could read the steps rather than watching a 20+-minute video again.  In hopes that it will be helpful to others, I've posted it here.  I'm mainly following Jay's instructions from LearnLinuxTV; I'll link that video and other resources below.  The primary difference between that video and these instructions is the use of `virt-customize` to install the Qemu Guest Agent, which was suggested by a commenter on that video.
 
-These instructions have been tested and confirmed to work with Debian 12, and Ubuntu 22.04 and 24.04.  Rocky Linux 9 doesn't quite work with these instructions; specifically, the Qemu Guest Agent doesn't appear to run.
+These instructions have been tested and confirmed to work with Debian 12 and 13, and Ubuntu 22.04 and 24.04.  Rocky Linux 9 doesn't quite work with these instructions; specifically, the Qemu Guest Agent doesn't appear to run.
 
 ## Instructions
 The process I describe uses cloud images provided for many Linux distributions.  These images are designed to work with cloud-init, which Proxmox supports, allowing you to configure that system as desired.
