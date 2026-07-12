@@ -2,7 +2,7 @@
 title: VM Templates on Proxmox VE
 description: Simplify Creating VMs by Using Templates
 published: true
-date: 2024-09-22T18:27:27.737Z
+date: 2026-07-12T19:34:45.005Z
 tags: 
 editor: markdown
 dateCreated: 2024-09-22T18:27:24.851Z
@@ -38,7 +38,7 @@ The next several steps are done using the shell as the root user.  SSH into your
 * Resize the image file.  As with the CPU and memory settings, you can increase this size in your cloned VMs if needed.  `qemu-img resize <filename>.qcow2 16G`
 * Now we're going to modify the image file by installing the Qemu Guest Agent, which will allow Proxmox VE to see VM IP addresses, cleanly shut them down, etc.  `virt-customize -a <filename>.qcow2 --install qemu-guest-agent`
   * If that command fails because `virt-customize` isn't found, install it using  `apt install libguestfs-tools`
-* If there are any other packages you want to install in your template, install them in the same way.
+* If there are any other packages you want to install in your template, install them in the same way.  Similarly, you can make changes to OS configuration files using the same tool.  _E.g.,_ to tell `apt` to use a proxy, you could run `virt-customize -a <filename>.qcow2 --append-line '/etc/apt/apt.conf.d/99proxy:Acquire::http { Proxy "http://<IP>:3142"\; }'`
 * Now you need to empty the `/etc/machine-id` file in the disk image.   `virt-customize -a <filename>.qcow2 --truncate /etc/machine-id`
   * `virt-customize` created this file when you installed the `qemu-guest-agent` package, but it needs to be removed.  If this isn't done, all VMs you create by cloning this template will be issued the same IP address by your DHCP server, which will result in IP conflicts on your network.
 * Next, import this disk image into the VM you created above.  `qm importdisk <VM ID> <filename>.qcow2 local-zfs`  Replace `local-zfs` with the name of the storage system you want to use to store the VM disk image.
