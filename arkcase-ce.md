@@ -2,14 +2,17 @@
 title: ArkCase-CE Installation
 description: Using Talos and Proxmox to install ArkCase-CE
 published: true
-date: 2026-08-25T20:37:40.759Z
+date: 2026-08-25T21:20:08.736Z
 tags: 
 editor: markdown
 dateCreated: 2026-08-24T09:06:14.149Z
 ---
 
 # Important note
-The guide below was prepared by Claude using the Sonnet 5 model.  It has been hand-verified to ensure that it works, but no guarantee is made as to accuracy of any other statements.
+The guide below was prepared by Claude using the Sonnet 5 model, with a little bit of manual tweaking.  It has been hand-verified to ensure that it works, but no guarantee is made as to accuracy of any other statements.
+
+---
+
 # ArkCase-CE Standalone Install: Talos on Proxmox, No ArgoCD
 
 This is a from-scratch installation guide for ArkCase Community Edition on a single Talos Linux node running as a Proxmox VM, deployed with plain Helm rather than ArgoCD/GitOps. It exists because a production ArkCase-CE deployment managed by ArgoCD ran into a cluster of interacting bugs -- credential rotation on every sync, a chart that assumes real Helm release history ArgoCD never provides, `ignoreDifferences` silently failing to protect live patches -- serious enough that this guide deliberately steers around ArgoCD entirely. **Appendix A** has the full story; read it before you decide whether to reintroduce GitOps here later.
