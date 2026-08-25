@@ -2,7 +2,7 @@
 title: ArkCase-CE Installation
 description: Using Talos and Proxmox to install ArkCase-CE
 published: true
-date: 2026-08-24T09:06:14.149Z
+date: 2026-08-25T20:37:40.759Z
 tags: 
 editor: markdown
 dateCreated: 2026-08-24T09:06:14.149Z
@@ -66,10 +66,10 @@ Talos's own documentation for this exact scenario is at **[docs.siderolabs.com -
 1. **Download the Talos ISO.** Get the current `metal-amd64.iso` from [Talos's release page](https://github.com/siderolabs/talos/releases) (or use [Image Factory](https://factory.talos.dev/) if you want to bake in extra kernel modules -- not needed for this guide). Upload it to your Proxmox host: **Datacenter -> your node -> local -> ISO Images -> Upload**.
 
 2. **Create the VM** ("Create VM" in the Proxmox web UI):
-   - **General**: a name (e.g. `arkcase-ce`).
-   - **OS**: select the Talos ISO. Guest OS type: Linux, kernel 6.x.
-   - **System**: Machine type `q35`, BIOS `OVMF (UEFI)` -- add the EFI disk when prompted (4 MB is enough), and uncheck "Pre-Enroll Keys". Leave the Qemu Agent checkbox **unchecked** -- it only does anything useful if your ISO was built with the corresponding extension, and otherwise just generates log noise.
-   - **Disks**: one disk sized per the table above, bus type **VirtIO SCSI** (not "VirtIO SCSI single" -- Talos's own docs call out that variant as a cause of bootstrap hangs). Format Raw for best performance, or QCOW2 if you want Proxmox-level snapshots. Enable "Discard" if your storage pool is thin-provisioned SSD/NVMe.
+   - **General**: a name (e.g. `arkcase-ce`).  You'll likely also want to check "Start at boot."
+   - **OS**: select the Talos ISO. Guest OS type: Linux, version 7.x - 2.6 Kernel.
+   - **System**: Machine type `q35`, BIOS `OVMF (UEFI)` -- leave the box checked for "Add EFI Disk," and select an appropriate location for "EFI Storage."  Uncheck "Pre-Enroll Keys". Leave the Qemu Agent checkbox **unchecked** -- it only does anything useful if your ISO was built with the corresponding extension, and otherwise just generates log noise.  Set the SCSI Controller to **VirtIO SCSI** (not "VirtIO SCSI single" -- Talos's own docs call out that variant as a cause of bootstrap hangs).
+   - **Disks**: one disk sized per the table above. Format Raw for best performance, or QCOW2 if you want Proxmox-level snapshots. Enable "Discard" if your storage pool is thin-provisioned SSD/NVMe.
    - **CPU**: per the sizing table, type `host` (passes through real CPU features; the tradeoff is you lose the ability to live-migrate this VM to a different physical CPU model -- irrelevant for a single-node, single-host setup).
    - **Memory**: per the sizing table. Leave **ballooning disabled** -- Talos doesn't support memory hotplug, and needs to see a fixed amount of RAM.
    - **Network**: model VirtIO, bridged to your LAN.
@@ -107,6 +107,7 @@ kubectl version --client
 helm version
 talosctl version --client
 ```
+Now that these utilities are installed, all the other shell commands for the remainder of this guide will be run on this same workstation.
 
 ---
 
