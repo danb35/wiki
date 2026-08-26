@@ -2,13 +2,15 @@
 title: Self-signed Certificate for TrueNAS SCALE
 description: How to create a self-signed TLS certificate in TrueNAS SCALE/Community Edition
 published: true
-date: 2025-03-29T14:49:23.312Z
+date: 2026-08-26T18:35:29.449Z
 tags: 
 editor: markdown
 dateCreated: 2025-03-29T14:49:21.465Z
 ---
 
-# Self-signed Certificate for TrueNAS SCALE
+# Self-signed Certificate for TrueNAS SCALE - DEPRECATED
+## Deprecation notice
+The built-in certificate authority was removed in TrueNAS 25.10.  This page is retained for historical reference, or for use with older versions.
 ## Introduction
 TrueNAS creates a self-signed TLS certificate on installation, which is valid for about a year.  Like any certificate, this will enable secure communication over HTTPS between a client system and your NAS.  However, it will not be trusted by browsers, so you'll get certificate errors when you browse to your NAS via HTTPS.
 
