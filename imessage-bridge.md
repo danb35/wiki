@@ -2,169 +2,233 @@
 title: Add iMessage Bridge to Synapse
 description: Installing the Mautrix iMessage bridge to Synapse
 published: true
-date: 2023-02-28T14:12:14.871Z
+date: 2026-09-04T18:47:34.317Z
 tags: 
 editor: markdown
 dateCreated: 2023-01-07T01:30:02.650Z
 ---
 
-# Introduction
-These notes discuss the installation of the [Mautrix iMessage bridge](https://github.com/mautrix/imessage).  This will involve installing a websocket proxy and the bridge component on a Mac (or other system running macOS), and setting up a VPN between the Mac and your Synapse server using ZeroTier.
+# Setting Up an iMessage↔Matrix Bridge
 
-# Prerequisites
-* You've installed Synapse on a public server using the Ansible playbook at https://github.com/spantaleev/matrix-docker-ansible-deploy, and you have root access to that server
-* You have an available system running macOS Ventura
-  * Because the bridge will run on this system, it will need to be running 24x7x365
-  * You'll need to disable SIP and AMFI as described at https://docs.mau.fi/bridges/go/imessage/mac-nosip/setup.html#disabling-sip-and-amfi
-    * Since this disables significant security features, it's best this macOS installation be on its own machine or VM.  macOS runs well under Proxmox; see https://github.com/luchina-gabriel/OSX-PROXMOX.  For a manual installation, see https://www.nicksherlock.com/2022/10/installing-macos-13-ventura-on-proxmox/
-  * You also need to be logged into iMessage on that system.
-  * The macOS system must have Xcode installed (free from the App Store) along with [Homebrew](https://brew.sh/)
-# Installing ZeroTier
-## On your Synapse server
-`curl -s 'https://raw.githubusercontent.com/zerotier/ZeroTierOne/master/doc/contact%40zerotier.com.gpg' | gpg --import && \
-if z=$(curl -s 'https://install.zerotier.com/' | gpg); then echo "$z" | sudo bash; fi`
-## On your Mac
-Download the installer from zerotier.com and install it
-## Set up the network
-* Log in to your account on zerotier.com--create one if you don't have it; it's free.
-* Go to the Networks tab, and click "Create A Network"
-* Once the network is created, you can optionally (but recommended) change the name to something meaningful.  Make a note of the 16-character network ID.
-* On the Mac, go to the ZeroTier menu, select "Join New Network...", and paste in the network ID.
-* On your Synapse server, run `sudo zerotier-cli join <network-id>`
-* Go back to the Networks tab on zerotier.com, and click on the network you just created.  You'll see two Members; check the box under "Auth?" to allow them to join.  In a moment, you'll see managed IPs show up for each member.  Give each member a name so you can readily tell them apart, and test connectivity by pinging each one from the other.
-# Install Barcelona
-Barcelona is a component used by the bridge to interface with the iMessage service, and it will need to be built from source code.  You'll need to run these commands from your preferred terminal on the Mac:
-* `mkdir -p ~/src/{mautrix-imessage,mautrix-wsproxy,barcelona-mautrix}`
-* `brew install xcodegen xcbeautify && sudo gem install xcpretty`
-* `cd ~`
-* `git clone https://github.com/beeper/barcelona`
-* `cd barcelona`
-* `make mautrix-macos`
-* `cp ~/barcelona/Build/macOS/Build/Products/Release/barcelona-mautrix ~/src/barcelona-mautrix/`
-* `sudo cp ~/barcelona/com.apple.security.xpc.plist /Library/Preferences/`
-# Install the bridge
-This step is done on the Mac.  First, browse to https://mau.dev/mautrix/imessage/pipelines?scope=branches&page=1.  Download the latest (i.e., first on the list) build from the `master` branch, with the appropriate architecture.  If you don't know, download the one that says `build universal:archive`.  Unzip it.
-* Move the contents to `~/src/mautrix-imessage/`, and rename `example-config.yaml` to `config.yaml`.
-* Edit `config.yaml`.
-  * In the `homeserver:` section, change `address:` to point to your Synapse server.  Change `websocket_proxy` to `ws://localhost:29331`.  Change `domain:` to the domain of your Synapse server.  Set `ping_interval_seconds` to `10`.
-  * In the `imessage:` section, change `platform:` to `mac-nosip` and `imessage_rest_path:` to `/Users/<you>/src/barcelona-mautrix/barcelona-mautrix`, where `<you>` is your username on the Mac.
-  * In the `bridge:` section, change `user:` to your user.  Change `login_shared_secret:` to the value of `matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret:` in your Ansible `vars.yaml` file.
-  * In `bridge -> encryption`, change `allow:` to `true`, and `default:` to `true`
-  * Save and close the file.
-* Go to the terminal of your preference, run `cd ~/src/mautrix-imessage/`, followed by `./mautrix-imessage -g`.  This will generate `registration.yaml` in that directory.  Edit that file.
-* In `registration.yaml`, change `url:` to `http://<zerotier_ip>:29331`, where `<zerotier_ip>` is the IP address of your Mac in the ZeroTier network.
+Bridges iMessage to Matrix using [mautrix/imessage](https://github.com/mautrix/imessage) with the BlueBubbles connector, which offloads the actual iMessage-hooking work to [BlueBubbles Server](https://bluebubbles.app/) rather than depending on private-framework tricks maintained by the bridge project itself.
 
-### Register the App service on your Synapse server
-* SSH in to your Synapse server as root
-* `mkdir -p /matrix/mautrix-imessage/config`
-* `nano /matrix/mautrix-imessage/config/registration.yaml`
-* Paste in the edited contents of `registration.yaml` from your Mac.
-# Installing wsproxy
-Compiled binaries for macOS aren't available for download for wsproxy, so you'll need to compile it yourself.  To do this, first go to https://go.dev and download (and install) Go for macOS.  Then:
-* `cd ~`
-* `git clone https://github.com/mautrix/wsproxy`
-* `cd wsproxy`
-* `go build -o mautrix-wsproxy`
-* `mv mautrix-wsproxy ~/src/mautrix-wsproxy`
-* `cp example-config.yaml ~/src/mautrix-wsproxy/config.yaml`
-* Edit `config.yaml`
-	* Set `listen_address:` to `0.0.0.0:29331`
-	* Replace the value of `as` with the value of `as_token` from `registration.yaml`
-	* Replace the value of `hs` with the value of `hs_token` from `registration.yaml`
-	* Remove everything after the `hs:` line
-# Configure Synapse to register this bridge
-These steps need to be taken on whatever machine you're using to run the Ansible playbook.  First, edit `vars.yaml`, and add the following to the end:
-```yaml
-# App service registration file for mautrix-imessage
-matrix_synapse_container_extra_arguments:
-- '--mount type=bind,src=/matrix/mautrix-imessage/config/registration.yaml,dst=/matrix-mautrix-imessage-registration.yaml,ro'
-matrix_synapse_app_service_config_files:
-- /matrix-mautrix-imessage-registration.yaml
+## Architecture: two hosts, not necessarily one
+
+This setup has two logically separate roles:
+
+- **The BlueBubbles host** — must run macOS, since it runs Messages.app and hooks into it directly. This is the one piece that can't be avoided.
+- **The bridge host** — runs `mautrix-imessage` and `mautrix-wsproxy`. These are plain Go binaries that talk to BlueBubbles over its local REST API; they have no macOS-specific dependency when using the `bluebubbles` platform. This can be the *same* Mac as the BlueBubbles host (simplest — everything talks over `localhost`), or a completely separate Linux, Windows, or macOS machine, as long as it can reach the BlueBubbles host's REST API (default port 1234) over the network.
+
+The rest of this guide assumes the simplest case — both roles on the same Mac — but calls out where it matters if you split them.
+
+## Prerequisites
+
+### The BlueBubbles host
+
+- A Mac — physical hardware or a VM — dedicated to this role. It needs to stay powered on continuously and be signed into Messages.app with the Apple ID / iCloud account whose iMessages you want to bridge.
+- System Integrity Protection (SIP) disabled, **only if** you want reactions/tapbacks and other rich features via BlueBubbles' Private API. A stock Mac with SIP enabled can still bridge basic text messages through BlueBubbles without Private API. AMFI does **not** need to be disabled — that was a requirement of an older, now-unmaintained connector (Barcelona), not of BlueBubbles.
+
+  **To disable SIP** (requires physical access — it cannot be done remotely or from a normal login session):
+  1. Restart the Mac and enter Recovery Mode:
+     - **Apple Silicon:** hold the power button as the Mac starts up until "Loading startup options" appears, then choose **Options**.
+     - **Intel:** hold **Cmd+R** immediately at startup.
+  2. From the menu bar in Recovery Mode, open **Utilities → Terminal**.
+  3. Run:
+     ```bash
+     csrutil disable
+     ```
+  4. On Apple Silicon, if prompted by Startup Security Utility, you may also need to select a reduced security level — this is a separate Apple Silicon boot-security gate layered on top of SIP.
+  5. Restart normally, then verify:
+     ```bash
+     csrutil status
+     ```
+     should report SIP as disabled.
+
+### The bridge host
+
+(If combining with the BlueBubbles host, this is the same machine — the requirements below just add to the ones above.)
+
+- Xcode Command Line Tools if on macOS (`xcode-select --install`), or a C toolchain (`build-essential` on Debian/Ubuntu, etc.) if on Linux — needed to compile with cgo.
+- Go 1.22 or newer. No package manager required; download directly from [go.dev/dl](https://go.dev/dl/).
+- SSH enabled for remote administration — optional, but strongly recommended on macOS, since without it you'll need physical or screen-sharing access for the GUI steps in this guide. (Enable via System Settings → General → Sharing → Remote Login.)
+
+### The Matrix homeserver
+
+- A Synapse (or other appservice-capable homeserver) you administer.
+- A network path between the homeserver and the bridge host, in both directions:
+  - The homeserver needs to reach the bridge's `wsproxy` component to deliver events.
+  - The bridge needs outbound access to the homeserver's client API.
+  - If both are on the same network, this is trivial. If not (e.g. a cloud-hosted homeserver and a bridge host at home), you'll need a tunnel. An SSH reverse tunnel (documented below) is simple and has no dependency on third-party infrastructure. A mesh VPN (ZeroTier, Tailscale, etc.) is an alternative, but is another moving part that can fail independently — see Changelog.
+
+## Setting up the BlueBubbles host
+
+Download from [bluebubbles.app/downloads/server](https://bluebubbles.app/downloads/server/) and install to `/Applications`.
+
+Launch it and walk through setup. Skip the Google/Firebase account step — it's not needed, since the Matrix bridge talks to BlueBubbles' local REST API directly rather than through Firebase push.
+
+Grant Full Disk Access when prompted.
+
+Set a server password (Settings → Server Address / Password) and note it down — you'll need it for the bridge config below.
+
+If you disabled SIP, enable Private API in Settings → Private API to get reactions/tapbacks.
+
+## Setting up the bridge host
+
+### 1. Build libolm
+
+GitHub's `matrix-org/olm` mirror is a stub (kept empty for US export-control reasons around cryptography). Get the real source from GitLab:
+
+```bash
+git clone https://gitlab.matrix.org/matrix-org/olm.git
+cd olm && mkdir build && cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$HOME/local \
+  -DBUILD_SHARED_LIBS=OFF -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+cmake --build . -j4
+cmake --install .
 ```
-Then, re-run the playbook with `ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start`.
-## Test
-Once that completes, test it out quickly.  Back on the Mac, open two terminal windows.  In the first, run `~/src/mautrix-wsproxy/mautrix-wsproxy`.  In the second, run `~/src/mautrix-imessage/mautrix-imessage`.  If the latter starts up successfully, press Ctrl-C to terminate each of them.
-# Start wsproxy and the bridge automatically
-Back on the Mac, create `~/mautrix-imessage.plist`.  Its contents should be:
+
+If you don't have `cmake`, a portable build works fine — download one from [cmake.org/download](https://cmake.org/download/), no system-wide install needed. This works the same way on Linux as on macOS.
+
+### 2. Build mautrix-imessage
+
+```bash
+git clone https://github.com/mautrix/imessage.git
+cd imessage
+CGO_CFLAGS="-I$HOME/local/include" CGO_LDFLAGS="-L$HOME/local/lib" ./build.sh -o mautrix-imessage
+```
+
+### 3. Build mautrix-wsproxy
+
+wsproxy relays appservice transactions between the homeserver and the bridge. See [docs.mau.fi/bridges/go/setup.html](https://docs.mau.fi/bridges/go/setup.html) for its source and build instructions.
+
+## Configuring the bridge
+
+- Copy `example-config.yaml` to `config.yaml`.
+- Under `imessage:`, set:
+  ```yaml
+  platform: bluebubbles
+  bluebubbles_url: http://<blueBubbles-host-address>:1234
+  bluebubbles_password: <the password you set in BlueBubbles Server>
+  ```
+  (`<bluebubbles-host-address>` is `localhost` if the bridge and BlueBubbles are on the same machine.)
+- Under `homeserver:`, set `address` to your homeserver's public URL and `domain` to its server name.
+- Generate the appservice registration:
+  ```bash
+  ./mautrix-imessage --config config.yaml --generate-registration
+  ```
+
+## Connecting the bridge to your homeserver
+
+### Registering the appservice
+
+Copy the generated `registration.yaml` to your homeserver and add its path to Synapse's `app_service_config_files` in `homeserver.yaml`, then restart Synapse. If you're using a deployment tool like matrix-docker-ansible-deploy, check whether it has native mautrix-imessage support before wiring this in manually — as of this writing it does not, and the practical approach is to mount the registration file in as an extra argument and reference it directly in `app_service_config_files`.
+
+### Connectivity: SSH reverse tunnel
+
+The homeserver needs to reach `mautrix-wsproxy` (default port 29331) on the bridge host. If they're not on the same network, an SSH reverse tunnel from the bridge host to the homeserver is a simple way to achieve this:
+
+1. On the bridge host, generate a dedicated key restricted to port-forwarding only:
+   ```bash
+   ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519_wsproxy_tunnel -N ""
+   ```
+2. On the homeserver, add its public key to some low-privilege account's `authorized_keys`, prefixed with:
+   ```
+   restrict,port-forwarding,permitopen="localhost:29331" ssh-ed25519 AAAA...
+   ```
+   This key can only forward ports — it can't open a shell, even if it's ever compromised.
+3. If your homeserver runs Synapse in a Docker container on an isolated bridge network (common with matrix-docker-ansible-deploy and similar), the container can't reach the host's loopback interface. Bind the tunnel to that Docker network's gateway IP instead of `localhost` — find it with `docker network inspect <network-name>`. This requires adding `GatewayPorts clientspecified` to the homeserver's `sshd_config`.
+4. If the homeserver has a restrictive host firewall (common on cloud VPS default images, which often only allow inbound SSH), add an explicit allow rule for the Docker bridge subnet on the wsproxy port.
+5. Run the tunnel persistently (see "Running the bridge persistently" below for concrete examples on both macOS and Linux).
+6. In your appservice registration's `url:` field, point at wherever the tunnel lands on the homeserver side (the Docker bridge gateway IP + port from step 3, or `localhost` if you're not using Docker).
+
+## Running the bridge persistently
+
+You need `mautrix-imessage` and `mautrix-wsproxy` running continuously, restarting automatically on crash or reboot — plus the SSH tunnel from the previous section, if you're using one. How you do this depends on what the bridge host runs.
+
+### macOS: launchd
+
+Create one plist per process in `~/Library/LaunchAgents/`, then `launchctl load` each.
+
+`~/Library/LaunchAgents/mautrix-imessage.plist`:
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-
 <plist version="1.0">
 <dict>
-
     <key>Label</key>
     <string>com.github.mautrix-imessage</string>
-
     <key>WorkingDirectory</key>
-    <string>/Users/<you>/src/mautrix-imessage</string>
-
+    <string>/Users/you/src/mautrix-imessage</string>
     <key>ProgramArguments</key>
     <array>
-	<string>./mautrix-imessage</string>
-	<string>--config</string>
-	<string>config.yaml</string>
+        <string>./mautrix-imessage</string>
+        <string>--config</string>
+        <string>config.yaml</string>
     </array>
-
-    <key>RunAtLoad</key>
-    <true/>
-
-    <key>KeepAlive</key>
-    <true/>
-
+    <key>RunAtLoad</key><true/>
+    <key>KeepAlive</key><true/>
 </dict>
 </plist>
 ```
-...where `<you>` is your username on the Mac.  Then create `~/mautrix-wsproxy.plist`.  Its contents should be:
+
+`~/Library/LaunchAgents/mautrix-wsproxy.plist` follows the same shape, pointing at the wsproxy binary and its own working directory.
+
+The SSH tunnel's launchd job (label `com.familybrown.wsproxy-tunnel` in the example below — pick your own) uses `/usr/bin/ssh` directly as the program, since there's no long-running binary of your own to wrap:
 ```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-
-<plist version="1.0">
-<dict>
-
-    <key>Label</key>
-    <string>com.github.mautrix-wsproxy</string>
-
-    <key>WorkingDirectory</key>
-    <string>/Users/<you>/src/mautrix-wsproxy</string>
-
-    <key>ProgramArguments</key>
-    <array>
-	<string>./mautrix-wsproxy</string>
-	<string>-config</string>
-	<string>config.yaml</string>
-    </array>
-
-    <key>RunAtLoad</key>
-    <true/>
-
-    <key>KeepAlive</key>
-    <true/>
-
-</dict>
-</plist>
+<key>ProgramArguments</key>
+<array>
+  <string>/usr/bin/ssh</string>
+  <string>-N</string><string>-R</string>
+  <string>&lt;docker-bridge-gateway-ip&gt;:29331:localhost:29331</string>
+  <string>-o</string><string>ServerAliveInterval=15</string>
+  <string>-o</string><string>ServerAliveCountMax=3</string>
+  <string>-o</string><string>ExitOnForwardFailure=yes</string>
+  <string>-i</string><string>/Users/you/.ssh/id_ed25519_wsproxy_tunnel</string>
+  <string>user@your-homeserver</string>
+</array>
+<key>KeepAlive</key><true/>
 ```
-Then, at your favorite terminal:
-* `mkdir ~/Library/LaunchAgents`
-* `cp ~/*.plist ~/Library/LaunchAgents/`
-* `launchctl load mautrix-wsproxy.plist`
-* `launchctl load mautrix-imessage.plist`
-# Test again
-Log in to your homeserver using whatever client app you like, and send a message to `@imessagebot:example.com`, where `example.com` is the domain of your homeserver.
 
-# Log files
-The bridge stores its log files in `~/src/mautrix-imessage/logs` by default, and has no apparent mechanism for rotating, trimming, or otherwise limiting them.  However, they can readily be broken up.
-
-## Cron job
-From the terminal on the macOS system, run `EDITOR=nano crontab -e` (if you happen to like `vi`, you can omit the `EDITOR=nano` part).  Enter the following line:
+After creating or editing a plist:
+```bash
+launchctl load ~/Library/LaunchAgents/<name>.plist
 ```
-1 0 * * * launchctl stop com.github.mautrix-imessage && launchctl start com.github.mautrix-imessage
+(If you've previously loaded it and are updating it, `launchctl unload` first, or use `launchctl bootout`/`bootstrap` — the newer verbs, more reliable on recent macOS than `load`/`unload` for picking up a changed file.)
+
+### Linux: systemd
+
+If you've split the bridge host onto Linux, use a user or system systemd unit instead. Example for `mautrix-imessage` (`/etc/systemd/system/mautrix-imessage.service` or `~/.config/systemd/user/mautrix-imessage.service`):
+
+```ini
+[Unit]
+Description=mautrix-imessage bridge
+After=network-online.target
+
+[Service]
+WorkingDirectory=/home/you/mautrix-imessage
+ExecStart=/home/you/mautrix-imessage/mautrix-imessage --config config.yaml
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
 ```
-This will restart the bridge every morning at 12:01 AM, creating a new log file with the appropriate date.
 
-## Log Level
-Once you're sure the bridge is working properly, you can reduce the log level by editing `~/src/mautrix-imessage/config.yaml`.  Near the end of that file, in the `logging:` section, set `print_level` to `info` or `warn` to reduce the verbosity of the log file.
+`mautrix-wsproxy` follows the same shape. Enable and start with `systemctl enable --now mautrix-imessage.service` (add `--user` and use `systemctl --user` if using a user unit).
 
-# To Do
-* Log rotation
+## Verifying it works
+
+- Check BlueBubbles Server's own status: `curl http://localhost:1234/api/v1/server/info?password=<password>` should return `private_api: true` and `helper_connected: true`.
+- Tail the bridge's logs for `Startup sync complete` and successful websocket pings.
+- Send a message from Matrix and confirm it arrives in iMessage, and vice versa.
+
+## Troubleshooting
+
+- **Contact lookups failing, or reactions not bridging:** confirm BlueBubbles' Private API is enabled and SIP is actually disabled (`csrutil status`).
+- **Bridge can't reach the homeserver:** check that the tunnel/VPN link is actually up before assuming it's a bridge config problem.
+- **Homeserver can't reach the bridge:** check the homeserver's own firewall — cloud VPS images often default to allowing only SSH inbound, which silently blocks a newly-added listener.
+
+## Changelog
+
+- **2026-09-04:** Migrated from the Barcelona connector to BlueBubbles. Barcelona had gone unmaintained (no releases since Aug 2023) and had a live regression in its contacts API; BlueBubbles is actively maintained and decouples the iMessage-hooking problem from the Matrix-bridging problem. AMFI no longer needs to be disabled, since that was specific to Barcelona.
+- **2026-09-04:** Replaced a ZeroTier mesh VPN link between the bridge host and homeserver with an SSH reverse tunnel, after the ZeroTier link failed and could not be restored — the two nodes stopped negotiating any peer path despite both showing authorized/active in ZeroTier Central and running matching client versions. Root cause was never identified, likely a home-router NAT issue. The SSH tunnel has fewer moving parts and no dependency on third-party relay infrastructure.
