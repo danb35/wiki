@@ -2,7 +2,7 @@
 title: OPNSense Update Notifications
 description: Using Uptime Kuma to notify you of available updates for your OPNsense router
 published: true
-date: 2026-09-04T11:48:08.609Z
+date: 2026-09-04T11:54:55.406Z
 tags: 
 editor: markdown
 dateCreated: 2026-09-04T11:19:24.892Z
@@ -33,16 +33,19 @@ They're independent Uptime Kuma monitors with no dependency link between them �
 Firmware-status access needs its own user, scoped to nothing else:
 
 1. **System → Access → Users** — create (or reuse) a user dedicated to this integration, not a personal login.
-2. On that user, **API keys → +** to generate a key/secret pair. OPNsense shows the secret exactly once — save it immediately, it can't be retrieved again later.
-3. Grant only the privilege covering firmware status/check (search "firmware" in the privilege picker under the user's **Effective Privileges**). Skip admin or "all pages" access.
-4. Auth is HTTP Basic on every request: the **API key** is the username, the **API secret** is the password.
+2. Open the user, scroll to **Effective privileges**, click **+**.
+3. Search `Firmware` and select **"System: Firmware"**. This is the *only* privilege OPNsense exposes for this — there's no finer-grained option scoped to just `/status` or just `/check`. Its source definition (`OPNsense/Core/ACL/ACL.xml`, page id `page-system-firmware-manualupdate`) covers:
 
-```
-GET  /api/core/firmware/status   → read the last cached check result
-POST /api/core/firmware/check    → kick off a fresh check (async, ~10-20s to complete)
-```
+   ```xml
+   <pattern>ui/core/firmware/*</pattern>
+   <pattern>api/core/firmware/*</pattern>
+   <pattern>ui/diagnostics/log/core/pkg/*</pattern>
+   <pattern>api/diagnostics/log/core/pkg/*</pattern>
+   ```
 
-Confirmed least-privilege: this key's user gets `403 Forbidden` on unrelated endpoints like `/api/cron/settings/searchJobs` — it can't see anything outside firmware status.
+   So alongside the two API endpoints used here, it also grants the Firmware GUI page and the package-log diagnostics endpoint — still well short of admin, but worth knowing it isn't scoped to *only* what this integration calls.
+4. Save the user, then scroll to **API keys** and click **+** to generate a key/secret pair. OPNsense shows the secret exactly once at creation — copy it immediately, it can't be retrieved again later.
+5. Auth is HTTP Basic on every request: the **API key** is the username, the **API secret** is the password.
 
 ## Uptime Kuma: the two monitors
 
