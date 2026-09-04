@@ -2,7 +2,7 @@
 title: OPNSense Update Notifications
 description: Using Uptime Kuma to notify you of available updates for your OPNsense router
 published: true
-date: 2026-09-04T11:54:55.406Z
+date: 2026-09-04T22:17:43.580Z
 tags: 
 editor: markdown
 dateCreated: 2026-09-04T11:19:24.892Z
@@ -16,6 +16,8 @@ How OPNsense got a working "update available" notification in Uptime Kuma — th
 A long-standing source of frustration for me with OPNsense is that it has no built-in way to notify you of an available update.  You can set up a cron job to check for available updates, but you need to log into the GUI to see if any are available.  I've found a variety of scripts to run on the OPNsense box itself that are supposed to provide these notifications, but haven't had any luck.
 
 This guide, prepared with the assistance of [Claude](https://claude.ai), describes using [Uptime Kuma](https://uptimekuma.co/) to notify you of available updates.  It assumes you already have Uptime Kuma installed, and one or more notification methods configured.  Uptime Kuma will then trigger the update check every six hours, and notify you via your chosen method when an update is available.
+
+It's likely this method can be adapted to other monitoring tools.  If they're able to make authenticated HTTP requests on a schedule, and parse a JSON response, they should be able to follow this method.
 
 ## Why two monitors, not one
 
