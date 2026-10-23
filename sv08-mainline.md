@@ -2,7 +2,7 @@
 title: Mainline Klipper on a Sovol SV08 in 2026
 description: Notes on converting a Sovol SV08 printer to run Mainline Klipper
 published: true
-date: 2026-10-23T16:40:50.428Z
+date: 2026-10-23T17:14:39.001Z
 tags: 
 editor: markdown
 dateCreated: 2026-10-23T16:22:06.717Z
@@ -11,7 +11,7 @@ dateCreated: 2026-10-23T16:22:06.717Z
 # Introduction
 After buying a [Sovol SV08 3D printer](https://www.sovol3d.com/products/sovol-sv08-3d-printer), one of the first things I wanted to do was install mainline Klipper.  The canonical instructions for this process are at https://github.com/Rappetor/Sovol-SV08-Mainline.  However, time, hardware revisions, and bugs resulted in several changes to my installation, which I wanted to document for my own reference, as well as anyone else who may find it helpful.
 # Before you begin
-Ideally, back up your entire `/config` directory.  At a minimum, back up your `printer.cfg` file.  You can do this through the Mainsail web interface.
+Ideally, back up the entire `~/config` directory on your printer.  At a minimum, back up your `printer.cfg` file.  You can do this through the Mainsail web interface.
 
 # Base OS image
 The Rappetor repo calls for use of the use of the BTT CB1 v2.3.4 image.  This is based on Debian 11 (Bullseye), which is now EOL.  An image of Armbian is available specifically for the SV08, which is based on Debian 13 (Trixie), the current release.  That can be downloaded from https://armbian.com/boards/sovol-sv08.
@@ -31,7 +31,24 @@ overlays=spidev1_1
 The remaining lines (beginning with `rootdev=`) remain unchanged.
 # Installation process
 ## Flash and first boot
-Install the eMMC module in your printer, plug in a keyboard and display, and connect to your network.  When you boot the system, run through the first-boot process: create a root password, set up a non-root user (I used `biqu`), set your locale, time zone, etc.  Run `apt update && apt upgrade` to install system updates, `apt install git mc`, then reboot.
+Install the eMMC module in your printer, plug in a keyboard and display, connect to your (wired) network, and power up.[^1]
+
+[^1]: If you need to connect your printer to WiFi, the process is a little complicated.  Once you've run through the first-boot process, you'll need to configure it by creating a YAML file.  To do this, at the shell prompt, run `nano /etc/netplan/30-wifis-dhcp.yaml`.  For its contents, enter this:
+    ```
+    network:
+      version: 2
+      renderer: networkd
+      wifis:
+        wlan0:
+          dhcp4: true
+          dhcp6: true
+          access-points:
+            "Your-SSID":
+              password: "your-password"
+    ```
+    These indents use spaces, and the spacing is critical.  And, of course, substitute your own WiFi SSID and password.  Once finished, Ctrl-X to exit, Y to save.  Then `chmod 600 /etc/netplan/*.yaml` to make the file readable by root only, then `netnetplan try`.  The last command will validate the file syntax and attempt to connect to your WiFi.
+
+When you boot the system, run through the first-boot process: create a root password, set up a non-root user (I used `biqu`), set your locale, time zone, etc.  Run `apt update && apt upgrade` to install system updates, `apt install git mc`, then reboot.
 
 At this point, you can unplug the keyboard and display, and do the remainder of the installation via SSH.
 ## KIAUH
