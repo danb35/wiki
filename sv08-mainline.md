@@ -2,7 +2,7 @@
 title: Mainline Klipper on a Sovol SV08 in 2026
 description: Notes on converting a Sovol SV08 printer to run Mainline Klipper
 published: true
-date: 2026-10-24T11:23:09.471Z
+date: 2026-10-24T11:29:33.821Z
 tags: 
 editor: markdown
 dateCreated: 2026-10-23T16:22:06.717Z
@@ -181,7 +181,7 @@ Be careful not to swap the two files.
 
 ### Find the MCU serials
 
-Power the printer on and run `ls /dev/serial/by-id/`.  You should see two entries beginning with `usb-Klipper_stm32f103xe_`.  To tell which is which, unplug the USB cable at the toolhead and list them again: the one that disappears is the toolhead (`[mcu extra_mcu]`); the one that remains is the mainboard (`[mcu]`).  Plug the toolhead back in.  Put the full paths (not `ttyACM0`/`ttyACM1`) into `printer.cfg`:
+Power the printer on and run `ls /dev/serial/by-id/`.  You should see two entries beginning with `usb-Klipper_stm32f103xe_`.  To tell which is which, first, refer to your backup copy of `printer.cfg`.  If you can't find that, or if the paths there look like `/dev/ttyACM0`, unplug the USB cable at the toolhead and list them again: the one that disappears is the toolhead (`[mcu extra_mcu]`); the one that remains is the mainboard (`[mcu]`).  Plug the toolhead back in.  Put the full paths (not `ttyACM0`/`ttyACM1`) into `printer.cfg`:
 
 ```ini
 [mcu]
